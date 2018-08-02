@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -50,17 +50,16 @@ void export_functional(py::module &m) {
 
         .def(py::init<>())
         .def_static("blank", &SuperFunctional::blank, "Initialize a blank SuperFunctional.")
-        .def_static("XC_build", &SuperFunctional::XC_build,
-                    "Builds a SuperFunctional from a XC string.")
+        .def_static("XC_build", &SuperFunctional::XC_build, "Builds a SuperFunctional from a XC string.")
         .def("allocate", &SuperFunctional::allocate,
              "Allocates the vectors, should be called after ansatz or npoint changes.")
-        .def("compute_functional", &SuperFunctional::compute_functional,
-             "Computes the SuperFunctional.")
+        .def("compute_functional", &SuperFunctional::compute_functional, "Computes the SuperFunctional.")
         .def("x_functional", &SuperFunctional::x_functional, "Returns the desired X Functional.")
-        .def("c_functional", &SuperFunctional::c_functional, "Returns the desired C Functional")
+        .def("c_functional", &SuperFunctional::c_functional, "Returns the desired C Functional.")
+        .def("x_functionals", &SuperFunctional::x_functionals, "Returns all X Functionals.")
+        .def("c_functionals", &SuperFunctional::c_functionals, "Returns all C Functionals.")
         .def("add_x_functional", &SuperFunctional::add_x_functional, "Add a exchange Functional.")
-        .def("add_c_functional", &SuperFunctional::add_c_functional,
-             "Add a correlation Functional.")
+        .def("add_c_functional", &SuperFunctional::add_c_functional, "Add a correlation Functional.")
         .def("test_functional", &SuperFunctional::test_functional, "Quick testing capabilities.")
         .def("values", &SuperFunctional::values, "Return all internal values.")
         .def("value", &SuperFunctional::value, "Returns a given internal value.")
@@ -89,37 +88,30 @@ void export_functional(py::module &m) {
         .def("is_x_hybrid", &SuperFunctional::is_x_hybrid, "Requires exact exchange?")
         .def("is_c_hybrid", &SuperFunctional::is_c_hybrid, "Requires MP2 correlation?")
         .def("is_c_scs_hybrid", &SuperFunctional::is_c_scs_hybrid, "Requires SCS-MP2 correlation?")
+        .def("is_libxc_func", &SuperFunctional::is_libxc_func, "A full SuperFunctional definition from LibXC.")
         .def("set_name", &SuperFunctional::set_name, "Sets the SuperFunctional name.")
-        .def("set_description", &SuperFunctional::set_description,
-             "Sets the SuperFunctional description.")
+        .def("set_description", &SuperFunctional::set_description, "Sets the SuperFunctional description.")
         .def("set_citation", &SuperFunctional::set_citation, "Sets the SuperFunctional citation.")
-        .def("set_max_points", &SuperFunctional::set_max_points,
-             "Sets the maximum number of points.")
+        .def("set_max_points", &SuperFunctional::set_max_points, "Sets the maximum number of points.")
         .def("set_deriv", &SuperFunctional::set_deriv, "Sets the derivative level.")
         .def("set_lock", &SuperFunctional::set_lock, "Locks the functional to prevent changes.")
-        .def("set_x_omega", &SuperFunctional::set_x_omega,
-             "Sets the range-seperation exchange parameter.")
-        .def("set_c_omega", &SuperFunctional::set_c_omega,
-             "Sets the range-seperation correlation parameter.")
+        .def("set_x_omega", &SuperFunctional::set_x_omega, "Sets the range-seperation exchange parameter.")
+        .def("set_c_omega", &SuperFunctional::set_c_omega, "Sets the range-seperation correlation parameter.")
         .def("set_x_alpha", &SuperFunctional::set_x_alpha, "Sets the amount of exact global HF exchange.")
         .def("set_x_beta", &SuperFunctional::set_x_beta, "Sets the amount of exact HF exchange at long range.")
         .def("set_c_alpha", &SuperFunctional::set_c_alpha, "Sets the amount of MP2 correlation.")
-        .def("set_c_ss_alpha", &SuperFunctional::set_c_ss_alpha,
-             "Sets the amount of SS MP2 correlation.")
-        .def("set_c_os_alpha", &SuperFunctional::set_c_os_alpha,
-             "Sets the amount of OS MP2 correlation.")
+        .def("set_c_ss_alpha", &SuperFunctional::set_c_ss_alpha, "Sets the amount of SS MP2 correlation.")
+        .def("set_c_os_alpha", &SuperFunctional::set_c_os_alpha, "Sets the amount of OS MP2 correlation.")
         .def("set_vv10_b", &SuperFunctional::set_vv10_b, "Sets the VV10 b parameter.")
         .def("set_vv10_c", &SuperFunctional::set_vv10_c, "Sets the VV10 c parameter.")
         .def("set_grac_shift", &SuperFunctional::set_grac_shift, "Sets the GRAC bulk shift value.")
         .def("set_grac_alpha", &SuperFunctional::set_grac_alpha, "Sets the GRAC alpha parameter.")
         .def("set_grac_beta", &SuperFunctional::set_grac_beta, "Sets the GRAC beta parameter.")
         .def("needs_xc", &SuperFunctional::needs_xc, "Does this functional need XC quantities.")
-        .def("needs_vv10", &SuperFunctional::needs_vv10,
-             "Does this functional need VV10 dispersion.")
+        .def("needs_vv10", &SuperFunctional::needs_vv10, "Does this functional need VV10 dispersion.")
         .def("needs_grac", &SuperFunctional::needs_grac, "Does this functional need GRAC.")
         .def("print_out", &SuperFunctional::py_print, "Prints out functional details.")
-        .def("print_detail", &SuperFunctional::py_print_detail,
-             "Prints all SuperFunctional information.");
+        .def("print_detail", &SuperFunctional::py_print_detail, "Prints all SuperFunctional information.");
 
     py::class_<Functional, std::shared_ptr<Functional>>(m, "Functional", "docstring")
         .def_static("build_base", &Functional::build_base, py::arg("alias"), "docstring")
@@ -152,7 +144,8 @@ void export_functional(py::module &m) {
         .def(py::init<std::string, bool>())
         .def("get_mix_data", &LibXCFunctional::get_mix_data, "docstring")
         .def("set_tweak", &LibXCFunctional::set_tweak, "docstring")
-        .def("set_omega", &LibXCFunctional::set_omega, "docstring");
+        .def("set_omega", &LibXCFunctional::set_omega, "docstring")
+        .def("query_libxc", &LibXCFunctional::query_libxc, "query libxc regarding functional parameters.");
 
     py::class_<VBase, std::shared_ptr<VBase>>(m, "VBase", "docstring")
         .def_static("build",
@@ -221,25 +214,25 @@ void export_functional(py::module &m) {
                       std::shared_ptr<BasisExtents>>())
         .def("x",
              [](BlockOPoints &grid) {
-                 SharedVector ret(new Vector("X Grid points", grid.npoints()));
+                 auto ret = std::make_shared<Vector>("X Grid points", grid.npoints());
                  C_DCOPY(grid.npoints(), grid.x(), 1, ret->pointer(), 1);
                  return ret;
              })
         .def("y",
              [](BlockOPoints &grid) {
-                 SharedVector ret(new Vector("Y Grid points", grid.npoints()));
+                 auto ret = std::make_shared<Vector>("Y Grid points", grid.npoints());
                  C_DCOPY(grid.npoints(), grid.y(), 1, ret->pointer(), 1);
                  return ret;
              })
         .def("z",
              [](BlockOPoints &grid) {
-                 SharedVector ret(new Vector("Z Grid points", grid.npoints()));
+                 auto ret = std::make_shared<Vector>("Z Grid points", grid.npoints());
                  C_DCOPY(grid.npoints(), grid.z(), 1, ret->pointer(), 1);
                  return ret;
              })
         .def("w",
              [](BlockOPoints &grid) {
-                 SharedVector ret(new Vector("Grid Weights", grid.npoints()));
+                 auto ret = std::make_shared<Vector>("Grid Weights", grid.npoints());
                  C_DCOPY(grid.npoints(), grid.w(), 1, ret->pointer(), 1);
                  return ret;
              })
@@ -269,8 +262,13 @@ void export_functional(py::module &m) {
         .def("blocks", &MolecularGrid::blocks, "Returns a list of blocks.");
 
     py::class_<DFTGrid, std::shared_ptr<DFTGrid>, MolecularGrid>(m, "DFTGrid", "docstring")
-        .def_static("build", [](std::shared_ptr<Molecule> &mol, std::shared_ptr<BasisSet> &basis) {
-            return DFTGrid(mol, basis, Process::environment.options);
+        .def_static("build",
+                    [](std::shared_ptr<Molecule> &mol, std::shared_ptr<BasisSet> &basis) {
+                        return std::make_shared<DFTGrid>(mol, basis, Process::environment.options);
+                    })
+        .def_static("build", [](std::shared_ptr<Molecule> &mol, std::shared_ptr<BasisSet> &basis,
+                                std::map<std::string, int> int_opts, std::map<std::string, std::string> string_opts) {
+            return std::make_shared<DFTGrid>(mol, basis, int_opts, string_opts, Process::environment.options);
         });
 
     py::class_<Dispersion, std::shared_ptr<Dispersion>>(m, "Dispersion", "docstring")

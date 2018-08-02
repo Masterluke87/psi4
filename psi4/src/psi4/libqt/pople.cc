@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -61,7 +61,7 @@ int pople(double **A, double *x, int dimen, int /*num_vecs*/, double tolerance,
           std::string out, int print_lvl)
 {
    std::shared_ptr<psi::PsiOutStream> printer=(out=="outfile"?outfile:
-            std::shared_ptr<PsiOutStream>(new PsiOutStream(out)));
+            std::make_shared<PsiOutStream>(out));
    double det, tval;
    double **Bmat; /* Matrix of expansion vectors */
    double **Ab;   /* Matrix of A x expansion vectors */

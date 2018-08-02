@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -106,7 +106,7 @@ PsiReturnType cchbar(std::shared_ptr<Wavefunction> ref_wfn, Options &options)
     spaces.push_back(moinfo.occ_sym);
     spaces.push_back(moinfo.virtpi);
     spaces.push_back(moinfo.vir_sym);
-    dpd_init(0, moinfo.nirreps, params.memory, 0, cachefiles, cachelist, NULL, 2, spaces);
+    dpd_init(0, moinfo.nirreps, params.memory, 0, cachefiles, cachelist, nullptr, 2, spaces);
   }
   else if(params.ref == 2) { /** UHF **/
 
@@ -121,7 +121,7 @@ PsiReturnType cchbar(std::shared_ptr<Wavefunction> ref_wfn, Options &options)
     spaces.push_back(moinfo.bvirtpi);
     spaces.push_back(moinfo.bvir_sym);
 
-    dpd_init(0, moinfo.nirreps, params.memory, 0, cachefiles, cachelist, NULL, 4, spaces);
+    dpd_init(0, moinfo.nirreps, params.memory, 0, cachefiles, cachelist, nullptr, 4, spaces);
   }
 
   sort_amps();

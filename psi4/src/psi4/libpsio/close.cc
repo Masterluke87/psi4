@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -33,7 +33,15 @@
  ** \ingroup PSIO
  */
 
+#ifdef _MSC_VER
+#include <io.h>
+#define SYSTEM_CLOSE ::_close
+#define SYSTEM_UNLINK ::_unlink
+#else
 #include <unistd.h>
+#define SYSTEM_CLOSE ::close
+#define SYSTEM_UNLINK ::unlink
+#endif
 #include <cstring>
 #include <cstdlib>
 #include "psi4/libpsio/psio.h"
@@ -67,23 +75,23 @@ void PSIO::close(size_t unit, int keep) {
   for (i=0; i < this_unit->numvols; i++) {
     int errcod;
 
-      errcod = ::close(this_unit->vol[i].stream);
+      errcod = SYSTEM_CLOSE(this_unit->vol[i].stream);
 
     if (errcod == -1)
       psio_error(unit,PSIO_ERROR_CLOSE);
     /* Delete the file completely if requested */
-    if(!keep) unlink(this_unit->vol[i].path);
+    if(!keep) SYSTEM_UNLINK(this_unit->vol[i].path);
     PSIOManager::shared_object()->close_file(std::string(this_unit->vol[i].path), unit, (keep ? true : false));
 
     free(this_unit->vol[i].path);
-    this_unit->vol[i].path = NULL;
+    this_unit->vol[i].path = nullptr;
     this_unit->vol[i].stream = -1;
   }
 
   /* Reset the global page stats to zero */
   this_unit->numvols = 0;
   this_unit->toclen = 0;
-  this_unit->toc = NULL;
+  this_unit->toc = nullptr;
 }
 
 int psio_close(size_t unit, int keep) {

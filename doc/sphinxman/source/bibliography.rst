@@ -3,7 +3,7 @@
 .. #
 .. # Psi4: an open-source quantum chemistry software package
 .. #
-.. # Copyright (c) 2007-2017 The Psi4 Developers.
+.. # Copyright (c) 2007-2018 The Psi4 Developers.
 .. #
 .. # The copyrights for code used from other parties are included in
 .. # the corresponding files.
@@ -386,3 +386,11 @@ Bibliography
 .. [Tomasi:2005:2999]
    J. Tomasi, B. Mennucci, and R. Cammi
    *Chem. Rev.* **105**, 2999 (2005).
+
+.. [McGibbon:2017:161725]
+   R. T. McGibbon, A. G. Taube, A. G. Donchev, K. Siva, F. Hern\ |a_acute|\ andez, C. Hargus, K. H. Law, J. L. Klepeis, D. E. Shaw
+   *J. Chem. Phys.* **147**, 161725 (2017).
+
+.. [Patkowski:2018:164110]
+   Konrad Patkowski, Piotr S. \.Zuchowski, Daniel G. A. Smith
+   *J. Chem. Phys.* **148**, 164110 (2018).

@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -210,7 +210,7 @@ class INTERFRAG {
   double ** H_guess(void); // guess Hessian
 
   // orient fragments and displace by dq; forces are just for printing
-  bool orient_fragment(double *dq, double *f_q=NULL);
+  bool orient_fragment(double *dq, double *f_q=nullptr);
 
   double ** compute_constraints(void) const;
 

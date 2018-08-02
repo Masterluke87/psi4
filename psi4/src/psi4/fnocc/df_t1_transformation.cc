@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -31,7 +31,6 @@
 #include "psi4/libmints/matrix.h"
 #include "psi4/libmints/wavefunction.h"
 #include"psi4/libqt/qt.h"
-#include<sys/times.h>
 #include "psi4/libciomr/libciomr.h"
 #ifdef _OPENMP
     #include<omp.h>
@@ -85,7 +84,7 @@ void DFCoupledCluster::T1Fock(){
     free(Catemp);
 
     // (Q|rs)
-    std::shared_ptr<PSIO> psio(new PSIO());
+    auto psio = std::make_shared<PSIO>();
     psio->open(PSIF_DCC_QSO,PSIO_OPEN_OLD);
     psio_address addr1  = PSIO_ZERO;
     psio_address addr2  = PSIO_ZERO;
@@ -257,7 +256,7 @@ void DFCoupledCluster::T1Integrals(){
     free(Catemp);
 
     // (Q|rs)
-    std::shared_ptr<PSIO> psio(new PSIO());
+    auto psio = std::make_shared<PSIO>();
     psio->open(PSIF_DCC_QSO,PSIO_OPEN_OLD);
     psio_address addr1  = PSIO_ZERO;
     psio_address addrvo = PSIO_ZERO;

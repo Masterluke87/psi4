@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -100,7 +100,7 @@ if (reference_ == "RESTRICTED") {
 	}
 
 	// Read in nuclear repulsion energy
-	Enuc = reference_wavefunction_->molecule()->nuclear_repulsion_energy();
+    Enuc = reference_wavefunction_->molecule()->nuclear_repulsion_energy(reference_wavefunction_->get_dipole_field_strength());
 
 	// Read SCF energy
     Escf=reference_wavefunction_->reference_energy();
@@ -375,7 +375,7 @@ if (reference_ == "RESTRICTED") {
 /********************************************************************************************/
         // read orbital coefficients from reference
 	Ca_ = SharedMatrix(reference_wavefunction_->Ca());
-	Ca_ref = std::shared_ptr<Matrix>(new Matrix("Ref alpha MO coefficients", nirrep_, nsopi_, nmopi_));
+	Ca_ref = std::make_shared<Matrix>("Ref alpha MO coefficients", nirrep_, nsopi_, nmopi_);
 
 	// read orbital coefficients from external files
 	if (read_mo_coeff == "TRUE"){
@@ -469,7 +469,7 @@ else if (reference_ == "UNRESTRICTED") {
 
 
 	// Read in nuclear repulsion energy
-	Enuc = reference_wavefunction_->molecule()->nuclear_repulsion_energy();
+    Enuc = reference_wavefunction_->molecule()->nuclear_repulsion_energy(reference_wavefunction_->get_dipole_field_strength());
 
 	// Read SCF energy
     Escf=reference_wavefunction_->reference_energy();
@@ -740,8 +740,8 @@ else if (reference_ == "UNRESTRICTED") {
         // read orbital coefficients from reference
 	Ca_ = SharedMatrix(reference_wavefunction_->Ca());
         Cb_ = SharedMatrix(reference_wavefunction_->Cb());
-	Ca_ref = std::shared_ptr<Matrix>(new Matrix("Ref alpha MO coefficients", nirrep_, nsopi_, nmopi_));
-	Cb_ref = std::shared_ptr<Matrix>(new Matrix("Ref beta MO coefficients", nirrep_, nsopi_, nmopi_));
+	Ca_ref = std::make_shared<Matrix>("Ref alpha MO coefficients", nirrep_, nsopi_, nmopi_);
+	Cb_ref = std::make_shared<Matrix>("Ref beta MO coefficients", nirrep_, nsopi_, nmopi_);
 
 	// read orbital coefficients from external files
 	if (read_mo_coeff == "TRUE"){
@@ -787,9 +787,9 @@ else if (reference_ == "UNRESTRICTED") {
 /************************** Create all required matrice *************************************/
 /********************************************************************************************/
         // Build Hso
-	Hso = std::shared_ptr<Matrix>(new Matrix("SO-basis One-electron Ints", nirrep_, nsopi_, nsopi_));
-	Tso = std::shared_ptr<Matrix>(new Matrix("SO-basis Kinetic Energy Ints", nirrep_, nsopi_, nsopi_));
-	Vso = std::shared_ptr<Matrix>(new Matrix("SO-basis Potential Energy Ints", nirrep_, nsopi_, nsopi_));
+	Hso = std::make_shared<Matrix>("SO-basis One-electron Ints", nirrep_, nsopi_, nsopi_);
+	Tso = std::make_shared<Matrix>("SO-basis Kinetic Energy Ints", nirrep_, nsopi_, nsopi_);
+	Vso = std::make_shared<Matrix>("SO-basis Potential Energy Ints", nirrep_, nsopi_, nsopi_);
 	Hso->zero();
 	Tso->zero();
 	Vso->zero();

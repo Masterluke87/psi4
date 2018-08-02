@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -105,7 +105,7 @@ void MatrixBase::add(MatrixBase* A, double alpha, double beta)
 void MatrixBase::contract(MatrixBase* A, MatrixBase* B, double const alpha, double const beta)
 {
   size_t max_r = A->get_ncols();
-  if((max_r != 0) and (nrows != 0) and (ncols != 0))
+  if((max_r != 0) && (nrows != 0) && (ncols != 0))
     C_DGEMM('n','t',nrows,ncols,max_r,alpha,&(A->get_matrix()[0][0]),max_r,&(B->get_matrix()[0][0]),max_r,beta,&(matrix[0][0]),ncols);
   else if(std::fabs(beta) < 1.0e-9)
     zero();

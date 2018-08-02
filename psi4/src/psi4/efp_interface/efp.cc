@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -37,7 +37,7 @@ namespace psi { namespace efp {
 PsiReturnType efp_init(Options & options)
 {
     // new efp object
-    std::shared_ptr<EFP> myefp(new EFP(options));
+    auto myefp = std::make_shared<EFP>(options);
 
     // set efp object in process environment
     Process::environment.set_efp(myefp);

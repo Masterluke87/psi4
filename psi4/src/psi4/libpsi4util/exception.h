@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -43,6 +43,8 @@
 #define PSI4_CURRENT_FUNCTION "(unknown)"
 #endif
 
+#include "psi4/pragma.h"
+
 namespace psi {
 
 #define PSIEXCEPTION(message) PsiException(message, __FILE__, __LINE__)
@@ -51,7 +53,7 @@ namespace psi {
 /**
     Generic exception class for Psi4
 */
-class PsiException : public std::runtime_error
+class PSI_API PsiException : public std::runtime_error
 {
 
 private:
@@ -132,7 +134,7 @@ public:
 /**
 * Exception for sanity checks being performed, e.g. checking alignment of matrix multiplication.
 */
-class SanityCheckError : public PsiException
+class PSI_API SanityCheckError : public PsiException
 {
 
 public:

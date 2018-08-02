@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -217,7 +217,7 @@ y*pc_bohr2angstroms, z*pc_bohr2angstroms, dens/b2a3);
   int zsteps = (int) ((zmax - zmin)/step_size + 1);
 
   // Prep .dx file
-  std::shared_ptr<PsiOutStream> printer(new PsiOutStream("density.dx",std::ostream::trunc));
+  auto printer = std::make_shared<PsiOutStream>("density.dx",std::ostream::trunc);
   printer->Printf( "#  Output from Psi4 calculation\n");
   printer->Printf( "#  Electronic density (in e/ang^3) for: \n");
   printer->Printf( "object 1 class gridpositions counts %d %d %d\n", xsteps, ysteps, zsteps);
@@ -266,7 +266,7 @@ y*pc_bohr2angstroms, z*pc_bohr2angstroms, dens/b2a3);
   printer->Printf( "\n");
   printer->Printf( "end");
 
-  std::shared_ptr<PsiOutStream> printer2(new PsiOutStream("molecule.dx",std::ostream::trunc));
+  auto printer2 = std::make_shared<PsiOutStream>("molecule.dx",std::ostream::trunc);
 
   printer2->Printf("%d\n", molecule->natom());
   printer2->Printf("Initial atomic coordinates\n");

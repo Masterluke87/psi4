@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -35,6 +35,7 @@ if pymod.startswith(os.path.sep + os.path.sep):
     pymod = pymod[1:]
 pymod_dir_step = os.path.sep.join(['..'] * pymod.count(os.path.sep))
 data_dir = os.path.sep.join([psi4_module_loc, pymod_dir_step, '@CMAKE_INSTALL_DATADIR@', 'psi4'])
+executable = os.path.abspath(os.path.sep.join([psi4_module_loc, pymod_dir_step, '@CMAKE_INSTALL_BINDIR@', 'psi4']))
 
 # from . import config
 # data_dir = config.psidatadir
@@ -48,7 +49,6 @@ data_dir = os.path.abspath(data_dir)
 if not os.path.isdir(data_dir):
     raise KeyError("Unable to read the Psi4 Python folder - check the PSIDATADIR environmental variable"
                     "      Current value of PSIDATADIR is %s" % data_dir)
-os.environ["PSIDATADIR"] = data_dir
 
 # Init core
 try:
@@ -68,6 +68,9 @@ if "PSI_SCRATCH" in os.environ.keys():
     if not os.path.isdir(envvar_scratch):
         raise Exception("Passed in scratch is not a directory (%s)." % envvar_scratch)
     core.IOManager.shared_object().set_default_path(envvar_scratch)
+
+core.set_datadir(data_dir)
+del psi4_module_loc, pymod, pymod_dir_step, data_dir
 
 # Cleanup core at exit
 import atexit

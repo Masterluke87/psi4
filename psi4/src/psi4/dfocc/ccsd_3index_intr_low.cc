@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -32,11 +32,10 @@
 
 using namespace psi;
 
-namespace psi{ namespace dfoccwave{
+namespace psi {
+namespace dfoccwave {
 
-void DFOCC::ccsd_3index_intr_low()
-{
-
+void DFOCC::ccsd_3index_intr_low() {
     // defs
     SharedTensor2d K, T, U, Tau;
 
@@ -143,7 +142,8 @@ void DFOCC::ccsd_3index_intr_low()
     K.reset();
     Tau->write(psio_, PSIF_DFOCC_AMPS);
     Tau.reset();
-    //outfile->Printf("\t3indices done.\n");
+    // outfile->Printf("\t3indices done.\n");
 
-}// end ccsd_3index_intr_low
-}} // End Namespaces
+}  // end ccsd_3index_intr_low
+}  // namespace dfoccwave
+}  // namespace psi

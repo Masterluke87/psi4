@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -32,7 +32,6 @@
 #include "psi4/libmints/matrix.h"
 #include "psi4/libmints/wavefunction.h"
 #include"psi4/libqt/qt.h"
-#include<sys/times.h>
 #include "psi4/libciomr/libciomr.h"
 #ifdef _OPENMP
     #include<omp.h>
@@ -63,7 +62,7 @@ void DFCoupledCluster::SCS_CCSD(){
     F_DGEMM('n','t',o*v,o*v,nQ,1.0,Qov,o*v,Qov,o*v,0.0,integrals,o*v);
 
     if (t2_on_disk){
-        std::shared_ptr<PSIO> psio (new PSIO());
+        auto psio = std::make_shared<PSIO>();
         psio->open(PSIF_DCC_T2,PSIO_OPEN_OLD);
         psio->read_entry(PSIF_DCC_T2,"t2",(char*)&tempv[0],o*o*v*v*sizeof(double));
         psio->close(PSIF_DCC_T2,1);
@@ -104,7 +103,7 @@ void DFCoupledCluster::SCS_MP2(){
     F_DGEMM('n','t',o*v,o*v,nQ,1.0,Qov,o*v,Qov,o*v,0.0,integrals,o*v);
 
     if (t2_on_disk){
-        std::shared_ptr<PSIO> psio (new PSIO());
+        auto psio = std::make_shared<PSIO>();
         psio->open(PSIF_DCC_T2,PSIO_OPEN_OLD);
         psio->read_entry(PSIF_DCC_T2,"t2",(char*)&tempv[0],o*o*v*v*sizeof(double));
         psio->close(PSIF_DCC_T2,1);

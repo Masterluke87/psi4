@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -88,7 +88,7 @@ bool CCOperation::compatible_element_by_element()
   int B_right  = B_Matrix->get_right()->get_ntuples();
 
   // First case: We are comparing A and B
-  if(C_Matrix==NULL){
+  if(C_Matrix==nullptr){
     if((A_left==B_left) && (A_right==B_right))
       same = true;
   }else{

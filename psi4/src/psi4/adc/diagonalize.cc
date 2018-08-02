@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -75,7 +75,7 @@ ADCWfn::rhf_diagonalize(int irrep, int num_root, bool first, double omega_in, do
     for(int I = 0;I < rpi_[irrep];I++) lambda_o[I] = omega_guess_->get(irrep, I);
     shift_denom4(irrep, omega_in);
 
-    std::shared_ptr<PsiOutStream> printer(new PsiOutStream("iter.dat",std::ostream::app));
+    auto printer = std::make_shared<PsiOutStream>("iter.dat",std::ostream::app);
 
     timer_on("SEM");
     while(converged < rpi_[irrep] && iter < sem_max_){

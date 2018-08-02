@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -223,7 +223,7 @@ void MOLECULE::read_geom_grad(void) {
   INTEGER *QZ, QNATOMS;
   bool Qnoghosts = true;
 
-  ::get_carts(NULL, &QX, &QZ, &QNATOMS, Qnoghosts);
+  ::get_carts(nullptr, &QX, &QZ, &QNATOMS, Qnoghosts);
 
   int QNATOMS_real = g_natom();
   if (QNATOMS_real != (QNATOMS-FBatom))

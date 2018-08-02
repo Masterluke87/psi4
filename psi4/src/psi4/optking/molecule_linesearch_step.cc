@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -143,7 +143,7 @@ void MOLECULE::linesearch_step(void) {
 
     double *coord = g_geom_array();
 
-    FILE *qc_fout = NULL;
+    FILE *qc_fout = nullptr;
     std::string psi_fout = "linesearch_geoms.py";
 #if defined(OPTKING_PACKAGE_QCHEM)
     FILE *qc_fout = fopen("linesearch_geoms.py", "w");

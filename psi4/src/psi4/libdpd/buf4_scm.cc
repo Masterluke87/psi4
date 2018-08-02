@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -81,7 +81,7 @@ int DPD::buf4_scm(dpdbuf4 *InBuf, double alpha)
 #endif
 
     /* Look first for the TOC entry on disk */
-    if(psio_tocscan(InBuf->file.filenum, InBuf->file.label) == NULL)
+    if(psio_tocscan(InBuf->file.filenum, InBuf->file.label) == nullptr)
         new_buf4 = 1;
     else new_buf4 = 0;
 

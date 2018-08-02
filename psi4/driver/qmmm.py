@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -31,9 +31,7 @@ a QM calculation.
 
 """
 from __future__ import absolute_import
-import re
-import os
-import math
+
 from psi4.driver import *
 
 
@@ -71,7 +69,7 @@ class Diffuse(object):
 
         basis = core.get_option("BASIS")
         ribasis = core.get_option("DF_BASIS_SCF")
-        scftype = core.get_option("SCF_TYPE")
+        scftype = core.get_global_option("SCF_TYPE")
 
         core.print_out("    => Diffuse SCF (Determines Da) <=\n\n")
 

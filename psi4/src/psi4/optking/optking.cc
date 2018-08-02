@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -215,7 +215,7 @@ OptReturnType optking(void) {
       mol1->add_cartesians(); // also adds trivial combos
 
     // print out internal coordinates for future steps
-    FILE *qc_intco = NULL;
+    FILE *qc_intco = nullptr;
     std::string psi_intco = FILENAME_INTCO_DAT;
 #if defined(OPTKING_PACKAGE_QCHEM)
     qc_intco = fopen(FILENAME_INTCO_DAT, "w");
@@ -269,7 +269,7 @@ OptReturnType optking(void) {
   // save geometry and energy
   double * x = mol1->g_geom_array();
   p_Opt_data->save_geom_energy(x, mol1->g_energy());
-  if (x!=NULL) free_array(x);
+  if (x!=nullptr) free_array(x);
 
   // print out report on progress
   p_Opt_data->previous_step_report();
@@ -554,7 +554,7 @@ OptReturnType optking(void) {
 
       delete p_Opt_data;
       opt_intco_dat_remove(); // rm intco definitions
-      opt_io_remove();        // rm optimization data
+      opt_io_remove(true);        // rm optimization data
 
       //if (Opt_params.fragment_mode == OPT_PARAMS::MULTI)
       //  exc.override_fragment_mode = true;

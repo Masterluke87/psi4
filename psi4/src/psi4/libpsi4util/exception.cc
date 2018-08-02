@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -26,9 +26,11 @@
  * @END LICENSE
  */
 
-
+#ifndef _MSC_VER
 #include <execinfo.h>
 #include <cxxabi.h>
+#endif
+
 #include <vector>
 #include <sstream>
 #include <cstring>
@@ -49,6 +51,9 @@ PsiException::PsiException(std::string msg,
     message << std::endl << "Fatal Error: " << msg << std::endl;
     message << "Error occurred in file: " << file_ << " on line: " << line_ << std::endl;
 
+// Disable stack trace printing on Windows
+#ifndef _MSC_VER
+
     std::vector<void *> Stack(5);
     char **strings;
     int size = backtrace(&Stack[0], 5);
@@ -59,7 +64,7 @@ PsiException::PsiException(std::string msg,
 
     for (int i = 0; i < size; i++) {
         //This part from https://panthema.net/2008/0901-stacktrace-demangled/
-        char *begin_name = NULL, *begin_offset = NULL, *end_offset = NULL;
+        char *begin_name = nullptr, *begin_offset = nullptr, *end_offset = nullptr;
         for (char *p = strings[i]; *p; ++p) {
             if (*p == '(') begin_name = p;
             else if (*p == '+')begin_offset = p;
@@ -80,6 +85,7 @@ PsiException::PsiException(std::string msg,
             ::free(demangledname);
         }
     }
+#endif
 
     msg_ = message.str();
 }

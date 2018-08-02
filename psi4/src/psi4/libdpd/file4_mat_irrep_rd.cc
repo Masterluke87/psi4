@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -46,7 +46,7 @@ int DPD::file4_mat_irrep_rd(dpdfile4 *File, int irrep)
     if(File->incore) return 0;  /* We already have this data in core */
 
     /* If the data doesn't actually exist on disk, we just leave */
-    if(psio_tocscan(File->filenum, File->label) == NULL) return 1;
+    if(psio_tocscan(File->filenum, File->label) == nullptr) return 1;
 
 #ifdef DPD_TIMER
     timer_on("file4_rd");

@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -82,7 +82,7 @@ int DPD::buf4_mat_irrep_shift31(dpdbuf4 *Buf, int buf_block)
     Buf->shift.matrix[buf_block] = (double ***) malloc(nirreps*sizeof(double **));
     for(h_pqr=0; h_pqr < nirreps; h_pqr++)
         Buf->shift.matrix[buf_block][h_pqr] =
-                ((!Buf->shift.rowtot[buf_block][h_pqr]) ? NULL :
+                ((!Buf->shift.rowtot[buf_block][h_pqr]) ? nullptr :
                                                           (double **) malloc(Buf->shift.rowtot[buf_block][h_pqr] * sizeof(double *)));
 
     /* Calculate the row offsets */

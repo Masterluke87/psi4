@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -43,7 +43,7 @@ namespace helpers
 namespace psi4
 {
 
-void convert(const psi::Matrix &matrix, ambit::Tensor *target)
+void PSI_API convert(const psi::Matrix &matrix, ambit::Tensor *target)
 {
     if (target->rank() != 2)
         throw std::runtime_error(
@@ -77,7 +77,7 @@ void convert(const psi::Matrix &matrix, ambit::Tensor *target)
     (*target)() = local_tensor();
 }
 
-void convert(const psi::Vector &vector, ambit::Tensor *target)
+void PSI_API convert(const psi::Vector &vector, ambit::Tensor *target)
 {
     if (target->rank() != 1)
         throw std::runtime_error(

@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -35,11 +35,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <strings.h>
 #include "psi4/psifiles.h"
 #include "psi4/libpsi4util/PsiOutStream.h"
 #include "psi4/libpsi4util/process.h"
-#include <unistd.h>
 #ifdef _POSIX_MEMLOCK
 #include <sys/mman.h>
 #endif
@@ -75,23 +73,23 @@ namespace psi {
 ** \ingroup CIOMR
 */
 
-double ** block_matrix(size_t n, size_t m, bool memlock)
+PSI_API double ** block_matrix(size_t n, size_t m, bool memlock)
 {
-    double **A=NULL;
-    double *B=NULL;
+    double **A=nullptr;
+    double *B=nullptr;
     size_t i;
 
     if(!m || !n) return(static_cast<double **>(0));
 
     A = new double*[n];
-    if (A==NULL) {
+    if (A==nullptr) {
         outfile->Printf("block_matrix: trouble allocating memory \n");
         outfile->Printf("n = %ld\n",n);
         exit(PSI_RETURN_FAILURE);
     }
 
     B = new double[n*m];
-    if (B == NULL) {
+    if (B == nullptr) {
         outfile->Printf("block_matrix: trouble allocating memory \n");
         outfile->Printf("m = %ld\n",m);
         exit(PSI_RETURN_FAILURE);
@@ -150,9 +148,9 @@ double ** block_matrix(size_t n, size_t m, bool memlock)
 **
 ** \ingroup CIOMR
 */
-void free_block(double **array)
+void PSI_API free_block(double **array)
 {
-    if(array == NULL) return;
+    if(array == nullptr) return;
     delete [] array[0];
     delete [] array;
 }

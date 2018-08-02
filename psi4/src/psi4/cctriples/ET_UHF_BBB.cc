@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -122,7 +122,7 @@ double ET_UHF_BBB(void)
 	    }
 	  }
 	}
-  std::shared_ptr<PsiOutStream> printer(new PsiOutStream("ijk.dat",std::ostream::trunc));
+  auto printer = std::make_shared<PsiOutStream>("ijk.dat",std::ostream::trunc);
   //ffile(&ijkfile,"ijk.dat",0);
   printer->Printf("Spin Case: BBB\n");
   printer->Printf("Number of IJK combintions: %d\n", nijk);

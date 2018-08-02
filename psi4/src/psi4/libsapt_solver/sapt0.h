@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -84,10 +84,10 @@ private:
   SAPTDFInts set_Q14_AR();
 
   Iterator get_iterator(long int, SAPTDFInts*, bool alloc=true);
-  Iterator set_iterator(int, SAPTDFInts*, bool alloc=true);
+  Iterator set_iterator(long int, SAPTDFInts*, bool alloc=true);
 
   Iterator get_iterator(long int, SAPTDFInts*, SAPTDFInts*, bool alloc=true);
-  Iterator set_iterator(int, SAPTDFInts*, SAPTDFInts*, bool alloc=true);
+  Iterator set_iterator(long int, SAPTDFInts*, SAPTDFInts*, bool alloc=true);
 
   void read_all(SAPTDFInts*);
   void read_block(Iterator *, SAPTDFInts *);
@@ -194,15 +194,15 @@ struct SAPTDFInts {
 
   psio_address next_DF_;
 
-  SAPTDFInts() { next_DF_ = PSIO_ZERO; B_p_ = NULL; B_d_ = NULL; };
+  SAPTDFInts() { next_DF_ = PSIO_ZERO; B_p_ = nullptr; B_d_ = nullptr; };
   ~SAPTDFInts() {
-    if (B_p_ != NULL) free_block(B_p_);
-    if (B_d_ != NULL) free_block(B_d_); };
+    if (B_p_ != nullptr) free_block(B_p_);
+    if (B_d_ != nullptr) free_block(B_d_); };
   void rewind() { next_DF_ = PSIO_ZERO; };
-  void clear() { free_block(B_p_); B_p_ = NULL; next_DF_ = PSIO_ZERO; };
+  void clear() { free_block(B_p_); B_p_ = nullptr; next_DF_ = PSIO_ZERO; };
   void done() {
     free_block(B_p_); if (dress_) free_block(B_d_);
-    B_p_ = NULL; B_d_ = NULL; };
+    B_p_ = nullptr; B_d_ = nullptr; };
 };
 
 struct Iterator {

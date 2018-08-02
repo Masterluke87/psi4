@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -25,7 +25,6 @@
 #
 # @END LICENSE
 #
-
 """Module to facilitate quantum chemical computations on chemical
 databases. Contains Molecule class and physical constants from psi4 suite.
 
@@ -38,7 +37,7 @@ __author__ = 'Lori A. Burns'
 
 # Load Python modules
 import sys
-from .molecule import Molecule
+from .molecule import Molecule, compute_atom_map
 from .dbproc import *
 from .options import *
 from .qcformat import *
@@ -46,12 +45,19 @@ from . import cfour
 from . import jajo
 from . import orca
 from .orient import OrientMols
-from .dbwrap import Database, DB4 #DatabaseWrapper  #ReactionDatum, Reagent, Reaction
+from .dbwrap import Database, DB4  #DatabaseWrapper, ReactionDatum, Reagent, Reaction
 from .libmintspointgrp import SymmetryOperation, PointGroup
 from .libmintsbasisset import BasisSet
 from .libmintsmolecule import LibmintsMolecule
 from .basislist import *
+from . import align
+from . import vib
+from .vib import compare_vibinfos
+from . import molparse
+from . import hessparse
 
 # Load items that are useful to access from an input file
 from .psiutil import *
 from .physconst import *
+
+from .util import *

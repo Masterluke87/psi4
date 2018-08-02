@@ -8,8 +8,19 @@ if(${ENABLE_simint})
         message(STATUS "${Cyan}Found simint ${simint_MAXAM}${ColourReset}: ${_loc} (found version ${simint_VERSION}; vectorization ${simint_VECTOR})")
         add_library(simint_external INTERFACE)  # dummy
     else()
+        if(${CMAKE_INSIST_FIND_PACKAGE_simint})
+            message(FATAL_ERROR "Suitable simint could not be externally located as user insists")
+        endif()
+
         include(ExternalProject)
         message(STATUS "Suitable simint could not be located, ${Magenta}Building simint${ColourReset} instead.")
+
+        if (CMAKE_CXX_COMPILER_ID MATCHES Intel)
+            if (NOT (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "18.0.0"))
+                message(FATAL_ERROR "ICPC version 2018 builds an incorrect simint library. Use the conda package or build simint separately with GNU or Intel 2017 compilers.")
+            endif()
+        endif()
+
         ExternalProject_Add(simint_external
             URL http://www.bennyp.org/research/simint/download/simint-v${SIMINT_VER}.tar.bz2
             UPDATE_COMMAND ""
@@ -29,8 +40,7 @@ if(${ENABLE_simint})
                        -DSIMINT_MAXAM=${MAX_AM_ERI}
             CMAKE_CACHE_ARGS -DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS}
                              -DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}
-            INSTALL_COMMAND ${CMAKE_MAKE_PROGRAM} install
-            DESTDIR=${CMAKE_BINARY_DIR}/stage)
+            INSTALL_COMMAND DESTDIR=${CMAKE_BINARY_DIR}/stage ${CMAKE_MAKE_PROGRAM} install)
 
         set(simint_DIR ${STAGED_INSTALL_PREFIX}/share/cmake/simint CACHE PATH "path to internally built simintConfig.cmake" FORCE)
     endif()

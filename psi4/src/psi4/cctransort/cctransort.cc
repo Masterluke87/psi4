@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -110,7 +110,7 @@ PsiReturnType cctransort(SharedWavefunction ref, Options& options)
   int nirreps = ref->nirrep();
   int nmo = ref->nmo();
   std::vector<std::string> labels = ref->molecule()->irrep_labels();
-  double enuc = ref->molecule()->nuclear_repulsion_energy();
+  double enuc = ref->molecule()->nuclear_repulsion_energy(ref->get_dipole_field_strength());
   double escf;
   if(ref->reference_wavefunction()) {
       escf = ref->reference_wavefunction()->reference_energy();
@@ -359,16 +359,16 @@ PsiReturnType cctransort(SharedWavefunction ref, Options& options)
 
   IntegralTransform *ints;
   if(options.get_str("REFERENCE") == "RHF")
-    ints = new IntegralTransform(ref, transspaces, IntegralTransform::Restricted, IntegralTransform::DPDOnly);
+    ints = new IntegralTransform(ref, transspaces, IntegralTransform::TransformationType::Restricted, IntegralTransform::OutputType::DPDOnly);
   else if(options.get_str("REFERENCE") == "ROHF") {
     if(semicanonical)
       // Importantly the transform is handled python-side so we technically have unrestricted orbitals at this point
-      ints = new IntegralTransform(ref, transspaces, IntegralTransform::Unrestricted, IntegralTransform::DPDOnly);
+      ints = new IntegralTransform(ref, transspaces, IntegralTransform::TransformationType::Unrestricted, IntegralTransform::OutputType::DPDOnly);
     else
-      ints = new IntegralTransform(ref, transspaces, IntegralTransform::Restricted, IntegralTransform::DPDOnly);
+      ints = new IntegralTransform(ref, transspaces, IntegralTransform::TransformationType::Restricted, IntegralTransform::OutputType::DPDOnly);
   }
   else if(options.get_str("REFERENCE") == "UHF")
-    ints = new IntegralTransform(ref, transspaces, IntegralTransform::Unrestricted, IntegralTransform::DPDOnly);
+    ints = new IntegralTransform(ref, transspaces, IntegralTransform::TransformationType::Unrestricted, IntegralTransform::OutputType::DPDOnly);
   else
     throw PSIEXCEPTION("Invalid choice of reference wave function.");
 
@@ -399,27 +399,27 @@ PsiReturnType cctransort(SharedWavefunction ref, Options& options)
   */
 
   outfile->Printf("\t(OO|OO)...\n");
-  ints->transform_tei(MOSpace::occ, MOSpace::occ, MOSpace::occ, MOSpace::occ, IntegralTransform::MakeAndKeep);
+  ints->transform_tei(MOSpace::occ, MOSpace::occ, MOSpace::occ, MOSpace::occ, IntegralTransform::HalfTrans::MakeAndKeep);
   outfile->Printf("\t(OO|OV)...\n");
-  ints->transform_tei(MOSpace::occ, MOSpace::occ, MOSpace::occ, MOSpace::vir, IntegralTransform::ReadAndKeep);
+  ints->transform_tei(MOSpace::occ, MOSpace::occ, MOSpace::occ, MOSpace::vir, IntegralTransform::HalfTrans::ReadAndKeep);
   outfile->Printf("\t(OO|VV)...\n");
-  ints->transform_tei(MOSpace::occ, MOSpace::occ, MOSpace::vir, MOSpace::vir, IntegralTransform::ReadAndNuke);
+  ints->transform_tei(MOSpace::occ, MOSpace::occ, MOSpace::vir, MOSpace::vir, IntegralTransform::HalfTrans::ReadAndNuke);
 
   outfile->Printf("\t(OV|OO)...\n");
-  ints->transform_tei(MOSpace::occ, MOSpace::vir, MOSpace::occ, MOSpace::occ, IntegralTransform::MakeAndKeep);
+  ints->transform_tei(MOSpace::occ, MOSpace::vir, MOSpace::occ, MOSpace::occ, IntegralTransform::HalfTrans::MakeAndKeep);
   outfile->Printf("\t(OV|OV)...\n");
-  ints->transform_tei(MOSpace::occ, MOSpace::vir, MOSpace::occ, MOSpace::vir, IntegralTransform::ReadAndKeep);
+  ints->transform_tei(MOSpace::occ, MOSpace::vir, MOSpace::occ, MOSpace::vir, IntegralTransform::HalfTrans::ReadAndKeep);
   outfile->Printf("\t(OV|VV)...\n");
-  ints->transform_tei(MOSpace::occ, MOSpace::vir, MOSpace::vir, MOSpace::vir, IntegralTransform::ReadAndNuke);
+  ints->transform_tei(MOSpace::occ, MOSpace::vir, MOSpace::vir, MOSpace::vir, IntegralTransform::HalfTrans::ReadAndNuke);
 
   if(options.get_bool("DELETE_TEI")) ints->set_keep_dpd_so_ints(false);
 
   outfile->Printf("\t(VV|OO)...\n");
-  ints->transform_tei(MOSpace::vir, MOSpace::vir, MOSpace::occ, MOSpace::occ, IntegralTransform::MakeAndKeep);
+  ints->transform_tei(MOSpace::vir, MOSpace::vir, MOSpace::occ, MOSpace::occ, IntegralTransform::HalfTrans::MakeAndKeep);
   outfile->Printf("\t(VV|OV)...\n");
-  ints->transform_tei(MOSpace::vir, MOSpace::vir, MOSpace::occ, MOSpace::vir, IntegralTransform::ReadAndKeep);
+  ints->transform_tei(MOSpace::vir, MOSpace::vir, MOSpace::occ, MOSpace::vir, IntegralTransform::HalfTrans::ReadAndKeep);
   outfile->Printf("\t(VV|VV)...\n");
-  ints->transform_tei(MOSpace::vir, MOSpace::vir, MOSpace::vir, MOSpace::vir, IntegralTransform::ReadAndNuke);
+  ints->transform_tei(MOSpace::vir, MOSpace::vir, MOSpace::vir, MOSpace::vir, IntegralTransform::HalfTrans::ReadAndNuke);
 
   double efzc;
   psio->open(PSIF_CC_INFO, PSIO_OPEN_OLD);
@@ -463,7 +463,7 @@ PsiReturnType cctransort(SharedWavefunction ref, Options& options)
     spaces.push_back(bvir);
 
     if(dpd_list[0]) throw PSIEXCEPTION("Attempting to initilize new DPD instance before the old one was freed.");
-    dpd_list[0] = new DPD(0, nirreps, Process::environment.get_memory(), 0, cachefiles, cachelist, NULL, 4, spaces);
+    dpd_list[0] = new DPD(0, nirreps, Process::environment.get_memory(), 0, cachefiles, cachelist, nullptr, 4, spaces);
     dpd_default = 0;
     global_dpd_ = dpd_list[0];
   }
@@ -476,7 +476,7 @@ PsiReturnType cctransort(SharedWavefunction ref, Options& options)
     spaces.push_back(vir);
 
     if(dpd_list[0]) throw PSIEXCEPTION("Attempting to initilize new DPD instance before the old one was freed.");
-    dpd_list[0] = new DPD(0, nirreps, Process::environment.get_memory(), 0, cachefiles, cachelist, NULL, 2, spaces);
+    dpd_list[0] = new DPD(0, nirreps, Process::environment.get_memory(), 0, cachefiles, cachelist, nullptr, 2, spaces);
     dpd_default = 0;
     global_dpd_ = dpd_list[0];
   }

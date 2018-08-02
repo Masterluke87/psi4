@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -29,8 +29,8 @@
 from __future__ import absolute_import
 import re
 
-yes = re.compile(r'^(yes|true|on|1)', re.IGNORECASE)
-no = re.compile(r'^(no|false|off|0)', re.IGNORECASE)
+yes = re.compile(r'^(yes|true|on|1$)', re.IGNORECASE)
+no = re.compile(r'^(no|false|off|0$)', re.IGNORECASE)
 der0th = re.compile(r'^(0|none|energy)', re.IGNORECASE)
 der1st = re.compile(r'^(1|first|gradient)', re.IGNORECASE)
 der2nd = re.compile(r'^(2|second|hessian)', re.IGNORECASE)

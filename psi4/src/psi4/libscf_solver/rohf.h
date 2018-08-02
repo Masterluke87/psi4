@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -93,6 +93,8 @@ public:
     SharedMatrix moFeff() const {return moFeff_; }
     SharedMatrix moFa() const {return moFa_; }
     SharedMatrix moFb() const {return moFb_; }
+
+    std::shared_ptr<ROHF> c1_deep_copy(std::shared_ptr<BasisSet> basis);
 
 };
 

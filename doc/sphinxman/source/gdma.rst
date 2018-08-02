@@ -3,7 +3,7 @@
 .. #
 .. # Psi4: an open-source quantum chemistry software package
 .. #
-.. # Copyright (c) 2007-2017 The Psi4 Developers.
+.. # Copyright (c) 2007-2018 The Psi4 Developers.
 .. #
 .. # The copyrights for code used from other parties are included in
 .. # the corresponding files.
@@ -67,10 +67,13 @@ Installation
 
 * If using |PSIfour| built from source, and anaconda or miniconda has
   already been installed (instructions at :ref:`sec:quickconda`),
-  gdma can be obtained through ``conda install gdma``.
+  gdma can be obtained through ``conda install gdma -c psi4``.
   Then enable it as a feature with :makevar:`ENABLE_gdma`,
   hint its location with :makevar:`CMAKE_PREFIX_PATH`,
   and rebuild |PSIfour| to detect gdma and activate dependent code.
+
+* Previous bullet had details. To build |PSIfour| from source and use
+  gdma from conda without thinking, consult :ref:`sec:condapsi4dev`.
 
 * To remove a conda installation, ``conda remove gdma``.
 
@@ -160,6 +163,7 @@ How to configure gdma for building Psi4
 * :makevar:`CMAKE_PREFIX_PATH` |w---w| CMake list variable to specify where pre-built dependencies can be found. For gdma, set to an installation directory containing ``include/GDMA/GDMA_MANGLE.h``
 * :makevar:`gdma_DIR` |w---w| CMake variable to specify where pre-built gdma can be found. Set to installation directory containing ``share/cmake/gdma/gdmaConfig.cmake``
 * :makevar:`CMAKE_DISABLE_FIND_PACKAGE_gdma` |w---w| CMake variable to force internal build of gdma instead of detecting pre-built
+* :makevar:`CMAKE_INSIST_FIND_PACKAGE_gdma` |w---w| CMake variable to force detecting pre-built gdma and not falling back on internal build
 
 **Examples**
 

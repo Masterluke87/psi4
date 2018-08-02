@@ -3,7 +3,7 @@
 .. #
 .. # Psi4: an open-source quantum chemistry software package
 .. #
-.. # Copyright (c) 2007-2017 The Psi4 Developers.
+.. # Copyright (c) 2007-2018 The Psi4 Developers.
 .. #
 .. # The copyrights for code used from other parties are included in
 .. # the corresponding files.
@@ -65,6 +65,8 @@ non-derivative integrals.
    throw an error if you try to execute that class of computation. But
    there may be more, so use with caution.
 
+.. warning:: erd seems to be having some problems with Intel 2018 compilers. presently disabled in conda package.
+
 Installation
 ~~~~~~~~~~~~
 
@@ -79,10 +81,13 @@ Installation
 
 * If using |PSIfour| built from source, and anaconda or miniconda has
   already been installed (instructions at :ref:`sec:quickconda`),
-  erd can be obtained through ``conda install erd``.
+  erd can be obtained through ``conda install erd -c psi4``.
   Then enable it as a feature with :makevar:`ENABLE_erd`,
   hint its location with :makevar:`CMAKE_PREFIX_PATH`,
   and rebuild |PSIfour| to detect erd and activate dependent code.
+
+* Previous bullet had details. To build |PSIfour| from source and use
+  erd from conda without thinking, consult :ref:`sec:condapsi4dev`.
 
 * To remove a conda installation, ``conda remove erd``.
 
@@ -118,6 +123,7 @@ How to configure erd for building Psi4
 * :makevar:`CMAKE_PREFIX_PATH` |w---w| CMake list variable to specify where pre-built dependencies can be found. For erd, set to an installation directory containing ``include/ERD/ERD_MANGLE.h``
 * :makevar:`erd_DIR` |w---w| CMake variable to specify where pre-built erd can be found. Set to installation directory containing ``share/cmake/erd/erdConfig.cmake``
 * :makevar:`CMAKE_DISABLE_FIND_PACKAGE_erd` |w---w| CMake variable to force internal build of erd instead of detecting pre-built
+* :makevar:`CMAKE_INSIST_FIND_PACKAGE_erd` |w---w| CMake variable to force detecting pre-built erd and not falling back on internal build
 
 **Examples**
 

@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -377,7 +377,7 @@ SymRep::trace() const
 // //////////////////////////////////////////////////////////////////
 
 
-class CharacterTable;
+class PSI_API CharacterTable;
 
 /** The IrreducibleRepresentation class provides information associated
     with a particular irreducible representation of a point group.  This
@@ -524,10 +524,10 @@ public:
     const std::string& symbol() const
     { return symb; }
     /// Returns the i'th irrep.
-    IrreducibleRepresentation& gamma(int i)
+    IrreducibleRepresentation& gamma(int i) const
     { return gamma_[i]; }
     /// Returns the i'th symmetry operation.
-    SymmetryOperation& symm_operation(int i)
+    SymmetryOperation& symm_operation(int i) const
     { return symop[i]; }
 
     /** Cn, Cnh, Sn, T, and Th point groups have complex representations.
@@ -591,7 +591,7 @@ public:
  symmetry operations, so if you want to use a point group with a nonzero
  origin, first translate all your coordinates to the origin and then set
  the origin to zero.  */
-class PointGroup
+class PSI_API PointGroup
 {
 private:
     std::string symb;
@@ -684,6 +684,9 @@ public:
     static bool full_name_to_bits(const std::string& pg, unsigned char& bits);
 
     void print(std::string out_fname = "outfile") const;
+
+    /// Convert an irrep bit string to a human readable irrep list
+    std::string irrep_bits_to_string(int irrep_bits) const;
 };
 
 }

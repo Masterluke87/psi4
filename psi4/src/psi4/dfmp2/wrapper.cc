@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -46,28 +46,24 @@
 
 #include "mp2.h"
 
+namespace psi {
+namespace dfmp2 {
 
-
-namespace psi { namespace dfmp2 {
-
-SharedWavefunction dfmp2(SharedWavefunction ref_wfn, Options & options)
-{
-
-    std::shared_ptr<PSIO> psio(new PSIO);
+SharedWavefunction dfmp2(SharedWavefunction ref_wfn, Options& options) {
+    auto psio = std::make_shared<PSIO>();
 
     std::shared_ptr<Wavefunction> dfmp2;
     if (options.get_str("REFERENCE") == "RHF" || options.get_str("REFERENCE") == "RKS") {
-        dfmp2 = std::shared_ptr<Wavefunction>(new RDFMP2(ref_wfn, options, psio));
+        dfmp2 = std::make_shared<RDFMP2>(ref_wfn, options, psio);
     } else if (options.get_str("REFERENCE") == "UHF" || options.get_str("REFERENCE") == "UKS") {
-        dfmp2 = std::shared_ptr<Wavefunction>(new UDFMP2(ref_wfn, options, psio));
+        dfmp2 = std::make_shared<UDFMP2>(ref_wfn, options, psio);
     } else if (options.get_str("REFERENCE") == "ROHF") {
-        dfmp2 = std::shared_ptr<Wavefunction>(new RODFMP2(ref_wfn, options, psio));
+        dfmp2 = std::make_shared<RODFMP2>(ref_wfn, options, psio);
     } else {
         throw PSIEXCEPTION("DFMP2: Unrecognized reference");
     }
 
     return dfmp2;
 }
-
-
-}}
+}
+}

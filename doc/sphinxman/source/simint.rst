@@ -3,7 +3,7 @@
 .. #
 .. # Psi4: an open-source quantum chemistry software package
 .. #
-.. # Copyright (c) 2007-2017 The Psi4 Developers.
+.. # Copyright (c) 2007-2018 The Psi4 Developers.
 .. #
 .. # The copyrights for code used from other parties are included in
 .. # the corresponding files.
@@ -57,6 +57,8 @@ integral_package simint`` (do this in ``~/.psi4rc`` for universal effect)
 runs libderiv from Libint for derivative integrals and simint for
 non-derivative integrals. Note that present AM maximum is ``$$(gg|gg)$$``
 
+.. warning:: simint seems to be having some problems with Intel 2018 compilers. presently disabled in conda package.
+
 Installation
 ~~~~~~~~~~~~
 
@@ -69,14 +71,17 @@ Installation
 
 * The conda package is compiled to least-common-denominator, namely SSE instruction set.
 
-.. * If using the |PSIfour| binary, simint has already been installed alongside.
+* If using the |PSIfour| binary, simint has already been installed alongside.
 
 * If using |PSIfour| built from source, and anaconda or miniconda has
   already been installed (instructions at :ref:`sec:quickconda`),
-  simint can be obtained through ``conda install simint``.
+  simint can be obtained through ``conda install simint -c psi4``.
   Then enable it as a feature with :makevar:`ENABLE_simint`,
   hint its location with :makevar:`CMAKE_PREFIX_PATH`,
   and rebuild |PSIfour| to detect simint and activate dependent code.
+
+* Previous bullet had details. To build |PSIfour| from source and use 
+  simint from conda without thinking, consult :ref:`sec:condapsi4dev`.
 
 * To remove a conda installation, ``conda remove simint``.
 
@@ -111,6 +116,7 @@ How to configure simint for building Psi4
 * :makevar:`CMAKE_PREFIX_PATH` |w---w| CMake list variable to specify where pre-built dependencies can be found. For simint, set to an installation directory containing ``include/simint/simint.h``
 * :makevar:`simint_DIR` |w---w| CMake variable to specify where pre-built simint can be found. Set to installation directory containing ``share/cmake/simint/simintConfig.cmake``
 * :makevar:`CMAKE_DISABLE_FIND_PACKAGE_simint` |w---w| CMake variable to force internal build of simint instead of detecting pre-built
+* :makevar:`CMAKE_INSIST_FIND_PACKAGE_simint` |w---w| CMake variable to force detecting pre-built simint and not falling back on internal build
 * :makevar:`SIMINT_VECTOR` |w---w| CMake variable for simint vectorization (i.e., scalar sse avx avxfma micavx512). Default is ``avx``, *not* detected, so ``sse`` may be required for older chipsets. See http://www.bennyp.org/research/simint/README.txt for details.
 
 **Examples**

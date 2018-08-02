@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -189,10 +189,10 @@ void SAPT2::disp20()
  *
 void SAPT0::disp20()
 {
-  std::shared_ptr<Vector> evals_aoccA(new Vector(aoccA_));
-  std::shared_ptr<Vector> evals_virA(new Vector(nvirA_));
-  std::shared_ptr<Vector> evals_aoccB(new Vector(aoccB_));
-  std::shared_ptr<Vector> evals_virB(new Vector(nvirB_));
+  auto evals_aoccA = std::make_shared<Vector>(aoccA_);
+  auto evals_virA = std::make_shared<Vector>(nvirA_);
+  auto evals_aoccB = std::make_shared<Vector>(aoccB_);
+  auto evals_virB = std::make_shared<Vector>(nvirB_);
 
   for (int a=0; a<aoccA_; a++)
     evals_aoccA->set(0,a,evalsA_[a+foccA_]);

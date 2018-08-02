@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -28,6 +28,7 @@
 
 """Module with non-generic exceptions classes."""
 from __future__ import absolute_import
+
 from psi4 import core
 from psi4 import extras
 
@@ -86,6 +87,14 @@ class ConvergenceError(PsiException):
         PsiException.__init__(self, msg)
         self.message = msg
         core.print_out('\nPsiException: %s\n\n' % (msg))
+
+
+class OptimizationConvergenceError(ConvergenceError):
+    """Error called for problems with geometry optimizer."""
+
+    def __init__(self, eqn_description, maxit, wfn):
+        ConvergenceError.__init__(self, eqn_description, maxit)
+        self.wfn = wfn
 
 
 class CSXError(PsiException):

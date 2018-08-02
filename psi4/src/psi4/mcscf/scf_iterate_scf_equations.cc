@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -130,7 +130,7 @@ void SCF::iterate_scf_equations()
   }
 
 
-    if(cycle > 15 and (std::fabs(delta_energy) < options_.get_double("E_CONVERGENCE"))
+    if(cycle > 15 && (std::fabs(delta_energy) < options_.get_double("E_CONVERGENCE"))
           && (rms_dens < options_.get_double("D_CONVERGENCE") )){
       if(reference == tcscf){
         if(2.0 * std::fabs(norm_ci_grad) < options_.get_double("D_CONVERGENCE"))

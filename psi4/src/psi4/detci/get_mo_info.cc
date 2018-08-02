@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -79,7 +79,7 @@ void CIWavefunction::get_mo_info() {
     CalcInfo_->labels = molecule()->irrep_labels();
     CalcInfo_->docc = doccpi();
     CalcInfo_->socc = soccpi();
-    CalcInfo_->enuc = molecule()->nuclear_repulsion_energy();
+    CalcInfo_->enuc = molecule()->nuclear_repulsion_energy(dipole_field_strength_);
     CalcInfo_->escf = reference_energy();
     CalcInfo_->edrc = 0.0;
 
@@ -262,11 +262,11 @@ void CIWavefunction::get_mo_info() {
     int ncitri = (CalcInfo_->num_ci_orbs * (CalcInfo_->num_ci_orbs + 1)) / 2;
     CalcInfo_->num_ci_tri = ncitri;
     CalcInfo_->num_ci_tri2 = (ncitri * (ncitri + 1)) / 2;
-    CalcInfo_->so_onel_ints = SharedMatrix(new Matrix("SO CI One Electron Ints", nso_, nso_));
-    CalcInfo_->onel_ints = SharedVector(new Vector("CI One Electron Ints", ncitri));
-    CalcInfo_->twoel_ints = SharedVector(new Vector("CI Two Electron Ints", ncitri * (ncitri + 1) / 2));
-    CalcInfo_->gmat = SharedVector(new Vector("CI RAS Gmat", CalcInfo_->num_ci_orbs * CalcInfo_->num_ci_orbs));
-    CalcInfo_->tf_onel_ints = SharedVector(new Vector("CI TF One Electron Ints", ncitri));
+    CalcInfo_->so_onel_ints = std::make_shared<Matrix>("SO CI One Electron Ints", nso_, nso_);
+    CalcInfo_->onel_ints = std::make_shared<Vector>("CI One Electron Ints", ncitri);
+    CalcInfo_->twoel_ints = std::make_shared<Vector>("CI Two Electron Ints", ncitri * (ncitri + 1) / 2);
+    CalcInfo_->gmat = std::make_shared<Vector>("CI RAS Gmat", CalcInfo_->num_ci_orbs * CalcInfo_->num_ci_orbs);
+    CalcInfo_->tf_onel_ints = std::make_shared<Vector>("CI TF One Electron Ints", ncitri);
 
 }  // end get_mo_info()
 }}  // namespace psi::detci

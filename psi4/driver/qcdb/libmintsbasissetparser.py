@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -32,8 +32,10 @@ from __future__ import division
 import os
 import re
 import sys
+
 from .exceptions import *
 from .libmintsgshell import *
+
 if sys.version_info >= (3,0):
     basestring = str
 
@@ -199,7 +201,8 @@ class Gaussian94BasisSetParser(object):
                                         1: 1,   'p': 1,   'P': 1,
                                         2: 2,   'd': 2,   'D': 2,
                                         3: 3,   'f': 3,   'F': 3,
-                                        4: 4,   'g': 4,   'G': 4}
+                                        4: 4,   'g': 4,   'G': 4,
+                                        5: 5,   'h': 5,   'H': 5}
                         # This is an ECP spec like "KR-ECP    3     28"
                         matchobj = atom_ecp.match(line)
                         sl = line.split()

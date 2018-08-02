@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -47,6 +47,7 @@ protected:
     std::shared_ptr<SuperFunctional> functional_;
     std::shared_ptr<VBase> potential_;
     std::map<std::string, SharedMatrix> gradients_;
+    std::map<std::string, SharedMatrix> hessians_;
 
 public:
     SCFGrad(SharedWavefunction ref_wfn, Options& options);

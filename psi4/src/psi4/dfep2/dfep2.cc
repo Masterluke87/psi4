@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -39,7 +39,7 @@
 #include "psi4/libpsio/psio.h"
 #include "psi4/libpsio/aiohandler.h"
 #include "psi4/libpsi4util/PsiOutStream.h"
-#include "psi4/lib3index/df_helper.h"
+#include "psi4/lib3index/dfhelper.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -90,8 +90,8 @@ DFEP2Wavefunction::DFEP2Wavefunction(std::shared_ptr<Wavefunction> ref_wfn)
 #endif
 
     // ==> Init DF object <== /
-    dfh_ = std::make_shared<DF_Helper>(get_basisset("ORBITAL"), get_basisset("DF_BASIS_SCF"));
-    dfh_->set_method("DIRECT");
+    dfh_ = std::make_shared<DFHelper>(get_basisset("ORBITAL"), get_basisset("DF_BASIS_SCF"));
+    dfh_->set_method("DIRECT_iaQ");
     dfh_->set_memory(memory_doubles_);
     dfh_->set_nthreads(num_threads_);
     dfh_->initialize();
@@ -177,7 +177,7 @@ std::vector<std::vector<std::pair<double, double>>> DFEP2Wavefunction::compute(
     }
 
     // ==> Build the solve orbitals <== /
-    SharedMatrix AO_CE(new Matrix("Solve orbitals", AO_C_->rowspi()[0], nE));
+    auto AO_CE = std::make_shared<Matrix>("Solve orbitals", AO_C_->rowspi()[0], nE);
 
     double** AO_CEp = AO_CE->pointer();
     double** AO_Cp = AO_C_->pointer();
@@ -198,8 +198,10 @@ std::vector<std::vector<std::pair<double, double>>> DFEP2Wavefunction::compute(
 
     // ==> Transform DF integrals <== /
 
+    // safety check
+    dfh_->clear_spaces();
+    
     // add spaces
-    dfh_->clear_all();
     dfh_->add_space("i", AO_Cocc_);
     dfh_->add_space("a", AO_Cvir_);
     dfh_->add_space("E", AO_CE);
@@ -217,7 +219,7 @@ std::vector<std::vector<std::pair<double, double>>> DFEP2Wavefunction::compute(
     // ==> Build ERI's <== /
 
     std::shared_ptr<PSIO> psio = PSIO::shared_object();
-    std::shared_ptr<AIOHandler> aio(new AIOHandler(psio));
+    auto aio = std::make_shared<AIOHandler>(psio);
 
     psio->open(unit_, PSIO_OPEN_OLD);
 
@@ -257,18 +259,18 @@ std::vector<std::vector<std::pair<double, double>>> DFEP2Wavefunction::compute(
     }
 
     // Read in part of the tensors
-    SharedMatrix aEQ(new Matrix("aEQ", nE * nvir, nQ));
+    auto aEQ = std::make_shared<Matrix>("aEQ", nE * nvir, nQ);
     double* aEQp = aEQ->pointer()[0];
     dfh_->fill_tensor("aEQ", aEQ);
 
-    SharedMatrix iEQ(new Matrix("iEQ", nE * nocc, nQ));
+    auto iEQ = std::make_shared<Matrix>("iEQ", nE * nocc, nQ);
     double* iEQp = iEQ->pointer()[0];
     dfh_->fill_tensor("iEQ", iEQ);
 
     // Allocate temps
-    SharedMatrix block_iaQ(new Matrix(block_size * nvir, nQ));
-    SharedMatrix temp_ovvE(new Matrix(block_size * nvir, nvir * nE));
-    SharedMatrix temp_ovoE(new Matrix(block_size * nvir, nocc * nE));
+    auto block_iaQ = std::make_shared<Matrix>(block_size * nvir, nQ);
+    auto temp_ovvE = std::make_shared<Matrix>(block_size * nvir, nvir * nE);
+    auto temp_ovoE = std::make_shared<Matrix>(block_size * nvir, nocc * nE);
 
     psio_address ovvE_addr = psio_get_address(PSIO_ZERO, 0);
     psio_address ovoE_addr = psio_get_address(PSIO_ZERO, 0);
@@ -365,7 +367,7 @@ std::vector<std::vector<std::pair<double, double>>> DFEP2Wavefunction::compute(
         // sigma <= (Eabi - Ebai) * Eabi / (E - v - v + o)
 
         ovvE_addr = psio_get_address(PSIO_ZERO, 0);
-        SharedMatrix I_ovvE(new Matrix(aaE_size * nvir, nvir * nE));
+        auto I_ovvE = std::make_shared<Matrix>(aaE_size * nvir, nvir * nE);
         double** I_ovvEp = I_ovvE->pointer();
 
         for (size_t i_block = 0; i_block < aaE_nblocks; i_block++) {
@@ -384,7 +386,6 @@ std::vector<std::vector<std::pair<double, double>>> DFEP2Wavefunction::compute(
 #ifdef _OPENMP
                     rank = omp_get_thread_num();
 #endif
-#pragma omp simd collapse(2)
                     for (size_t b = 0; b < nvir; b++) {
                         for (size_t e = 0; e < nE; e++) {
                             double Eabi = I_ovvEp[i * nvir + b][a * nE + e];
@@ -405,7 +406,7 @@ std::vector<std::vector<std::pair<double, double>>> DFEP2Wavefunction::compute(
         // sigma <= (Eija - Ejia) * Eija / (E - o - o + v)
 
         vooE_addr = psio_get_address(PSIO_ZERO, 0);
-        SharedMatrix I_vooE(new Matrix(ooE_size * nocc, nocc * nE));
+        auto I_vooE = std::make_shared<Matrix>(ooE_size * nocc, nocc * nE);
         double** I_vooEp = I_vooE->pointer();
 
         for (size_t a_block = 0; a_block < ooE_nblocks; a_block++) {
@@ -424,7 +425,6 @@ std::vector<std::vector<std::pair<double, double>>> DFEP2Wavefunction::compute(
 #ifdef _OPENMP
                     rank = omp_get_thread_num();
 #endif
-#pragma omp simd collapse(2)
                     for (size_t j = 0; j < nocc; j++) {
                         for (size_t e = 0; e < nE; e++) {
                             double Eija = I_vooEp[a * nocc + j][i * nE + e];

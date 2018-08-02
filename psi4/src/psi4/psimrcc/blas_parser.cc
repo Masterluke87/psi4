@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -72,8 +72,8 @@ int CCBLAS::parse(std::string& str){
 
   while(iter!=split_str.end()){
     double factor=1.0;
-    C_Matrix = NULL;
-    B_Matrix = NULL;
+    C_Matrix = nullptr;
+    B_Matrix = nullptr;
     // Read the reindexing
     if(iter->find("#")!=std::string::npos){
       reindexing = *iter;

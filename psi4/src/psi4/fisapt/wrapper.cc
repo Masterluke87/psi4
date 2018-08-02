@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -41,7 +41,7 @@ PsiReturnType fisapt(SharedWavefunction ref_wfn, Options& options)
 {
     tstart();
 
-    std::shared_ptr<fisapt::FISAPT> intra(new fisapt::FISAPT(ref_wfn, options));
+    auto intra = std::make_shared<fisapt::FISAPT>(ref_wfn, options);
     intra->compute_energy();
 
     tstop();

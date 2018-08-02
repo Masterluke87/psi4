@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -69,7 +69,7 @@ void MOInfoBase::startup()
   wfn_sym = 0;
 
   guess_occupation = true;
-  PSI_NULL(ioff);
+  PSI_nullptr(ioff);
   compute_ioff();
 }
 
@@ -86,7 +86,7 @@ void MOInfoBase::read_data()
     // Read sopi and save as a STL vector
     sopi           = convert_int_array_to_vector(nirreps, ref_wfn.nsopi());
     irr_labs       = ref_wfn.molecule()->irrep_labels();
-    nuclear_energy = ref_wfn.molecule()->nuclear_repulsion_energy();
+    nuclear_energy = ref_wfn.molecule()->nuclear_repulsion_energy(ref_wfn.get_dipole_field_strength());
 }
 
 void MOInfoBase::compute_number_of_electrons()

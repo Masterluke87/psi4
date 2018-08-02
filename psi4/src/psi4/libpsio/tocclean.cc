@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -49,7 +49,7 @@ void PSIO::tocclean(size_t unit, const char *key) {
   this_unit = &(psio_unit[unit]);
 
   this_entry = tocscan(unit, key);
-  if (this_entry == NULL) {
+  if (this_entry == nullptr) {
     if (!strcmp(key, ""))
       this_entry = this_unit->toc;
     else {
@@ -62,7 +62,7 @@ void PSIO::tocclean(size_t unit, const char *key) {
   /* Get the end of the TOC and work backwards */
   last_entry = toclast(unit);
 
-  while ((last_entry != this_entry) && (last_entry != NULL)) {
+  while ((last_entry != this_entry) && (last_entry != nullptr)) {
     /* Now free all the remaining members */
     prev_entry = last_entry->last;
     free(last_entry);

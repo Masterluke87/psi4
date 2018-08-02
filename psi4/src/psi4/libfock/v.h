@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -29,8 +29,10 @@
 #ifndef LIBFOCK_DFT_H
 #define LIBFOCK_DFT_H
 #include "psi4/libmints/typedefs.h"
+#include "psi4/pragma.h"
 #include <vector>
 #include <map>
+#include <string>
 
 namespace psi {
 class BasisSet;
@@ -49,7 +51,7 @@ class BlockOPoints;
  * K-matrix-vector products
  **/
 
-class VBase {
+class PSI_API VBase {
 
 protected:
     /// Debug flag
@@ -90,7 +92,7 @@ protected:
     bool grac_initialized_;
 
     // VV10 dispersion, return vv10_nlc energy
-    double vv10_nlc(SharedMatrix ret);
+    double vv10_nlc(SharedMatrix D, SharedMatrix ret);
 
     /// Set things up
     void common_init();
@@ -134,7 +136,7 @@ public:
     virtual void print_header() const;
 };
 
-// => APPLIED CLASSES <= //
+// => Derived Classes <= //
 
 class RV : public VBase {
 

@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -28,6 +28,7 @@
 
 import datetime
 import os
+import socket
 
 from . import core
 from .metadata import __version__, version_formatter
@@ -45,16 +46,17 @@ def sizeof_fmt(num, suffix='B'):
 def print_header():
     driver_info = version_formatter("""{version} {release}""")
     git_info = version_formatter("""{{{branch}}} {githash} {clean}""")
-    datadir = core.get_environment("PSIDATADIR")
+    datadir = core.get_datadir()
     memory = sizeof_fmt(core.get_memory())
+    hostname = socket.gethostname()
     threads = str(core.get_num_threads())
 
     header = """
     -----------------------------------------------------------------------
           Psi4: An Open-Source Ab Initio Electronic Structure Package
-                               Psi4 %s
+                               Psi4 {}
 
-                         Git: Rev %s
+                         Git: Rev {}
 
 
     R. M. Parrish, L. A. Burns, D. G. A. Smith, A. C. Simmonett,
@@ -66,14 +68,19 @@ def print_header():
     J. Chem. Theory Comput. 13(7) pp 3185--3197 (2017).
     (doi: 10.1021/acs.jctc.7b00174)
 
+
+                         Additional Contributions by
+    P. Kraus, H. Kruse, M. H. Lechner, M. C. Schieber, and R. A. Shaw
+
     -----------------------------------------------------------------------
 
 
-    Psi4 started on: %s
+    Psi4 started on: {}
 
-    Process ID: %6d
-    PSIDATADIR: %s
-    Memory:     %s
-    Threads:    %s
-    """ % (driver_info, git_info, time_string, pid, datadir, memory, threads)
+    Process ID: {}
+    Host:       {}
+    PSIDATADIR: {}
+    Memory:     {}
+    Threads:    {}
+    """.format(driver_info, git_info, time_string, pid, hostname, datadir, memory, threads)
     core.print_out(header)

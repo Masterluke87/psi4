@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -58,12 +58,12 @@ void SlaterDeterminant::set(size_t na, unsigned char *alpoccs,
    int i;
 
    if (nalp_ != na) {
-      if (Occs_[0] != NULL) free(Occs_[0]);
+      if (Occs_[0] != nullptr) free(Occs_[0]);
       Occs_[0] = (unsigned char *) malloc (sizeof(unsigned char) * na);
       nalp_ = na;
       }
    if (nbet_ != nb) {
-      if (Occs_[1] != NULL) free(Occs_[1]);
+      if (Occs_[1] != nullptr) free(Occs_[1]);
       Occs_[1] = (unsigned char *) malloc (sizeof(unsigned char) * nb);
       nbet_ = nb;
       }
@@ -136,11 +136,11 @@ void SlaterDeterminant::print_config()
 SlaterDeterminant& SlaterDeterminant::operator=(const SlaterDeterminant& s)
 {
    if (nalp_ != s.nalp_) {
-      if (Occs_[0] != NULL) free(Occs_[0]);
+      if (Occs_[0] != nullptr) free(Occs_[0]);
       Occs_[0] = (unsigned char *) malloc (sizeof(unsigned char) * s.nalp_);
       }
    if (nbet_ != s.nbet_) {
-      if (Occs_[1] != NULL) free(Occs_[1]);
+      if (Occs_[1] != nullptr) free(Occs_[1]);
       Occs_[1] = (unsigned char *) malloc (sizeof(unsigned char) * s.nbet_);
       }
    set(s.nalp_, s.Occs_[0], s.nbet_, s.Occs_[1]);

@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -25,149 +25,71 @@
 #
 # @END LICENSE
 #
-
 """
 Module to provide lightweight definitions of functionals and
 SuperFunctionals
 """
 import re
 import os
-import math
+
 from psi4 import core
 from psi4.driver.qcdb import interface_dftd3 as dftd3
 from psi4.driver.p4util.exceptions import *
-from . import libxc_xc_funcs
-from . import gga_superfuncs
-from . import hyb_superfuncs
-from . import mgga_superfuncs
-from . import double_hyb_superfuncs
+from . import dict_builder
 
-## ==> SuperFunctionals <== ##
+def build_superfunctional(name, restricted):
+    npoints = core.get_option("SCF", "DFT_BLOCK_MAX_POINTS")
+    deriv = 1  # Default depth for now
 
-superfunctionals = {}
-superfunctionals.update(libxc_xc_funcs.libxc_xc_functional_list)
-superfunctionals.update(gga_superfuncs.gga_superfunc_list)
-superfunctionals.update(hyb_superfuncs.hyb_superfunc_list)
-superfunctionals.update(mgga_superfuncs.mgga_superfunc_list)
-superfunctionals.update(double_hyb_superfuncs.double_hyb_superfunc_list)
+    # We are a XC generating function
 
-## ==> SuperFunctional List <== ##
+    if hasattr(name, '__call__'):
+        custom_error = "SCF: Custom functional type must either be a SuperFunctional or a tuple of (SuperFunctional, (base_name, dashparam))."
+        sfunc = name("name", npoints, deriv, restricted)
 
-superfunctional_list = []
-for key in superfunctionals.keys():
-    sup = superfunctionals[key](key, 1, 1, True)[0]
-    superfunctional_list.append(sup)
-
-## ==> Dispersion SuperFunctional List <== ##
-
-p4_funcs = set([x for x in list(superfunctionals)])
-p4_funcs -= set(['b97-d'])
-for dashlvl, dashparam_dict in dftd3.dashcoeff.items():
-    func_list = (set(dashparam_dict) & p4_funcs)
-    for func in func_list:
-        sup = superfunctionals[func](func, 1, 1, True)[0]
-        sup.set_name(sup.name() + '-' + dashlvl.upper())
-        superfunctional_list.append(sup)
-
-        if dashlvl == 'd2p4':
-            # -D2 overide
-            sup = superfunctionals[func](func, 1, 1, True)[0]
-            sup.set_name(sup.name() + '-D2')
-            superfunctional_list.append(sup)
-
-            # -D overide
-            sup = superfunctionals[func](func, 1, 1, True)[0]
-            sup.set_name(sup.name() + '-D')
-            superfunctional_list.append(sup)
-
-        if dashlvl == 'd3zero':
-            sup = superfunctionals[func](func, 1, 1, True)[0]
-            sup.set_name(sup.name() + '-D3')
-            superfunctional_list.append(sup)
-
-        if dashlvl == 'd3mzero':
-            sup = superfunctionals[func](func, 1, 1, True)[0]
-            sup.set_name(sup.name() + '-D3M')
-            superfunctional_list.append(sup)
-
-# # B97D is an odd one
-for dashlvl in dftd3.full_dash_keys:
-    if dashlvl == 'd2p4': continue
-
-    sup = superfunctionals['b97-d']('b97-d', 1, 1, True)[0]
-    sup.set_name('B97-' + dashlvl.upper())
-    superfunctional_list.append(sup)
-
-# wPBE, grr need a new scheme
-for dashlvl in ['d3', 'd3m', 'd3zero', 'd3mzero', 'd3bj', 'd3mbj']:
-    sup = superfunctionals['wpbe']('wpbe', 1, 1, True)[0]
-    sup.set_name(sup.name() + '-' + dashlvl.upper())
-    superfunctional_list.append(sup)
-
-
-## ==> SuperFunctional Builder <== ##
-
-def build_superfunctional(alias, restricted):
-    name = alias.lower()
-
-    npoints = core.get_option("SCF", "DFT_BLOCK_MAX_POINTS");
-    deriv = 1 # Default depth for now
-
-    # Grab out superfunctional
-    if name in ["gen", ""]:
-        sup = (core.get_option("DFT_CUSTOM_FUNCTIONAL"), False)
-        if not isinstance(sup[0], core.SuperFunctional):
-            raise KeyError("SCF: Custom Functional requested, but nothing provided in DFT_CUSTOM_FUNCTIONAL")
-
-    elif name in superfunctionals.keys():
-        sup = superfunctionals[name](name, npoints, deriv, restricted)
-
-    elif name.upper() in superfunctionals.keys():
-        sup = superfunctionals[name.upper()](name, npoints, deriv, restricted)
-
-
-
-    elif any(name.endswith(al) for al in dftd3.full_dash_keys):
-
-        # Odd hack for b97-d
-        if 'b97-d' in name:
-            name = name.replace('b97', 'b97-d')
-
-        dashparam = [x for x in dftd3.full_dash_keys if name.endswith(x)]
-        if len(dashparam) > 1:
-            raise Exception("Dashparam %s is ambiguous.")
+        # Without Dispersion
+        if isinstance(sfunc, core.SuperFunctional):
+            sup = (sfunc, False)
+        # With Dispersion
+        elif isinstance(sup[0], core.SuperFunctional):
+            sup = sfunc
+            # Can we validate dispersion?
         else:
-            dashparam = dashparam[0]
+            raise ValidationError(custom_error)
 
-        base_name = name.replace('-' + dashparam, '')
+        # Double check that the SuperFunctional is correctly sized (why dont we always do this?)
+        sup[0].set_max_points(npoints)
+        sup[0].set_deriv(deriv)
+        sup[0].allocate()
 
-        if dashparam in ['d2', 'd']:
-            dashparam = 'd2p4'
-
-        if dashparam == 'd3':
-            dashparam = 'd3zero'
-
-        if dashparam == 'd3m':
-            dashparam = 'd3mzero'
-
-        if base_name not in superfunctionals.keys():
-            raise KeyError("SCF: Functional (%s) with base (%s) not found!" % (alias, base_name))
-
-        func = superfunctionals[base_name](base_name, npoints, deriv, restricted)[0]
-
-        base_name = base_name.replace('wpbe', 'lcwpbe')
-        sup = (func, (base_name, dashparam))
-
+    # Check for supplied dict_func functionals
+    elif isinstance(name, dict):
+        sup = dict_builder.build_superfunctional_from_dictionary(name, npoints, deriv, restricted)
+    # Check for pre-defined dict-based functionals
+    elif name.lower() in dict_builder.functionals:
+        sup = dict_builder.build_superfunctional_from_dictionary(dict_builder.functionals[name.lower()],
+                                                                 npoints, deriv, restricted)
     else:
-        raise KeyError("SCF: Functional (%s) not found!" % alias)
-
+        raise ValidationError("SCF: Functional (%s) not found!" % name)
 
     if (core.get_global_option('INTEGRAL_PACKAGE') == 'ERD') and (sup[0].is_x_lrc() or sup[0].is_c_lrc()):
         raise ValidationError("INTEGRAL_PACKAGE ERD does not play nicely with omega ERI's, so stopping.")
 
+    # Lock and unlock the functional
+    sup[0].set_lock(False)
+
     # Set options
     if core.has_option_changed("SCF", "DFT_OMEGA") and sup[0].is_x_lrc():
-        sup[0].set_x_omega(core.get_option("SCF", "DFT_OMEGA"))
+        omega = core.get_option("SCF", "DFT_OMEGA")
+        sup[0].set_x_omega(omega)
+
+        # We also need to loop through all of the exchange functionals
+        if sup[0].is_libxc_func():
+            # Full libxc funcs are dropped in c_functionals (smooth move!)
+            sup[0].c_functionals()[0].set_omega(omega)
+        else:
+            for x_func in sup[0].x_functionals():
+                x_func.set_omega(omega)
     if core.has_option_changed("SCF", "DFT_OMEGA_C") and sup[0].is_c_lrc():
         sup[0].set_c_omega(core.get_option("SCF", "DFT_OMEGA_C"))
 
@@ -176,15 +98,44 @@ def build_superfunctional(alias, restricted):
     if core.has_option_changed("SCF", "DFT_ALPHA_C"):
         sup[0].set_c_alpha(core.get_option("SCF", "DFT_ALPHA_C"))
 
+    # add VV10 correlation to any functional or modify existing
+    # custom procedures using name 'scf' without any quadrature grid like HF will fail and are not detected
+    if (core.has_option_changed("SCF", "NL_DISPERSION_PARAMETERS") and sup[0].vv10_b() > 0.0):
+        if (name.lower() == 'hf'):
+            raise ValidationError("SCF: HF with -NL not implemented")
+        nl_tuple = core.get_option("SCF", "NL_DISPERSION_PARAMETERS")
+        sup[0].set_vv10_b(nl_tuple[0])
+        if len(nl_tuple) > 1:
+            sup[0].set_vv10_c(nl_tuple[1])
+        if len(nl_tuple) > 2:
+            raise ValidationError("too many entries in NL_DISPERSION_PARAMETERS for DFT-NL")
+    elif core.has_option_changed("SCF", "DFT_VV10_B"):
+        if (name.lower() == 'hf'):
+            raise ValidationError("SCF: HF with -NL not implemented")
+        vv10_b = core.get_option("SCF", "DFT_VV10_B")
+        sup[0].set_vv10_b(vv10_b)
+        if core.has_option_changed("SCF", "DFT_VV10_C"):
+            vv10_c = core.get_option("SCF", "DFT_VV10_C")
+            sup[0].set_vv10_c(vv10_c)
+        if (abs(sup[0].vv10_c() - 0.0) <= 1e-8):
+            core.print_out("SCF: VV10_C not specified. Using default (C=0.0093)!")
+            sup[0].set_vv10_c(0.0093)
+
+    if (core.has_option_changed("SCF", "NL_DISPERSION_PARAMETERS") and core.has_option_changed("SCF", "DFT_VV10_B")):
+        raise ValidationError("SCF: Decide between NL_DISPERSION_PARAMETERS and DFT_VV10_B !!")
+
     # Check SCF_TYPE
-    if sup[0].is_x_lrc() and (core.get_option("SCF", "SCF_TYPE") not in ["DIRECT", "DF", "OUT_OF_CORE", "PK"]):
-        raise KeyError("SCF: SCF_TYPE (%s) not supported for range-seperated functionals."
-                        % core.get_option("SCF", "SCF_TYPE"))
+    if sup[0].is_x_lrc() and (core.get_global_option("SCF_TYPE") not in ["DIRECT", "DF", "OUT_OF_CORE", "PK"]):
+        raise ValidationError(
+            "SCF: SCF_TYPE (%s) not supported for range-separated functionals, plese use SCF_TYPE = 'DF' to automatically select the correct JK build." % core.get_global_option("SCF_TYPE"))
 
     if (core.get_global_option('INTEGRAL_PACKAGE') == 'ERD') and (sup[0].is_x_lrc()):
         raise ValidationError('INTEGRAL_PACKAGE ERD does not play nicely with LRC DFT functionals, so stopping.')
 
+    sup[0].set_lock(True)
+
     return sup
+
 
 def test_ccl_functional(functional, ccl_functional):
 
@@ -199,31 +150,34 @@ def test_ccl_functional(functional, ccl_functional):
     points = []
     point = {}
 
-    rho_line = re.compile(r'^\s*rhoa=\s*(-?\d+\.\d+E[+-]\d+)\s*rhob=\s*(-?\d+\.\d+E[+-]\d+)\s*sigmaaa=\s*(-?\d+\.\d+E[+-]\d+)\s*sigmaab=\s*(-?\d+\.\d+E[+-]\d+)\s*sigmabb=\s*(-?\d+\.\d+E[+-]\d+)\s*')
+    rho_line = re.compile(
+        r'^\s*rhoa=\s*(-?\d+\.\d+E[+-]\d+)\s*rhob=\s*(-?\d+\.\d+E[+-]\d+)\s*sigmaaa=\s*(-?\d+\.\d+E[+-]\d+)\s*sigmaab=\s*(-?\d+\.\d+E[+-]\d+)\s*sigmabb=\s*(-?\d+\.\d+E[+-]\d+)\s*'
+    )
     val_line = re.compile(r'^\s*(\w*)\s*=\s*(-?\d+\.\d+E[+-]\d+)')
 
-    aliases = { 'zk'            : 'v',
-                'vrhoa'         : 'v_rho_a',
-                'vrhob'         : 'v_rho_b',
-                'vsigmaaa'      : 'v_gamma_aa',
-                'vsigmaab'      : 'v_gamma_ab',
-                'vsigmabb'      : 'v_gamma_bb',
-                'v2rhoa2'       : 'v_rho_a_rho_a',
-                'v2rhoab'       : 'v_rho_a_rho_b',
-                'v2rhob2'       : 'v_rho_b_rho_b',
-                'v2rhoasigmaaa' : 'v_rho_a_gamma_aa',
-                'v2rhoasigmaab' : 'v_rho_a_gamma_ab',
-                'v2rhoasigmabb' : 'v_rho_a_gamma_bb',
-                'v2rhobsigmaaa' : 'v_rho_b_gamma_aa',
-                'v2rhobsigmaab' : 'v_rho_b_gamma_ab',
-                'v2rhobsigmabb' : 'v_rho_b_gamma_bb',
-                'v2sigmaaa2'    : 'v_gamma_aa_gamma_aa',
-                'v2sigmaaaab'   : 'v_gamma_aa_gamma_ab',
-                'v2sigmaaabb'   : 'v_gamma_aa_gamma_bb',
-                'v2sigmaab2'    : 'v_gamma_ab_gamma_ab',
-                'v2sigmaabbb'   : 'v_gamma_ab_gamma_bb',
-                'v2sigmabb2'    : 'v_gamma_bb_gamma_bb',
-              }
+    aliases = {
+        'zk': 'v',
+        'vrhoa': 'v_rho_a',
+        'vrhob': 'v_rho_b',
+        'vsigmaaa': 'v_gamma_aa',
+        'vsigmaab': 'v_gamma_ab',
+        'vsigmabb': 'v_gamma_bb',
+        'v2rhoa2': 'v_rho_a_rho_a',
+        'v2rhoab': 'v_rho_a_rho_b',
+        'v2rhob2': 'v_rho_b_rho_b',
+        'v2rhoasigmaaa': 'v_rho_a_gamma_aa',
+        'v2rhoasigmaab': 'v_rho_a_gamma_ab',
+        'v2rhoasigmabb': 'v_rho_a_gamma_bb',
+        'v2rhobsigmaaa': 'v_rho_b_gamma_aa',
+        'v2rhobsigmaab': 'v_rho_b_gamma_ab',
+        'v2rhobsigmabb': 'v_rho_b_gamma_bb',
+        'v2sigmaaa2': 'v_gamma_aa_gamma_aa',
+        'v2sigmaaaab': 'v_gamma_aa_gamma_ab',
+        'v2sigmaaabb': 'v_gamma_aa_gamma_bb',
+        'v2sigmaab2': 'v_gamma_ab_gamma_ab',
+        'v2sigmaabbb': 'v_gamma_ab_gamma_bb',
+        'v2sigmabb2': 'v_gamma_bb_gamma_bb',
+    }
 
     for line in lines:
 
@@ -283,18 +237,19 @@ def test_ccl_functional(functional, ccl_functional):
 
     tasks = ['v', 'v_rho_a', 'v_rho_b', 'v_gamma_aa', 'v_gamma_ab', 'v_gamma_bb']
     mapping = {
-            'v': v,
-            'v_rho_a': v_rho_a,
-            'v_rho_b': v_rho_b,
-            'v_gamma_aa': v_gamma_aa,
-            'v_gamma_ab': v_gamma_ab,
-            'v_gamma_bb': v_gamma_bb,
-        }
+        'v': v,
+        'v_rho_a': v_rho_a,
+        'v_rho_b': v_rho_b,
+        'v_gamma_aa': v_gamma_aa,
+        'v_gamma_ab': v_gamma_ab,
+        'v_gamma_bb': v_gamma_bb,
+    }
 
     super.print_detail(3)
     index = 0
     for point in points:
-        core.print_out('rho_a= %11.3E, rho_b= %11.3E, gamma_aa= %11.3E, gamma_ab= %11.3E, gamma_bb= %11.3E\n' % (rho_a[index], rho_b[index], gamma_aa[index], gamma_ab[index], gamma_bb[index]))
+        core.print_out('rho_a= %11.3E, rho_b= %11.3E, gamma_aa= %11.3E, gamma_ab= %11.3E, gamma_bb= %11.3E\n' %
+                       (rho_a[index], rho_b[index], gamma_aa[index], gamma_ab[index], gamma_bb[index]))
 
         for task in tasks:
             v_ref = point[task]
@@ -310,7 +265,8 @@ def test_ccl_functional(functional, ccl_functional):
                 passed = 'FAILED'
                 check = False
 
-            core.print_out('\t%-15s %24.16E %24.16E %24.16E %24.16E %6s\n' % (task, v_ref, v_obs, delta, epsilon, passed))
+            core.print_out('\t%-15s %24.16E %24.16E %24.16E %24.16E %6s\n' % (task, v_ref, v_obs, delta, epsilon,
+                                                                              passed))
 
         index = index + 1
 

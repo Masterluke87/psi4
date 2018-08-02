@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -45,7 +45,7 @@ class IntegralTransform;
 class MOSpace;
 typedef std::shared_ptr<Matrix> SharedMatrix;
 class SOMCSCF;
-class DF_Helper;
+class DFHelper;
 
 // Well this is not ideal
 struct _SlaterDetSet;
@@ -341,7 +341,7 @@ private:
     std::shared_ptr<IntegralTransform> ints_; // Non-DF
     std::shared_ptr<MOSpace> rot_space_;
     std::shared_ptr<MOSpace> act_space_;
-    std::shared_ptr<DF_Helper> dfh_; // DF
+    std::shared_ptr<DFHelper> dfh_; // DF
     std::shared_ptr<JK> jk_;
     std::shared_ptr<SOMCSCF> somcscf_;
 

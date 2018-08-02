@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -37,7 +37,7 @@
 #include "psi4/psifiles.h"
 #include "psi4/libpsi4util/PsiOutStream.h"
 
-long int Position(long int i,long int j);
+PSI_API long int Position(long int i,long int j);
 
 namespace psi{ namespace fnocc{
 
@@ -100,7 +100,7 @@ class CoupledCluster: public Wavefunction{
 
     /// cc or qci (t)
     PsiReturnType triples();
-    PsiReturnType lowmemory_triples();
+    PSI_API PsiReturnType lowmemory_triples();
     double et;
 
     /// mp4 triples
@@ -216,7 +216,7 @@ class CoupledCluster: public Wavefunction{
 };
 
 // DF CC class
-class DFCoupledCluster : public CoupledCluster{
+class PSI_API DFCoupledCluster : public CoupledCluster{
 
   public:
     DFCoupledCluster(SharedWavefunction ref_wfn, Options&options);

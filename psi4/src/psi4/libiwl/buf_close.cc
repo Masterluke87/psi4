@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -53,8 +53,8 @@ void IWL::close()
         delete[](labels_);
     if (values_)
         delete[](values_);
-    labels_ = NULL;
-    values_ = NULL;
+    labels_ = nullptr;
+    values_ = nullptr;
 }
 
 /*!
@@ -66,7 +66,7 @@ void IWL::close()
 ** Close a Integrals With Labels Buffer
 ** \ingroup IWL
 */
-void iwl_buf_close(struct iwlbuf *Buf, int keep)
+void PSI_API iwl_buf_close(struct iwlbuf *Buf, int keep)
 {
 
    psio_close(Buf->itap, keep ? 1 : 0);

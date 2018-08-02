@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -170,7 +170,7 @@ class OPT_DATA {
     double *g_last_forces_pointer(void) const {
       if (steps.size() > 1)
         return steps.at(steps.size()-2)->g_forces_pointer();
-      else return NULL;
+      else return nullptr;
     }
     double *g_geom_const_pointer(int i) const {
       return steps.at(i)->g_geom_const_pointer();

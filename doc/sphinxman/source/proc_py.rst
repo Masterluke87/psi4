@@ -3,7 +3,7 @@
 .. #
 .. # Psi4: an open-source quantum chemistry software package
 .. #
-.. # Copyright (c) 2007-2017 The Psi4 Developers.
+.. # Copyright (c) 2007-2018 The Psi4 Developers.
 .. #
 .. # The copyrights for code used from other parties are included in
 .. # the corresponding files.
@@ -148,7 +148,7 @@ keyword |globals__qc_module| and a set of type keywords analogous to
 |globals__ci_type|, |globals__cc_type|, which can have values ``CONV``,
 ``DF``, and ``CD``. These are all *global* keywords, as their values are
 shared among modules rather than (or in addition to) being used internally
-by the module). We're sticking with |scf__scf_type| and
+by the module). We're sticking with |globals__scf_type| and
 |globals__mp2_type| defaulting to ``DF``, while everything higher defaults
 to ``CONV``. In :source:`share/python/driver.py`, a managed method calls a
 "select" function rather than a "run" function. ::

@@ -3,7 +3,7 @@
 .. #
 .. # Psi4: an open-source quantum chemistry software package
 .. #
-.. # Copyright (c) 2007-2017 The Psi4 Developers.
+.. # Copyright (c) 2007-2018 The Psi4 Developers.
 .. #
 .. # The copyrights for code used from other parties are included in
 .. # the corresponding files.
@@ -175,6 +175,26 @@ PSI Variables by Alpha
    The three components of the dipole [Debye] for the requested
    coupled cluster level of theory and root.
 
+.. psivar:: CC2 DIPOLE POLARIZABILITY @ xNM
+
+   The dipole polarizability [au] calculated at the CC2 level 
+   for a given (x) wavelength, (x) rounded to nearest integer. 
+
+.. psivar:: CC2 SPECIFIC ROTATION (LEN) @ xNM
+
+   The specific rotation [deg/(dm (g/cm^3))] calculated at the CC2 level in the
+   length gauge for a given (x) wavelength, (x) rounded to nearest integer.
+
+.. psivar:: CC2 SPECIFIC ROTATION (VEL) @ xNM
+
+   The specific rotation [deg/(dm (g/cm^3))] calculated at the CC2 level in the 
+   velocity gauge for a given (x) wavelength, (x) rounded to nearest integer.
+
+.. psivar:: CC2 SPECIFIC ROTATION (MVG) @ xNM
+
+   The specific rotation [deg/(dm (g/cm^3))] calculated at the CC2 level in the 
+   modified velocity gauge for a given (x) wavelength, (x) rounded to nearest integer.
+
 .. psivar:: CC QUADRUPOLE XX
    CC QUADRUPOLE XY
    CC QUADRUPOLE XZ
@@ -254,6 +274,26 @@ PSI Variables by Alpha
    The total electronic energy [H] and correlation energy component [H]
    for the approximate coupled-cluster (CCSD(T)_L, CCSDT(Q)_L, 
    up to CC(\ *n*\ -1)(\ *n*\ )L level of theory.
+
+.. psivar:: CCSD DIPOLE POLARIZABILITY @ xNM
+
+   The dipole polarizability [au] calculated at the CCSD level 
+   for a given (x) wavelength, (x) rounded to nearest integer. 
+
+.. psivar:: CCSD SPECIFIC ROTATION (LEN) @ xNM
+
+   The specific rotation [deg/(dm (g/cm^3))] calculated at the CCSD level in the
+   length gauge for a given (x) wavelength, (x) rounded to nearest integer.
+
+.. psivar:: CCSD SPECIFIC ROTATION (VEL) @ xNM
+
+   The specific rotation [deg/(dm (g/cm^3))] calculated at the CCSD level in the 
+   velocity gauge for a given (x) wavelength, (x) rounded to nearest integer.
+
+.. psivar:: CCSD SPECIFIC ROTATION (MVG) @ xNM
+
+   The specific rotation [deg/(dm (g/cm^3))] calculated at the CCSD level in the 
+   modified velocity gauge for a given (x) wavelength, (x) rounded to nearest integer.
 
 .. psivar:: CEPA(0) DIPOLE X
    CEPA(0) DIPOLE Y
@@ -561,6 +601,19 @@ PSI Variables by Alpha
 
    .. math:: E_{NN} = \sum_{i, j<i}^{N_{atom}}\frac{Z_i Z_j}{|\mathbf{R}_i - \mathbf{R}_j|}
       :label: ENN
+
+.. psivar:: NBODY (i, j, ..., k)@(a, b, ..., c) TOTAL ENERGY
+
+   The total energy [Eh] of a component of the requested N-Body energy.
+   The first parenthetical list over *i*, *j*, ..., *k* enumerates 
+   molecular fragments included in the computation in 1-indexed, 
+   input-file order, while the second enumerates list over *a*, *b*, 
+   ..., *c* enumerates which fragments contribute basis functions to the
+   computation.  For example, ``(1, 2)@(1, 2, 3, 4)`` indicates that the
+   fragments 1 and 2 are explicitly included in the energy computation,
+   with basis functions from each of fragments 1, 2, 3, & 4 included in 
+   the basis set.  Therefore, the basis functions from fragments 3 and 4
+   are included as ghost functions within the energy computation.
 
 .. psivar:: OCEPA(0) TOTAL ENERGY
    OCEPA(0) CORRELATION ENERGY

@@ -9,12 +9,13 @@ set(sources_list apps.cc
                  DiskJK.cc
                  PKJK.cc
                  DirectJK.cc
-                 DFJK.cc
+                 DiskDFJK.cc
                  CDJK.cc
                  GTFockJK.cc
                  soscf.cc
                  PK_workers.cc
                  PKmanagers.cc
+                 MemDFJK.cc
 )
 add_definitions("-Drestrict=${RESTRICT_KEYWORD}")
 
@@ -23,3 +24,4 @@ if(ENABLE_GTFOCK)
 endif()
 
 psi4_add_module(lib fock sources_list mints functional 3index psio)
+target_link_libraries(fock PRIVATE gau2grid::gg)

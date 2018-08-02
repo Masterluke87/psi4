@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -30,6 +30,7 @@
 #include "ccsd.h"
 
 #include "psi4/psi4-dec.h"
+#include "psi4/times.h"
 #include "psi4/libmints/vector.h"
 #include "psi4/libmints/matrix.h"
 #include "psi4/libmints/wavefunction.h"
@@ -39,8 +40,8 @@
 #include "psi4/libmints/basisset.h"
 #include "psi4/lib3index/3index.h"
 
-#include <sys/times.h>
-#include <unistd.h>
+#include <ctime>
+
 #ifdef _OPENMP
     #include<omp.h>
 #else
@@ -101,7 +102,7 @@ void CoupledCluster::common_init() {
   Da_ = SharedMatrix(reference_wavefunction_->Da());
   Ca_ = SharedMatrix(reference_wavefunction_->Ca());
   Fa_ = SharedMatrix(reference_wavefunction_->Fa());
-  epsilon_a_= std::shared_ptr<Vector>(new Vector(nirrep_, nsopi_));
+  epsilon_a_= std::make_shared<Vector>(nirrep_, nsopi_);
   epsilon_a_->copy(reference_wavefunction_->epsilon_a().get());
   nalpha_ = reference_wavefunction_->nalpha();
   nbeta_  = reference_wavefunction_->nbeta();
@@ -269,7 +270,7 @@ double CoupledCluster::compute_energy() {
      // now there should be space for t2
      if (t2_on_disk){
          tb = (double*)malloc(o*o*v*v*sizeof(double));
-         std::shared_ptr<PSIO> psio (new PSIO());
+         auto psio = std::make_shared<PSIO>();
          psio->open(PSIF_DCC_T2,PSIO_OPEN_OLD);
          psio->read_entry(PSIF_DCC_T2,"t2",(char*)&tb[0],o*o*v*v*sizeof(double));
          psio->close(PSIF_DCC_T2,1);
@@ -400,7 +401,7 @@ PsiReturnType CoupledCluster::CCSDIterations() {
   double Eold           = 1.0e9;
   eccsd                 = 0.0;
 
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   psio_address addr;
 
   outfile->Printf("\n");
@@ -433,7 +434,7 @@ PsiReturnType CoupledCluster::CCSDIterations() {
   const long clk_tck = sysconf(_SC_CLK_TCK);
   times(&total_tmstime);
 
-  time_t time_start = time(NULL);
+  time_t time_start = time(nullptr);
   double user_start = ((double) total_tmstime.tms_utime)/clk_tck;
   double sys_start  = ((double) total_tmstime.tms_stime)/clk_tck;
 
@@ -441,7 +442,7 @@ PsiReturnType CoupledCluster::CCSDIterations() {
 
   double s1,e1;
   while(iter < maxiter){
-      time_t iter_start = time(NULL);
+      time_t iter_start = time(nullptr);
 
       // evaluate cc/qci diagrams
       memset((void*)w1,'\0',o*v*sizeof(double));
@@ -488,7 +489,7 @@ PsiReturnType CoupledCluster::CCSDIterations() {
       else if (replace_diis_iter < maxdiis) replace_diis_iter++;
       else    replace_diis_iter = 1;
 
-      time_t iter_stop = time(NULL);
+      time_t iter_stop = time(nullptr);
       outfile->Printf("  %5i   %i %i %15.10f %15.10f %15.10f %8d\n",
             iter,diis_iter-1,replace_diis_iter,eccsd,eccsd-Eold,nrm,(int)iter_stop-(int)iter_start);
 
@@ -500,7 +501,7 @@ PsiReturnType CoupledCluster::CCSDIterations() {
 
   // stop timing iterations
   times(&total_tmstime);
-  time_t time_stop = time(NULL);
+  time_t time_stop = time(nullptr);
   double user_stop = ((double) total_tmstime.tms_utime)/clk_tck;
   double sys_stop  = ((double) total_tmstime.tms_stime)/clk_tck;
 
@@ -528,9 +529,9 @@ PsiReturnType CoupledCluster::CCSDIterations() {
   // add T1 diagnostic to globals
   Process::environment.globals["CC T1 DIAGNOSTIC"] = t1diag;
 
-  std::shared_ptr<Matrix>T (new Matrix(o,o));
-  std::shared_ptr<Matrix>eigvec (new Matrix(o,o));
-  std::shared_ptr<Vector>eigval (new Vector(o));
+  auto T = std::make_shared<Matrix>(o,o);
+  auto eigvec = std::make_shared<Matrix>(o,o);
+  auto eigval = std::make_shared<Vector>(o);
   double ** Tp = T->pointer();
   for (int i = 0; i < o; i++) {
       for (int j = 0; j < o; j++) {
@@ -863,7 +864,7 @@ void CoupledCluster::CPU_t1_vmeai(CCTaskParams params){
   long int o = ndoccact;
   long int v = nvirt;
   long int i,a,m,e,id,one=1;
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   psio->open(PSIF_DCC_IJAB,PSIO_OPEN_OLD);
   psio->read_entry(PSIF_DCC_IJAB,"E2ijab",(char*)&tempv[0],o*o*v*v*sizeof(double));
   psio->close(PSIF_DCC_IJAB,1);
@@ -890,7 +891,7 @@ void CoupledCluster::CPU_t1_vmeni(CCTaskParams params){
   long int m,e,n,a,id;
   long int o=ndoccact;
   long int v=nvirt;
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
 
   if (t2_on_disk){
      psio->open(PSIF_DCC_T2,PSIO_OPEN_OLD);
@@ -922,7 +923,7 @@ void CoupledCluster::CPU_t1_vmaef(CCTaskParams params){
   long int o=ndoccact;
   long int v=nvirt;
 
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
 
   if (t2_on_disk){
      psio->open(PSIF_DCC_T2,PSIO_OPEN_OLD);
@@ -977,7 +978,7 @@ void CoupledCluster::CPU_I1ab(CCTaskParams params){
   long int v = nvirt;
   long int b,m,n,e,a,id=0;
   // build I1(a,b)
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   psio->open(PSIF_DCC_IAJB,PSIO_OPEN_OLD);
   psio->read_entry(PSIF_DCC_IAJB,"E2iajb",(char*)&integrals[0],o*o*v*v*sizeof(double));
   psio->close(PSIF_DCC_IAJB,1);
@@ -1096,7 +1097,7 @@ void CoupledCluster::CPU_I2p_abci_refactored_term2(CCTaskParams params){
   long int ov2 = o*v*v;
   long int o2v = o*o*v;
 
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
 
   // now build and use intermediate:
   psio->open(PSIF_DCC_IJAB,PSIO_OPEN_OLD);
@@ -1134,7 +1135,7 @@ void CoupledCluster::CPU_I1pij_I1ia_lessmem(CCTaskParams params){
   long int id=0;
 
   // build I1(i,a). n^4
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   psio->open(PSIF_DCC_IAJB,PSIO_OPEN_OLD);
   psio->read_entry(PSIF_DCC_IAJB,"E2iajb",(char*)&integrals[0],o*o*v*v*sizeof(double));
   psio->close(PSIF_DCC_IAJB,1);
@@ -1242,7 +1243,7 @@ void CoupledCluster::I2ijkl(CCTaskParams params){
   long int id,i,j,a,b,o,v;
   o = ndoccact;
   v = nvirt;
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
 
   if (t2_on_disk){
      psio->open(PSIF_DCC_T2,PSIO_OPEN_OLD);
@@ -1311,7 +1312,7 @@ void CoupledCluster::I2piajk(CCTaskParams params){
   long int id,i,j,a,b,o,v;
   o = ndoccact;
   v = nvirt;
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   psio_address addr;
 
   if (isccsd) {
@@ -1389,7 +1390,7 @@ void CoupledCluster::Vabcd1(CCTaskParams params){
   long int id,i,j,a,b,o,v;
   o = ndoccact;
   v = nvirt;
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   psio_address addr;
   if (t2_on_disk){
      psio->open(PSIF_DCC_T2,PSIO_OPEN_OLD);
@@ -1458,7 +1459,7 @@ void CoupledCluster::Vabcd2(CCTaskParams params){
   int sg,sg2;
   o = ndoccact;
   v = nvirt;
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   psio_address addr;
   if (t2_on_disk){
      psio->open(PSIF_DCC_T2,PSIO_OPEN_OLD);
@@ -1528,7 +1529,7 @@ void CoupledCluster::K(CCTaskParams params){
   long int id,i,j,a,b,o,v;
   o = ndoccact;
   v = nvirt;
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   psio_address addr;
 
   psio->open(PSIF_DCC_IJAB,PSIO_OPEN_OLD);
@@ -1658,7 +1659,7 @@ void CoupledCluster::TwoJminusK(CCTaskParams params){
   long int id,i,j,a,b,o,v;
   o = ndoccact;
   v = nvirt;
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   psio_address addr;
 
   // o^2v^3 contribution to intermediate
@@ -1828,7 +1829,7 @@ void CoupledCluster::UpdateT2(long int iter){
   long int o = ndoccact;
   long int rs = nmo;
 
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   psio->open(PSIF_DCC_IAJB,PSIO_OPEN_OLD);
   psio->read_entry(PSIF_DCC_IAJB,"E2iajb",(char*)&integrals[0],o*o*v*v*sizeof(double));
   psio->close(PSIF_DCC_IAJB,1);
@@ -1910,7 +1911,7 @@ void CoupledCluster::SCS_CCSD(){
   long int iajb,ijab=0;
   double ssenergy = 0.0;
   double osenergy = 0.0;
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   psio->open(PSIF_DCC_IAJB,PSIO_OPEN_OLD);
   psio->read_entry(PSIF_DCC_IAJB,"E2iajb",(char*)&integrals[0],o*o*v*v*sizeof(double));
   psio->close(PSIF_DCC_IAJB,1);
@@ -1949,7 +1950,7 @@ void CoupledCluster::SCS_MP2(){
   long int iajb,ijab=0;
   double ssenergy = 0.0;
   double osenergy = 0.0;
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   psio->open(PSIF_DCC_IAJB,PSIO_OPEN_OLD);
   psio->read_entry(PSIF_DCC_IAJB,"E2iajb",(char*)&integrals[0],o*o*v*v*sizeof(double));
   psio->close(PSIF_DCC_IAJB,1);
@@ -1987,7 +1988,7 @@ double CoupledCluster::CheckEnergy(){
   double ta,tnew,dijab,da,dab,dabi;
   long int iajb,jaib,ijab=0;
   double energy = 0.0;
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   psio->open(PSIF_DCC_IAJB,PSIO_OPEN_OLD);
   psio->read_entry(PSIF_DCC_IAJB,"E2iajb",(char*)&integrals[0],o*o*v*v*sizeof(double));
   psio->close(PSIF_DCC_IAJB,1);
@@ -2080,7 +2081,7 @@ void CoupledCluster::DefineTasks(){
 }
 
 void CoupledCluster::MP4_SDQ(){
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   int o = ndoccact;
   int v = nvirt;
 

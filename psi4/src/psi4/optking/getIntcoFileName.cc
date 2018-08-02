@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -47,7 +47,7 @@ const char* getIntcoFileName()
    static std::string strintco("");
    if (strintco.empty() ) {
 #if defined(OPTKING_PACKAGE_QCHEM)
-      char* pref=NULL;
+      char* pref=nullptr;
       getPrefix(pref);
       strintco = std::string(pref) + "intco.dat";
 #elif defined(OPTKING_PACKAGE_PSI)
@@ -62,7 +62,7 @@ const char* getOptdataFileName()
    static std::string stroptdata("");
    if (stroptdata.empty() ) {
 #if defined(OPTKING_PACKAGE_QCHEM)
-      char* pref=NULL;
+      char* pref=nullptr;
       getPrefix(pref);
       stroptdata = std::string(pref) + "opt_data.1";
 #elif defined(OPTKING_PACKAGE_PSI)

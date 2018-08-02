@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -148,40 +148,40 @@ private:
 
 const MassPoint *LebedevGridMgr::nonstandard18PointGrid_;
 LebedevGridMgr::GridData LebedevGridMgr::grids_[] = {
-    {0,   1,    mk1ptGrid,    NULL},
-    {3,   6,    mk6ptGrid,    NULL},
-    {5,   14,   mk14ptGrid,   NULL},
-    {7,   26,   mk26ptGrid,   NULL},
-    {9,   38,   mk38ptGrid,   NULL},
-    {11,  50,   mk50ptGrid,   NULL},
-    {13,  74,   mk74ptGrid,   NULL},
-    {15,  86,   mk86ptGrid,   NULL},
-    {17,  110,  mk110ptGrid,  NULL},
-    {19,  146,  mk146ptGrid,  NULL},
-    {21,  170,  mk170ptGrid,  NULL},
-    {23,  194,  mk194ptGrid,  NULL},
-    {25,  230,  mk230ptGrid,  NULL},
-    {27,  266,  mk266ptGrid,  NULL},
-    {29,  302,  mk302ptGrid,  NULL},
-    {31,  350,  mk350ptGrid,  NULL},
-    {35,  434,  mk434ptGrid,  NULL},
-    {41,  590,  mk590ptGrid,  NULL},
-    {47,  770,  mk770ptGrid,  NULL},
-    {53,  974,  mk974ptGrid,  NULL},
-    {59,  1202, mk1202ptGrid, NULL},
-    {65,  1454, mk1454ptGrid, NULL},
-    {71,  1730, mk1730ptGrid, NULL},
-    {77,  2030, mk2030ptGrid, NULL},
-    {83,  2354, mk2354ptGrid, NULL},
-    {89,  2702, mk2702ptGrid, NULL},
-    {95,  3074, mk3074ptGrid, NULL},
-    {101, 3470, mk3470ptGrid, NULL},
-    {107, 3890, mk3890ptGrid, NULL},
-    {113, 4334, mk4334ptGrid, NULL},
-    {119, 4802, mk4802ptGrid, NULL},
-    {125, 5294, mk5294ptGrid, NULL},
-    {131, 5810, mk5810ptGrid, NULL}, // If you add a grid, increase LebedevGridMgr::MaxOrder.
-    {0,   0,    NULL,         NULL}
+    {0,   1,    mk1ptGrid,    nullptr},
+    {3,   6,    mk6ptGrid,    nullptr},
+    {5,   14,   mk14ptGrid,   nullptr},
+    {7,   26,   mk26ptGrid,   nullptr},
+    {9,   38,   mk38ptGrid,   nullptr},
+    {11,  50,   mk50ptGrid,   nullptr},
+    {13,  74,   mk74ptGrid,   nullptr},
+    {15,  86,   mk86ptGrid,   nullptr},
+    {17,  110,  mk110ptGrid,  nullptr},
+    {19,  146,  mk146ptGrid,  nullptr},
+    {21,  170,  mk170ptGrid,  nullptr},
+    {23,  194,  mk194ptGrid,  nullptr},
+    {25,  230,  mk230ptGrid,  nullptr},
+    {27,  266,  mk266ptGrid,  nullptr},
+    {29,  302,  mk302ptGrid,  nullptr},
+    {31,  350,  mk350ptGrid,  nullptr},
+    {35,  434,  mk434ptGrid,  nullptr},
+    {41,  590,  mk590ptGrid,  nullptr},
+    {47,  770,  mk770ptGrid,  nullptr},
+    {53,  974,  mk974ptGrid,  nullptr},
+    {59,  1202, mk1202ptGrid, nullptr},
+    {65,  1454, mk1454ptGrid, nullptr},
+    {71,  1730, mk1730ptGrid, nullptr},
+    {77,  2030, mk2030ptGrid, nullptr},
+    {83,  2354, mk2354ptGrid, nullptr},
+    {89,  2702, mk2702ptGrid, nullptr},
+    {95,  3074, mk3074ptGrid, nullptr},
+    {101, 3470, mk3470ptGrid, nullptr},
+    {107, 3890, mk3890ptGrid, nullptr},
+    {113, 4334, mk4334ptGrid, nullptr},
+    {119, 4802, mk4802ptGrid, nullptr},
+    {125, 5294, mk5294ptGrid, nullptr},
+    {131, 5810, mk5810ptGrid, nullptr}, // If you add a grid, increase LebedevGridMgr::MaxOrder.
+    {0,   0,    nullptr,         nullptr}
 };
 
 LebedevGridMgr::LebedevGridMgr()
@@ -190,7 +190,7 @@ LebedevGridMgr::LebedevGridMgr()
 
 void LebedevGridMgr::Initialize()
 {
-    for (int i = 0; grids_[i].mkGridFn != NULL; i++)
+    for (int i = 0; grids_[i].mkGridFn != nullptr; i++)
         grids_[i].grid = grids_[i].mkGridFn();
 
     // We handle the 18-point grid separately so it doesn't
@@ -203,20 +203,20 @@ static class MagicInitializer { public: MagicInitializer() { LebedevGridMgr::Ini
 
 bool LebedevGridMgr::isUsableOrder(int order)
 {
-    return findGridByOrder(order) != NULL;
+    return findGridByOrder(order) != nullptr;
 }
 
 const MassPoint *LebedevGridMgr::findGridByOrder(int order)
 {
-    for (int i = 0; grids_[i].mkGridFn != NULL; i++)
+    for (int i = 0; grids_[i].mkGridFn != nullptr; i++)
         if (grids_[i].order == order)
             return grids_[i].grid;
-    return NULL;
+    return nullptr;
 }
 
 int LebedevGridMgr::findNPointsByOrder(int order)
 {
-    for (int i = 0; grids_[i].mkGridFn != NULL; i++)
+    for (int i = 0; grids_[i].mkGridFn != nullptr; i++)
         if (grids_[i].order == order)
             return grids_[i].npoints;
     return 0;
@@ -224,15 +224,15 @@ int LebedevGridMgr::findNPointsByOrder(int order)
 
 const MassPoint *LebedevGridMgr::findGridByOrder_roundUp(int order)
 {
-    for (int i = 0; grids_[i].mkGridFn != NULL; i++)
+    for (int i = 0; grids_[i].mkGridFn != nullptr; i++)
         if (grids_[i].order >= order)
             return grids_[i].grid;
-    return NULL; // Too high!
+    return nullptr; // Too high!
 }
 
 int LebedevGridMgr::findNPointsByOrder_roundUp(int order)
 {
-    for (int i = 0; grids_[i].mkGridFn != NULL; i++)
+    for (int i = 0; grids_[i].mkGridFn != nullptr; i++)
         if (grids_[i].order >= order)
             return grids_[i].npoints;
     return 0;
@@ -240,7 +240,7 @@ int LebedevGridMgr::findNPointsByOrder_roundUp(int order)
 
 int LebedevGridMgr::findOrderByNPoints(int npoints)
 {
-    for (int i = 0; grids_[i].mkGridFn != NULL; i++)
+    for (int i = 0; grids_[i].mkGridFn != nullptr; i++)
         if (grids_[i].npoints == npoints)
             return grids_[i].order;
     return -1;
@@ -250,17 +250,17 @@ const MassPoint *LebedevGridMgr::findGridByNPoints(int npoints)
 {
     if (npoints == 18) // Special case; this isn't actually a Lebedev grid, but some SG-1 atomic grids require it.
         return nonstandard18PointGrid_;
-    for (int i = 0; grids_[i].mkGridFn != NULL; i++)
+    for (int i = 0; grids_[i].mkGridFn != nullptr; i++)
         if (grids_[i].npoints == npoints)
             return grids_[i].grid;
-    return NULL;
+    return nullptr;
 }
 
 void LebedevGridMgr::PrintHelp()
 {
     outfile->Printf( "  ==> Valid Lebedev Grids <==\n\n");
     outfile->Printf( "\t%11s %11s\n", "Points", "Order");
-    for (int i = 0; grids_[i].mkGridFn != NULL; i++)
+    for (int i = 0; grids_[i].mkGridFn != nullptr; i++)
         outfile->Printf( "\t%11d %11d\n", grids_[i].npoints, grids_[i].order);
     outfile->Printf( "\n");
 
@@ -2141,14 +2141,14 @@ void RadialGridMgr::GolombWelsch(int n, double a[], double b[], double q[])
 
 void RadialGridMgr::getLegendreRoots(int n, double r[], double w[])
 {
-    double a[n], bhack[n+1];
-    double *const b = &bhack[1]; // Note that b[n-1] is unused.
+    std::vector<double> a(n), bhack(n+1);
+    double *const b = &(bhack.data()[1]); // Note that b[n-1] is unused.
     for (int i = 0; i < n; i++) {
         a[i] = 0;
         int k = i + 1; // Easier to read
         b[i] = k/sqrt(4*k*k - 1);
     }
-    GolombWelsch(n, a, b, w);
+    GolombWelsch(n, a.data(), b, w);
     for (int i = 0; i < n; i++) {
         const double muzero = 2; // Value of $\int_{-1}^1\!dx$
         r[i] = a[i];
@@ -2170,14 +2170,14 @@ void RadialGridMgr::getLaguerreRoots(int n, double r[], double w[])
     // space for that extra element, and then declare that `b'
     // starts one element forward. That is, b[0] = bhack[1]. Then
     // b[-1] = bhack[0] is a valid memory location.
-    double a[n], bhack[n+1];
-    double *const b = &bhack[1]; // Note that b[n-1] is unused; it's almost enough to make you want to renumber the arrays.
+    std::vector<double> a(n), bhack(n+1);
+    double *const b = &(bhack.data()[1]); // Note that b[n-1] is unused; it's almost enough to make you want to renumber the arrays.
     for (int i = 0; i < n; i++) {
         a[i] = 2*i+1;
         b[i] = -(i+1);
     }
 
-    GolombWelsch(n, a, b, w);
+    GolombWelsch(n, a.data(), b, w);
     // The `w' vector right now just contains the first element of the eigenvectors
     // described in the Golomb-Welsch paper. The actual weights are
     //    w[i] = muzero*w[i]*w[i]
@@ -2328,13 +2328,13 @@ void RadialGridMgr::getMultiExpRoots(int n, double r[], double w[])
     if (n > TABSIZE)
         throw PSIEXCEPTION("Psi4 does not support MultiExp radial grids for n > 200.");
 
-    double a[n], bhack[n+1];
-    double *const b = &bhack[1]; // Note that b[n-1] is unused.
+    std::vector<double> a(n), bhack(n+1);
+    double *const b = &(bhack.data()[1]); // Note that b[n-1] is unused.
     for (int i = 0; i < n; i++) {
         a[i] = alphas[i];
         b[i] = betas[i];
     }
-    GolombWelsch(n, a, b, w);
+    GolombWelsch(n, a.data(), b, w);
     for (int i = 0; i < n; i++) {
         const double muzero = 2; // Value of $\int_0^1(\ln x)^2dx$
         r[i] = a[i];
@@ -2347,7 +2347,7 @@ void RadialGridMgr::getMultiExpRoots(int n, double r[], double w[])
 // Then `rFn' maps the nice interval to [0, \infty)
 // `drdxFn' is the derivative of rFn and is used to adjust the weights.
 RadialGridMgr::SchemeTable RadialGridMgr::radialschemes[] = {
-    {"LAGUERRE", getLaguerreRoots,    NULL,       NULL}, // NULLs mean we skip the [0,\infty) correction
+    {"LAGUERRE", getLaguerreRoots,    nullptr,       nullptr}, // nullptrs mean we skip the [0,\infty) correction
     {"MULTIEXP", getMultiExpRoots,    multiexp_r, multiexp_dr},
     {"AHLRICHS", getChebychevRoots,   ahlrichs_r, ahlrichs_dr}, // Also called "Treutler" or "Treutler-Ahlrichs"
     {"TREUTLER", getChebychevRoots,   ahlrichs_r, ahlrichs_dr},
@@ -2396,7 +2396,7 @@ void RadialGridMgr::makeRadialGrid(int n, int whichScheme, double r[], double w[
     double (*drdxFn)(double) = radialschemes[whichScheme].drdxFn;
     // So now `r' and `w' store the roots of some nice orthogonal basis.
     // Then we convert to spherical.
-    if (rFn != NULL) { // LaguerreRoots has its own implementation of this that avoids overflow issues.
+    if (rFn != nullptr) { // LaguerreRoots has its own implementation of this that avoids overflow issues.
         for (int i = 0; i < n; i++) {
             double old_x = r[i];
             r[i] = rFn(old_x);
@@ -2509,8 +2509,8 @@ const MassPoint *StandardGridMgr::GetSG1grid(int Z)
 
 void StandardGridMgr::makeCubatureGridFromPruneSpec(PruneSpec const& spec, int radscheme, MassPoint *grid_out)
 {
-    double r[spec.nrad], wr[spec.nrad];
-    RadialGridMgr::makeRadialGrid(spec.nrad, radscheme, r, wr, spec.rparam);
+    std::vector<double> r(spec.nrad), wr(spec.nrad);
+    RadialGridMgr::makeRadialGrid(spec.nrad, radscheme, r.data(), wr.data(), spec.rparam);
 
     int k_grid = 0; // Will index into `grid'.
     int k_rad = 0; // Will index into `r' and `wr'
@@ -2544,12 +2544,12 @@ void StandardGridMgr::ReleaseMemory()
     for (size_t i = 0; i < sizeof(SG0_grids_)/sizeof(SG0_grids_[0]); i++)
         if(SG0_grids_[i]){
             free((void*)SG0_grids_[i]);
-            SG0_grids_[i]=NULL;
+            SG0_grids_[i]=nullptr;
         }
     for (size_t i = 0; i < sizeof(SG1_grids_)/sizeof(SG1_grids_[0]); i++)
         if(SG1_grids_[i]){
             free((void*)SG1_grids_[i]);
-            SG1_grids_[i]=NULL;
+            SG1_grids_[i]=nullptr;
         }
 }
 
@@ -2577,9 +2577,9 @@ void StandardGridMgr::Initialize_SG0()
     static const PruneGroup Cl_grp[] = {{6, 4}, {18, 7}, {26, 2}, {38, 2}, {50, 1},  {74, 1},  {110, 2}, {170, 3}, {146, 1}, {110, 1}, {86, 1}, {6, 1}, {0,0}};
 
     PruneSpec SG0specs[18] = {
-        {NULL,    0,    0,    0},
+        {nullptr,    0,    0,    0},
         {H__grp, 23, 1406, 1.30},
-        {NULL,    0,    0,    0},
+        {nullptr,    0,    0,    0},
         {Li_grp, 23, 1406, 1.95},
         {Be_grp, 23, 1390, 2.20},
         {B__grp, 23, 1426, 1.45},
@@ -2587,7 +2587,7 @@ void StandardGridMgr::Initialize_SG0()
         {N__grp, 23, 1414, 1.10},
         {O__grp, 23, 1154, 1.10},
         {F__grp, 23, 1494, 1.20},
-        {NULL,    0,    0,    0},
+        {nullptr,    0,    0,    0},
         {Na_grp, 26, 1328, 2.30},
         {Mg_grp, 26, 1468, 2.20}, // Warning: The original paper has 1492 points instead of 1468...
         {Al_grp, 26, 1496, 2.10},
@@ -2599,7 +2599,7 @@ void StandardGridMgr::Initialize_SG0()
 
     for (int Z = 0; Z < 18; Z++) {
         if (SG0specs[Z].rparam == 0) {
-            SG0_grids_[Z] = NULL;
+            SG0_grids_[Z] = nullptr;
             SG0_sizes_[Z] = 0;
         } else {
             MassPoint *grid = (MassPoint*)malloc(SG0specs[Z].npts * sizeof(MassPoint));
@@ -2847,7 +2847,7 @@ double NuclearWeightMgr::computeNuclearWeight(MassPoint mp, int A, double stratm
 
     int natom = molecule_->natom();
     // Find the distance from point mp to each atom in the molecule.
-    double dist[natom];
+    std::vector<double> dist(natom);
     for (int l = 0; l < natom; l++)
         dist[l] = distToAtom(mp, l);
 
@@ -3013,7 +3013,7 @@ public:
 
     // Or we could use Matrix like smart people
     std::shared_ptr<Matrix> orientation() const {
-        std::shared_ptr<Matrix> O(new Matrix("O", 3, 3));
+        auto O = std::make_shared<Matrix>("O", 3, 3);
         double** Op = O->pointer();
         Op[0][0] = rotation_.xx;
         Op[0][1] = rotation_.xy;
@@ -3164,7 +3164,7 @@ OrientationMgr::LMatrix OrientationMgr::symmetricTopMatrix(std::shared_ptr<Molec
 {
     // First we build a copy of the molecule in which we've rotated the z-axis to where we want it.
     int natom = mol->natom();
-    LAtom rotmol[natom];
+    std::vector<LAtom> rotmol(natom);
     for (int i = 0; i < natom; i++) {
         // Translate each atom to the origin and then rotate the system to put the Z-axis where
         // it belongs.
@@ -3209,7 +3209,7 @@ OrientationMgr::LMatrix OrientationMgr::symmetricTopMatrix(std::shared_ptr<Molec
         // Is it an equally-good atom?
         if (!warned && fequ(XYDist, bestXYDist) && fequ(pos.z, bestZ) && rotmol[i].atomicNumber == rotmol[bestAtom].atomicNumber) {
             double alternateAngle = atan2(rotmol[i].pos.y, rotmol[i].pos.x);
-            if (!bothAnglesResultInEquivalentGrids(rotmol, natom, bestAngle, alternateAngle)) {
+            if (!bothAnglesResultInEquivalentGrids(rotmol.data(), natom, bestAngle, alternateAngle)) {
                 outfile->Printf( "Warning: Arbitrary grid orientation. (You can't do anything about this.)\n");
                 warned = true;
             }
@@ -3372,7 +3372,7 @@ OrientationMgr::SymmetryType OrientationMgr::sphericalTopMatrix(std::shared_ptr<
 {
     // Build a copy of the molecule where all the atoms are shifted to the center.
     int natom = origmol->natom();
-    LAtom mol[natom];
+    std::vector<LAtom> mol(natom);
     for (int i = 0; i < natom; i++) {
         // Translate each atom to the origin
         LVector displaced = {origmol->x(i) - center.x, origmol->y(i) - center.y, origmol->z(i) - center.z};
@@ -3382,12 +3382,12 @@ OrientationMgr::SymmetryType OrientationMgr::sphericalTopMatrix(std::shared_ptr<
     // We have to check for octahedral symmetry before tetrahedral because an octahedrally-symmetric
     // molecule has a bunch of extraneous C_2 axes. The tetrahedral checker will
     // spot them and do the wrong thing.
-    if (LookForIcosahedralSymmetry(mol, natom, Q_out)) {
+    if (LookForIcosahedralSymmetry(mol.data(), natom, Q_out)) {
         *Q_out = symmetricTopMatrix(origmol, *Q_out, center);
         return ICOSAHEDRAL;
-    } else if (LookForOctahedralSymmetry(mol, natom, Q_out)) {
+    } else if (LookForOctahedralSymmetry(mol.data(), natom, Q_out)) {
         return OCTAHEDRAL;
-    } else if (LookForTetrahedralSymmetry(mol, natom, Q_out)) {
+    } else if (LookForTetrahedralSymmetry(mol.data(), natom, Q_out)) {
         return TETRAHEDRAL;
     } else {
         outfile->Printf( "Warning: Molecule has a spherically-symmetric moment of charge but lacks icosahedral, octahedral, and tetrahedral symmetry.");
@@ -3514,7 +3514,7 @@ RadialPruneMgr::PruneSchemeTable RadialPruneMgr::pruneschemes[] = {
     {"P_GAUSSIAN", p_gaussian},
     {"D_GAUSSIAN", d_gaussian},
     {"LOG_GAUSSIAN", log_gaussian},
-    {NULL, NULL}
+    {nullptr, nullptr}
 };
 
 int RadialPruneMgr::WhichPruneScheme(const char *schemename)
@@ -3561,13 +3561,12 @@ void MolecularGrid::buildGridFromOptions(MolecularGridOptions const& opt)
         double stratmannCutoff = nuc.GetStratmannCutoff(A);
 
         if (opt.namedGrid == -1) { // Not using a named grid
-            double r[opt.nradpts];
-            double wr[opt.nradpts];
+            std::vector<double> r(opt.nradpts), wr(opt.nradpts);
             double alpha = GetBSRadius(Z) * opt.bs_radius_alpha;
-            RadialGridMgr::makeRadialGrid(opt.nradpts, RadialGridMgr::MuraKnowlesHack(opt.radscheme, Z), r, wr, alpha);
+            RadialGridMgr::makeRadialGrid(opt.nradpts, RadialGridMgr::MuraKnowlesHack(opt.radscheme, Z), r.data(), wr.data(), alpha);
 
             // RMP: Want this stuff too
-            radial_grids_.push_back(RadialGrid::build("Unknown", opt.nradpts, r, wr, alpha));
+            radial_grids_.push_back(RadialGrid::build("Unknown", opt.nradpts, r.data(), wr.data(), alpha));
             std::vector<std::shared_ptr<SphericalGrid> > spheres;
             spherical_grids_.push_back(spheres);
 
@@ -3638,8 +3637,7 @@ void MolecularGrid::buildGridFromOptions(MolecularGridOptions const& opt,
         int Z = molecule_->true_atomic_number(A);
         double stratmannCutoff = nuc.GetStratmannCutoff(A);
 
-            double  r[rs[A].size()];
-            double wr[rs[A].size()];
+            std::vector<double> r(rs[A].size()), wr(rs[A].size());
             double alpha = GetBSRadius(Z) * opt.bs_radius_alpha;
 
             // Bloody great
@@ -3649,7 +3647,7 @@ void MolecularGrid::buildGridFromOptions(MolecularGridOptions const& opt,
             }
 
             // RMP: Want this stuff too
-            radial_grids_.push_back(RadialGrid::build("Unknown", rs[A].size(), r, wr, alpha));
+            radial_grids_.push_back(RadialGrid::build("Unknown", rs[A].size(), r.data(), wr.data(), alpha));
             std::vector<std::shared_ptr<SphericalGrid> > spheres;
             spherical_grids_.push_back(spheres);
 
@@ -3701,7 +3699,7 @@ bool from_string(T& t,
 BasisExtents::BasisExtents(std::shared_ptr<BasisSet> primary, double delta) :
     primary_(primary), delta_(delta)
 {
-    shell_extents_ = std::shared_ptr<Vector>(new Vector("Shell Extents", primary_->nshell()));
+    shell_extents_ = std::make_shared<Vector>("Shell Extents", primary_->nshell());
     computeExtents();
 }
 BasisExtents::~BasisExtents()
@@ -3826,7 +3824,7 @@ void BasisExtents::computeExtents()
 void BasisExtents::print(std::string out)
 {
    std::shared_ptr<psi::PsiOutStream> printer=(out=="outfile"?outfile:
-            std::shared_ptr<PsiOutStream>(new PsiOutStream(out)));
+            std::make_shared<PsiOutStream>(out));
    printer->Printf( "   => BasisExtents: Cutoff = %11.3E <=\n\n", delta_);
 
     double* Rp = shell_extents_->pointer();
@@ -3932,7 +3930,7 @@ void BlockOPoints::populate()
 void BlockOPoints::print(std::string out, int print)
 {
    std::shared_ptr<psi::PsiOutStream> printer=(out=="outfile"?outfile:
-            std::shared_ptr<PsiOutStream>(new PsiOutStream(out)));
+            std::make_shared<PsiOutStream>(out));
    printer->Printf( "   => BlockOPoints: %d Points <=\n\n", npoints_);
 
     printer->Printf( "    Center = <%11.3E,%11.3E,%11.3E>, R = %11.3E\n\n",
@@ -4035,7 +4033,7 @@ void DFTGrid::buildGridFromOptions(std::map<std::string, int> int_opts_map, std:
     int min_points = full_int_options["DFT_BLOCK_MIN_POINTS"];
     double max_radius = options_.get_double("DFT_BLOCK_MAX_RADIUS");
     double epsilon = options_.get_double("DFT_BASIS_TOLERANCE");
-    std::shared_ptr<BasisExtents> extents(new BasisExtents(primary_, epsilon));
+    auto extents = std::make_shared<BasisExtents>(primary_, epsilon);
     postProcess(extents, max_points, min_points, max_radius);
 }
 
@@ -4075,7 +4073,7 @@ void PseudospectralGrid::buildGridFromOptions()
     int min_points = options_.get_int("PS_BLOCK_MIN_POINTS");
     double max_radius = options_.get_double("PS_BLOCK_MAX_RADIUS");
     double epsilon = options_.get_double("PS_BASIS_TOLERANCE");
-    std::shared_ptr<BasisExtents> extents(new BasisExtents(primary_, epsilon));
+    auto extents = std::make_shared<BasisExtents>(primary_, epsilon);
 
     postProcess(extents, max_points, min_points, max_radius);
 }
@@ -4103,9 +4101,11 @@ void MolecularGrid::block(int max_points, int min_points, double max_radius)
     // Reassign
     std::shared_ptr<GridBlocker> blocker;
     if (options_.get_str("DFT_BLOCK_SCHEME") == "NAIVE") {
-        blocker = std::shared_ptr<GridBlocker>(new NaiveGridBlocker(npoints_,x_,y_,z_,w_,index_,max_points,min_points,max_radius,extents_));
+        blocker = std::shared_ptr<GridBlocker>(
+            new NaiveGridBlocker(npoints_, x_, y_, z_, w_, index_, max_points, min_points, max_radius, extents_));
     } else if (options_.get_str("DFT_BLOCK_SCHEME") == "OCTREE") {
-        blocker = std::shared_ptr<GridBlocker>(new OctreeGridBlocker(npoints_,x_,y_,z_,w_,index_,max_points,min_points,max_radius,extents_));
+        blocker = std::shared_ptr<GridBlocker>(
+            new OctreeGridBlocker(npoints_, x_, y_, z_, w_, index_, max_points, min_points, max_radius, extents_));
     }
 
     blocker->set_print(options_.get_int("PRINT"));
@@ -4188,7 +4188,7 @@ void MolecularGrid::postProcess(std::shared_ptr<BasisExtents> extents, int max_p
 void MolecularGrid::print(std::string out, int /*print*/) const
 {
    std::shared_ptr<psi::PsiOutStream> printer=(out=="outfile"?outfile:
-            std::shared_ptr<PsiOutStream>(new PsiOutStream(out)));
+            std::make_shared<PsiOutStream>(out));
     printer->Printf("   => Molecular Quadrature <=\n\n");
     printer->Printf("    Radial Scheme       = %14s\n" , RadialGridMgr::SchemeName(options_.radscheme));
     printer->Printf("    Pruning Scheme      = %14s\n" , RadialPruneMgr::SchemeName(options_.prunescheme));
@@ -4208,7 +4208,7 @@ void MolecularGrid::print(std::string out, int /*print*/) const
 void MolecularGrid::print_details(std::string out, int /*print*/) const
 {
    std::shared_ptr<psi::PsiOutStream> printer=(out=="outfile"?outfile:
-            std::shared_ptr<PsiOutStream>(new PsiOutStream(out)));
+            std::make_shared<PsiOutStream>(out));
    printer->Printf("   > Grid Details <\n\n");
     for (size_t A = 0; A < radial_grids_.size(); A++) {
         printer->Printf("    Atom: %4d, Nrad = %6d, Alpha = %11.3E:\n", A, radial_grids_[A]->npoints(), radial_grids_[A]->alpha());
@@ -4261,12 +4261,12 @@ void NaiveGridBlocker::block()
     ::memcpy((void*)y_,(void*)y_ref_, sizeof(double)*npoints_);
     ::memcpy((void*)z_,(void*)z_ref_, sizeof(double)*npoints_);
     ::memcpy((void*)w_,(void*)w_ref_, sizeof(double)*npoints_);
-    ::memcpy((void*)index_,(void*)index_ref_, sizeof(double)*npoints_);
+    ::memcpy((void*)index_,(void*)index_ref_, sizeof(int)*npoints_);
 
     blocks_.clear();
     for (int Q = 0; Q < npoints_; Q += max_points_) {
         int n = (Q + max_points_ >= npoints_ ? npoints_ - Q : max_points_);
-        blocks_.push_back(std::shared_ptr<BlockOPoints>(new BlockOPoints(n,&x_[Q],&y_[Q],&z_[Q],&w_[Q], extents_)));
+        blocks_.push_back(std::make_shared<BlockOPoints>(n,&x_[Q],&y_[Q],&z_[Q],&w_[Q], extents_));
     }
 }
 OctreeGridBlocker::OctreeGridBlocker(const int npoints_ref, double const* x_ref, double const* y_ref, double const* z_ref,
@@ -4303,7 +4303,7 @@ void OctreeGridBlocker::block()
     // K-PR Tree blocking
     std::shared_ptr<PsiOutStream> printer;
     if (bench_) {
-       printer=std::shared_ptr<PsiOutStream>(new PsiOutStream("khtree.dat"));
+       printer=std::make_shared<PsiOutStream>("khtree.dat");
        //fh_ktree = fopen("ktree.dat","w");
         //outfile->Printf(fh_ktree,"#  %4s %5s %15s %15s %15s\n", "Dept","ID","X","Y","Z");
     }
@@ -4448,7 +4448,7 @@ void OctreeGridBlocker::block()
     int index = 0;
     int unique_block = 0;
     if (bench_) {
-       printer=std::shared_ptr<PsiOutStream>(new PsiOutStream("finished_blocks.dat",std::ostream::app));
+       printer=std::make_shared<PsiOutStream>("finished_blocks.dat",std::ostream::app);
         //outfile->Printf(fh_blocks, "#  %4s %15s %15s %15s %15s\n", "ID", "X", "Y", "Z", "W");
     }
     for (size_t A = 0; A < completed_tree.size(); A++) {
@@ -4467,12 +4467,13 @@ void OctreeGridBlocker::block()
     }
 
 
+    blocks_.clear();
     index = 0;
     max_points_ = 0;
     for (size_t A = 0; A < completed_tree.size(); A++) {
         std::vector<int> block = completed_tree[A];
         if (!block.size()) continue;
-        blocks_.push_back(std::shared_ptr<BlockOPoints>(new BlockOPoints(block.size(),&x_[index],&y_[index],&z_[index],&w_[index],extents_)));
+        blocks_.push_back(std::make_shared<BlockOPoints>(block.size(),&x_[index],&y_[index],&z_[index],&w_[index],extents_));
         if ((size_t)max_points_ < block.size()) {
             max_points_ = block.size();
         }
@@ -4486,7 +4487,7 @@ void OctreeGridBlocker::block()
     }
 
     if (bench_) {
-       printer=std::shared_ptr<PsiOutStream>(new PsiOutStream("extents.dat",std::ostream::app));
+       printer=std::make_shared<PsiOutStream>("extents.dat",std::ostream::app);
         //FILE* fh_extents = fopen("extents.dat","w");
         //outfile->Printf(fh_extents,"    %4s %15s %15s %15s %15s\n","ID","X","Y","Z","R");
         std::shared_ptr<BasisSet> basis = extents_->basis();
@@ -4503,7 +4504,7 @@ void OctreeGridBlocker::block()
         for (int i = 2; i < 20; i++) {
             std::stringstream ss;
             ss << "extents" << i << ".dat";
-            printer=std::shared_ptr<PsiOutStream>(new PsiOutStream(ss.str(),std::ostream::app));
+            printer=std::make_shared<PsiOutStream>(ss.str(),std::ostream::app);
             //FILE* fh_extents = fopen(ss.str().c_str(),"w");
             //outfile->Printf(fh_extents,"    %4s %15s %15s %15s %15s\n","ID","X","Y","Z","R");
             extents_->set_delta(pow(10.0,-i));
@@ -4533,7 +4534,7 @@ RadialGrid::~RadialGrid()
 void RadialGrid::print(std::string out, int level) const
 {
    std::shared_ptr<psi::PsiOutStream> printer=(out=="outfile"?outfile:
-            std::shared_ptr<PsiOutStream>(new PsiOutStream(out)));
+            std::make_shared<PsiOutStream>(out));
    if (level > 0) {
         printer->Printf( "   => RadialGrid: %s Scheme <=\n\n", scheme_.c_str());
         printer->Printf( "      Points: %d\n", npoints_);
@@ -4641,7 +4642,7 @@ SphericalGrid::~SphericalGrid()
 void SphericalGrid::print(std::string out, int level) const
 {
    std::shared_ptr<psi::PsiOutStream> printer=(out=="outfile"?outfile:
-            std::shared_ptr<PsiOutStream>(new PsiOutStream(out)));if (level > 0) {
+            std::make_shared<PsiOutStream>(out));if (level > 0) {
         printer->Printf( "   => SphericalGrid: %s Scheme <=\n\n", scheme_.c_str());
         printer->Printf( "      Points: %d\n", npoints_);
         printer->Printf( "   %4s %24s %24s %24s %24s\n", "N", "X", "Y", "Z",  "W");

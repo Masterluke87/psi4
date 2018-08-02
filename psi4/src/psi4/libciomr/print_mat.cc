@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -52,7 +52,7 @@ namespace psi {
 void print_mat(double **a, int m, int n, std::string out)
 {
    std::shared_ptr<psi::PsiOutStream> printer=(out=="outfile"?outfile:
-         std::shared_ptr<PsiOutStream>(new PsiOutStream(out)));
+         std::make_shared<PsiOutStream>(out));
 int num_frames = int(n/10);
 int num_frames_rem = n%10; //adding one for changing 0->1 start
 int num_frame_counter = 0;

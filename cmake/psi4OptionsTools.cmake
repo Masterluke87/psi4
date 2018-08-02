@@ -67,14 +67,14 @@ macro(psi4_add_module binlib libname sources)
     foreach(name_i IN LISTS depend_name)
         target_link_libraries(${libname} PRIVATE ${name_i})
     endforeach()
-    target_link_libraries(${libname} PRIVATE pybind11::module)
     target_link_libraries(${libname} PRIVATE tgt::lapack)
+    target_link_libraries(${libname} PRIVATE pybind11::module)
 endmacro()
 
 include(CheckCCompilerFlag)
 include(CheckCXXCompilerFlag)
 if(CMAKE_Fortran_COMPILER)
-    include(CheckFortranCompilerFlag)  # CMake >= 3.3, so local copy in cmake/
+    include(CheckFortranCompilerFlag)
 endif()
 
 #The guts of the next two functions, use the wrappers please
@@ -95,6 +95,7 @@ set(CMAKE_REQUIRED_QUIET_SAVE ${CMAKE_REQUIRED_QUIET})
          break()
       endif()
       unset(test_option CACHE)
+      set(CMAKE_REQUIRED_FLAGS "${flag_i}")
       if(${is_C} EQUAL 0)
           CHECK_C_COMPILER_FLAG("${flag_i}" test_option)
           set(description_to_print CMAKE_C_FLAGS)
@@ -117,6 +118,7 @@ set(CMAKE_REQUIRED_QUIET_SAVE ${CMAKE_REQUIRED_QUIET})
            message(STATUS "${msg_base} Failed")
         endif()
       endif()
+      unset(CMAKE_REQUIRED_FLAGS)
    endforeach()
    set(CMAKE_REQUIRED_QUIET ${CMAKE_REQUIRED_QUIET_SAVE})
 endmacro()
@@ -214,7 +216,7 @@ macro(add_skeleton_plugin PLUG TEMPLATE TESTLABELS)
         DEPENDS psi4-core
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${CCBD}/${PLUG}
         COMMAND ${PSIEXE} --plugin-name ${PLUG} --plugin-template ${TEMPLATE}
-        COMMAND ${CMAKE_COMMAND} -E chdir "${CCBD}/${PLUG}" cmake -C ${STAGED_INSTALL_PREFIX}/share/cmake/psi4/psi4PluginCache.cmake "-DCMAKE_PREFIX_PATH=${DIR_2_PASS}" .
+        COMMAND ${CMAKE_COMMAND} -E chdir "${CCBD}/${PLUG}" ${CMAKE_COMMAND} -C ${STAGED_INSTALL_PREFIX}/share/cmake/psi4/psi4PluginCache.cmake "-DCMAKE_PREFIX_PATH=${DIR_2_PASS}" -G "${CMAKE_GENERATOR}" .
         COMMAND ${CMAKE_COMMAND} -E chdir "${CCBD}/${PLUG}" ${CMAKE_MAKE_PROGRAM}
         COMMAND ${CMAKE_COMMAND} -E create_symlink ${CCBD}/${PLUG}/input.dat ${CCSD}/input.dat
         COMMAND ${CMAKE_COMMAND} -E create_symlink "${PLUG}/${PLUG}.so" "${PLUG}.so"

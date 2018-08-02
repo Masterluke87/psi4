@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -170,8 +170,8 @@ struct dpd_file4_cache_entry {
 /* DPD File2 Cache entries */
 struct dpd_file2_cache_entry {
     dpd_file2_cache_entry():
-        next(NULL),
-        last(NULL)
+        next(nullptr),
+        last(nullptr)
     {
     }
     int dpdnum;                         /* dpd structure reference */
@@ -223,8 +223,8 @@ struct dpd_gbl {
 
     // The default C'tor will zero everything out properly
     dpd_gbl():
-        file2_cache(NULL),
-        file4_cache(NULL),
+        file2_cache(nullptr),
+        file4_cache(nullptr),
         file4_cache_most_recent(0),
         file4_cache_least_recent(1),
         file4_cache_lru_del(0),
@@ -251,7 +251,7 @@ enum indices {pqrs, pqsr, prqs, prsq, psqr, psrq,
 /* Useful for the 3-index sorting function dpd_3d_sort() */
 enum pattern {abc, acb, cab, cba, bca, bac};
 
-class DPD{
+class PSI_API DPD{
 public:
 
     // These used to live in the dpd_data struct
@@ -523,15 +523,15 @@ public:
  * Static variables/functions to mimic the old C machinery
  */
 extern dpd_gbl dpd_main;
-extern DPD* global_dpd_;
-extern int dpd_default;
+extern PSI_API DPD* global_dpd_;
+extern PSI_API int dpd_default;
 extern DPD* dpd_list[2];
-extern int dpd_set_default(int dpd_num);
+extern PSI_API int dpd_set_default(int dpd_num);
 extern int dpd_init(int dpd_num, int nirreps, long int memory, int cachetype,
             int *cachefiles, int **cachelist, dpd_file4_cache_entry *priority,
             int num_subspaces, std::vector<int*> &spaceArrays);
 extern int dpd_close(int dpd_num);
-extern long int dpd_memfree(void);
+extern long int PSI_API dpd_memfree(void);
 extern void dpd_memset(long int memory);
 
 

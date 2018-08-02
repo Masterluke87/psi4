@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -398,8 +398,6 @@ public:
                                std::vector<std::pair<std::shared_ptr<Vector>, std::shared_ptr<Vector> > >& b);
 
 // Working with a pair is annoying, so we define a new function below
-    virtual std::vector<std::pair<SharedMatrix,SharedMatrix > > unpack(
-            const std::pair<std::shared_ptr<Vector>, std::shared_ptr<Vector> >& x){} ;
     virtual std::vector<std::pair<SharedMatrix,SharedMatrix > > unpack_paired(
             const std::shared_ptr<Vector>& x);
 

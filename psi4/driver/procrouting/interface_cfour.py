@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -34,13 +34,13 @@ Organizationally, this module isolates qcdb code from psi4 code.
 """
 from __future__ import print_function
 from __future__ import absolute_import
-import shutil
 import os
-import subprocess
 import re
 import sys
 import uuid
+import shutil
 import inspect
+import subprocess
 
 from psi4.driver import qcdb
 from psi4.driver import p4util
@@ -143,9 +143,11 @@ def run_cfour(name, **kwargs):
     lenv = {
         'PATH': ':'.join([os.path.abspath(x) for x in os.environ.get('PSIPATH', '').split(':') if x != '']) + \
                 ':' + os.environ.get('PATH') + \
-                ':' + os.environ.get("PSIDATADIR") + '/basis',
-        'GENBAS_PATH': os.environ.get("PSIDATADIR") + '/basis',
+                ':' + core.get_datadir() + '/basis',
+        'GENBAS_PATH': core.get_datadir() + '/basis',
         'CFOUR_NUM_CORES': os.environ.get('CFOUR_NUM_CORES'),
+        'MKL_NUM_THREADS':  os.environ.get('MKL_NUM_THREADS'),
+        'OMP_NUM_THREADS':  os.environ.get('OMP_NUM_THREADS'),
         'LD_LIBRARY_PATH': os.environ.get('LD_LIBRARY_PATH')
         }
 
@@ -201,12 +203,12 @@ def run_cfour(name, **kwargs):
     print('output in', current_directory + '/' + core.outfile_name())
     pathfill = '' if os.path.isabs(core.outfile_name()) else current_directory + os.path.sep
 
-    # Handle user's OMP_NUM_THREADS and CFOUR_OMP_NUM_THREADS
-    omp_num_threads_found = 'OMP_NUM_THREADS' in os.environ
-    if omp_num_threads_found == True:
-        omp_num_threads_user = os.environ['OMP_NUM_THREADS']
+    # Handle threading
+    #   OMP_NUM_THREADS from env is in lenv from above
+    #   threads from psi4 -n (core.get_num_threads()) is ignored
+    #   CFOUR_OMP_NUM_THREADS psi4 option takes precedence, handled below
     if core.has_option_changed('CFOUR', 'CFOUR_OMP_NUM_THREADS') == True:
-        os.environ['OMP_NUM_THREADS'] = str(core.get_option('CFOUR', 'CFOUR_OMP_NUM_THREADS'))
+        lenv['OMP_NUM_THREADS'] = str(core.get_option('CFOUR', 'CFOUR_OMP_NUM_THREADS'))
 
     #print("""\n\n<<<<<  RUNNING CFOUR ...  >>>>>\n\n""")
     # Call executable xcfour, directing cfour output to the psi4 output file
@@ -227,11 +229,6 @@ def run_cfour(name, **kwargs):
         core.print_out(data)
         c4out += data
     internal_p4c4_info['output'] = c4out
-
-    # Restore user's OMP_NUM_THREADS
-    if omp_num_threads_found == True:
-        if core.has_option_changed('CFOUR', 'CFOUR_OMP_NUM_THREADS') == True:
-            os.environ['OMP_NUM_THREADS'] = omp_num_threads_user
 
     c4files = {}
     core.print_out('\n')

@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -65,7 +65,7 @@ void get_moinfo(std::shared_ptr<Wavefunction> wfn)
     moinfo.nso = wfn->nso();
     moinfo.nao = wfn->basisset()->nao();
     moinfo.labels = wfn->molecule()->irrep_labels();
-    moinfo.enuc = wfn->molecule()->nuclear_repulsion_energy();
+    moinfo.enuc = wfn->molecule()->nuclear_repulsion_energy(wfn->get_dipole_field_strength());
     if(wfn->reference_wavefunction())
         moinfo.escf = wfn->reference_wavefunction()->reference_energy();
     else

@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -59,7 +59,7 @@ DCFTSolver::mp2_guess_RHF()
     spaces.push_back(MOSpace::all);
 
     // This wavefunction is really the global reference wavefunction
-    _ints = new IntegralTransform(shared_from_this(), spaces, IntegralTransform::Restricted);
+    _ints = new IntegralTransform(shared_from_this(), spaces, IntegralTransform::TransformationType::Restricted);
     _ints->set_keep_iwl_so_ints(true);
     _ints->set_keep_dpd_so_ints(true);
     dpd_set_default(_ints->get_dpd_id());

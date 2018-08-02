@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -34,10 +34,10 @@
     \brief   This class stores all the basic info regarding MOs
 */
 
-#define PSI_NULL(args) args = NULL;
-#define PSI_FREE(args) if(args != NULL) free(args);
-#define PSI_DELETE(args) if(args != NULL) delete args;
-#define PSI_DELETE_ARRAY(args) if(args != NULL) delete[] args;
+#define PSI_nullptr(args) args = nullptr;
+#define PSI_FREE(args) if(args != nullptr) free(args);
+#define PSI_DELETE(args) if(args != nullptr) delete args;
+#define PSI_DELETE_ARRAY(args) if(args != nullptr) delete[] args;
 #define IOFF 5000000
 
 #include <string>

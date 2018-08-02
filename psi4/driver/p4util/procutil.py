@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -32,8 +32,9 @@ import os
 import ast
 import sys
 import pickle
-import collections
 import inspect
+import collections
+
 from .exceptions import *
 from . import p4regex
 
@@ -53,7 +54,7 @@ def kwargs_lower(kwargs):
     # items() inefficient on Py2 but this is small dict
     for key, value in kwargs.items():
         lkey = key.lower()
-        if lkey in ['subset']:  # only kw for which case matters
+        if lkey in ['subset', 'banner']:  # only kw for which case matters
             lvalue = value
         else:
             try:

@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -30,6 +30,7 @@
 #include "ccsd.h"
 
 #include "psi4/psi4-dec.h"
+#include "psi4/times.h"
 #include "psi4/libmints/vector.h"
 #include "psi4/libmints/matrix.h"
 #include "psi4/libmints/wavefunction.h"
@@ -39,8 +40,8 @@
 #include "psi4/libmints/basisset.h"
 #include "psi4/lib3index/3index.h"
 
-#include <sys/times.h>
-#include <unistd.h>
+#include <ctime>
+
 #ifdef _OPENMP
     #include<omp.h>
 #else
@@ -260,7 +261,7 @@ PsiReturnType CoupledPair::CEPAIterations(){
     "   Iter  DIIS          Energy       d(Energy)          |d(T)|     time\n");
 
 
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   psio_address addr;
 
   // zero residual
@@ -284,13 +285,13 @@ PsiReturnType CoupledPair::CEPAIterations(){
   const long clk_tck = sysconf(_SC_CLK_TCK);
   times(&total_tmstime);
 
-  time_t time_start = time(NULL);
+  time_t time_start = time(nullptr);
   double user_start = ((double) total_tmstime.tms_utime)/clk_tck;
   double sys_start  = ((double) total_tmstime.tms_stime)/clk_tck;
 // TODO e_conv
 
   while(iter < maxiter){
-      time_t iter_start = time(NULL);
+      time_t iter_start = time(nullptr);
 
       // evaluate cepa diagrams
       if (iter>0){
@@ -349,7 +350,7 @@ PsiReturnType CoupledPair::CEPAIterations(){
       else if (replace_diis_iter<maxdiis) replace_diis_iter++;
       else replace_diis_iter = 1;
 
-      time_t iter_stop = time(NULL);
+      time_t iter_stop = time(nullptr);
       double dume = ( cepa_level < 1 ) ? evar : eccsd ;
       if ( iter==0 ) dume = eccsd; // use mp2 energy on first iteration
       outfile->Printf("  %5i   %i %i %15.10f %15.10f %15.10f %8d\n",
@@ -362,7 +363,7 @@ PsiReturnType CoupledPair::CEPAIterations(){
       if (std::fabs(dume - Eold) < e_conv && nrm < r_conv) break;
   }
   times(&total_tmstime);
-  time_t time_stop = time(NULL);
+  time_t time_stop = time(nullptr);
   double user_stop = ((double) total_tmstime.tms_utime)/clk_tck;
   double sys_stop  = ((double) total_tmstime.tms_stime)/clk_tck;
   psio.reset();
@@ -461,7 +462,7 @@ void CoupledPair::PairEnergy(){
   long int o = ndoccact;
   long int rs = nmo;
 
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   psio->open(PSIF_DCC_IAJB,PSIO_OPEN_OLD);
   psio->read_entry(PSIF_DCC_IAJB,"E2iajb",(char*)&integrals[0],o*o*v*v*sizeof(double));
   psio->close(PSIF_DCC_IAJB,1);
@@ -494,7 +495,7 @@ void CoupledPair::UpdateT2() {
   long int o = ndoccact;
   long int rs = nmo;
 
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   psio->open(PSIF_DCC_IAJB,PSIO_OPEN_OLD);
   psio->read_entry(PSIF_DCC_IAJB,"E2iajb",(char*)&integrals[0],o*o*v*v*sizeof(double));
   psio->close(PSIF_DCC_IAJB,1);
@@ -607,7 +608,7 @@ void CoupledPair::SCS_CEPA(){
   long int o = ndoccact;
   long int rs = nmo;
 
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   psio->open(PSIF_DCC_IAJB,PSIO_OPEN_OLD);
   psio->read_entry(PSIF_DCC_IAJB,"E2iajb",(char*)&integrals[0],o*o*v*v*sizeof(double));
   psio->close(PSIF_DCC_IAJB,1);
@@ -648,7 +649,7 @@ double CoupledPair::VariationalEnergy(){
     long int rs = nmo;
 
     // (ai|bj)
-    std::shared_ptr<PSIO> psio(new PSIO());
+    auto psio = std::make_shared<PSIO>();
     psio->open(PSIF_DCC_IAJB,PSIO_OPEN_OLD);
     psio->read_entry(PSIF_DCC_IAJB,"E2iajb",(char*)&integrals[0],o*o*v*v*sizeof(double));
     psio->close(PSIF_DCC_IAJB,1);
@@ -723,7 +724,7 @@ double CoupledPair::CheckEnergy(){
   long int o = ndoccact;
   long int rs = nmo;
 
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   psio->open(PSIF_DCC_IAJB,PSIO_OPEN_OLD);
   psio->read_entry(PSIF_DCC_IAJB,"E2iajb",(char*)&integrals[0],o*o*v*v*sizeof(double));
   psio->close(PSIF_DCC_IAJB,1);

@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -57,7 +57,7 @@ void IWL::fetch()
 ** David Sherrill, 26 June 1996
 ** \ingroup IWL
 */
-void iwl_buf_fetch(struct iwlbuf *Buf)
+void PSI_API iwl_buf_fetch(struct iwlbuf *Buf)
 {
   psio_read(Buf->itap, IWL_KEY_BUF, (char *) &(Buf->lastbuf), sizeof(int),
 	    Buf->bufpos, &Buf->bufpos);

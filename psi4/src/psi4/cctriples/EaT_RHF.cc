@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -121,7 +121,7 @@ double EaT_RHF(void)
     global_dpd_->buf4_mat_irrep_init(&Dints, h);
     global_dpd_->buf4_mat_irrep_rd(&Dints, h);
   }
-  std::shared_ptr<PsiOutStream> printer(new PsiOutStream("ijk.dat",std::ostream::trunc));
+  auto printer = std::make_shared<PsiOutStream>("ijk.dat",std::ostream::trunc);
   //ffile(&ijkfile,"ijk.dat", 0);
 
   /* each thread gets its own F buffer to assign memory and read blocks
@@ -207,7 +207,7 @@ double EaT_RHF(void)
 
         for (thread=0;thread<nthreads;++thread) {
           if (!ijk_part[thread]) continue;
-          errcod = pthread_create(&(p_thread[thread]), NULL, EaT_RHF_thread,
+          errcod = pthread_create(&(p_thread[thread]), nullptr, EaT_RHF_thread,
                    (void *) &thread_data_array[thread]);
           if (errcod) {
             throw PsiException("pthread_create in ET_RHF()",__FILE__,__LINE__);
@@ -216,7 +216,7 @@ double EaT_RHF(void)
 
         for (thread=0; thread<nthreads;++thread) {
           if (!ijk_part[thread]) continue;
-          errcod = pthread_join(p_thread[thread], NULL);
+          errcod = pthread_join(p_thread[thread], nullptr);
           if (errcod) {
             throw PsiException("pthread_join in ET_RHF() failed",__FILE__,__LINE__);
           }
@@ -931,7 +931,9 @@ void* EaT_RHF_thread(void* thread_data_in)
     } /* j */
   } /* i */
 
-  pthread_exit(NULL);
+  pthread_exit(nullptr);
+
+  return nullptr;
 }
 
 }} // namespace psi::CCTRIPLES

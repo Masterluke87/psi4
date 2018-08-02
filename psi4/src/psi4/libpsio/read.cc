@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -32,7 +32,6 @@
  */
 
 #include <cstdlib>
-#include <unistd.h>
 #include <cstring>
  #include "psi4/pragma.h"
  PRAGMA_WARNING_PUSH
@@ -58,7 +57,7 @@ void PSIO::read(size_t unit, const char *key, char *buffer, size_t size,
 
   tocentry_size = sizeof(psio_tocentry) - 2*sizeof(psio_tocentry *);
 
-  if (this_entry == NULL) {
+  if (this_entry == nullptr) {
     fprintf(stderr, "PSIO_ERROR: Can't find TOC Entry %s\n", key);
     psio_error(unit, PSIO_ERROR_NOTOCENT);
   } else {

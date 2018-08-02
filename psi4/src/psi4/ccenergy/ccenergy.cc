@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -54,9 +54,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <cmath>
-#include <sys/types.h>
-#include <unistd.h>
-#include <sys/types.h>
 
 namespace psi { namespace ccenergy {
 
@@ -131,7 +128,7 @@ double CCEnergyWavefunction::compute_energy()
         spaces.push_back(moinfo_.bvir_sym);
         delete[] dpd_list[0];
         dpd_list[0] = new DPD(0, moinfo_.nirreps, params_.memory, 0, cachefiles,
-                              cachelist, NULL, 4, spaces);
+                              cachelist, nullptr, 4, spaces);
         dpd_set_default(0);
 
         if( params_.df ){
@@ -146,7 +143,7 @@ double CCEnergyWavefunction::compute_energy()
             aospaces.push_back(moinfo_.bocc_sym);
             aospaces.push_back(moinfo_.sopi);
             aospaces.push_back(moinfo_.sosym);
-            dpd_init(1, moinfo_.nirreps, params_.memory, 0, cachefiles, cachelist, NULL, 4, aospaces);
+            dpd_init(1, moinfo_.nirreps, params_.memory, 0, cachefiles, cachelist, nullptr, 4, aospaces);
             dpd_set_default(0);
         }
 
@@ -171,7 +168,7 @@ double CCEnergyWavefunction::compute_energy()
             aospaces.push_back(moinfo_.occ_sym);
             aospaces.push_back(moinfo_.sopi);
             aospaces.push_back(moinfo_.sosym);
-            dpd_init(1, moinfo_.nirreps, params_.memory, 0, cachefiles, cachelist, NULL, 2, aospaces);
+            dpd_init(1, moinfo_.nirreps, params_.memory, 0, cachefiles, cachelist, nullptr, 2, aospaces);
             dpd_set_default(0);
         }
 
@@ -213,7 +210,7 @@ double CCEnergyWavefunction::compute_energy()
     outfile->Printf( "  ----     ---------------------    ---------   ----------  ----------  ----------   --------\n");
     moinfo_.ecc = energy();
     pair_energies(&emp2_aa, &emp2_ab);
-    double last_energy;
+    double last_energy = 0;
 
     moinfo_.t1diag = diagnostic();
     moinfo_.d1diag = d1diag();

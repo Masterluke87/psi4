@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -29,74 +29,44 @@
 from __future__ import print_function
 from __future__ import absolute_import
 
-from psi4.driver.p4util.exceptions import *
-from psi4.driver import p4util
-from psi4 import core
-
 import numpy as np
 
-def scf_set_reference_local(name):
+from psi4 import core
+from psi4.driver import p4util
+from psi4.driver.p4util.exceptions import *
+from psi4.driver.procrouting.dft_funcs import functionals
+from psi4.driver.procrouting.dft_funcs import build_superfunctional_from_dictionary
+
+def scf_set_reference_local(name, is_dft=False):
     """
     Figures out the correct SCF reference to set locally
     """
 
     optstash = p4util.OptionsState(
-        ['SCF', 'DFT_FUNCTIONAL'],
-        ['SCF', 'SCF_TYPE'],
+        ['SCF_TYPE'],
         ['SCF', 'REFERENCE'])
 
     # Alter default algorithm
-    if not core.has_option_changed('SCF', 'SCF_TYPE'):
-        core.set_local_option('SCF', 'SCF_TYPE', 'DF')
+    if not core.has_global_option_changed('SCF_TYPE'):
+        core.set_global_option('SCF_TYPE', 'DF')
 
-    if name == 'hf':
-        if core.get_option('SCF','REFERENCE') == 'RKS':
-            core.set_local_option('SCF','REFERENCE','RHF')
-        elif core.get_option('SCF','REFERENCE') == 'UKS':
-            core.set_local_option('SCF','REFERENCE','UHF')
-    elif name == 'scf':
-        if core.get_option('SCF','REFERENCE') == 'RKS':
-            if (len(core.get_option('SCF', 'DFT_FUNCTIONAL')) > 0) or core.get_option('SCF', 'DFT_CUSTOM_FUNCTIONAL') is not None:
-                pass
-            else:
-                core.set_local_option('SCF','REFERENCE','RHF')
-        elif core.get_option('SCF','REFERENCE') == 'UKS':
-            if (len(core.get_option('SCF', 'DFT_FUNCTIONAL')) > 0) or core.get_option('SCF', 'DFT_CUSTOM_FUNCTIONAL') is not None:
-                pass
-            else:
-                core.set_local_option('SCF','REFERENCE','UHF')
-    return optstash
-
-def dft_set_reference_local(name):
-    """
-    Figures out the correct DFT reference to set locally
-    """
-
-    optstash = p4util.OptionsState(
-        ['SCF', 'DFT_FUNCTIONAL'],
-        ['SCF', 'REFERENCE'],
-        ['SCF', 'SCF_TYPE'],
-        ['DF_BASIS_MP2'],
-        ['DFMP2', 'MP2_OS_SCALE'],
-        ['DFMP2', 'MP2_SS_SCALE'])
-
-    # Alter default algorithm
-    if not core.has_option_changed('SCF', 'SCF_TYPE'):
-        core.set_local_option('SCF', 'SCF_TYPE', 'DF')
-
-    core.set_local_option('SCF', 'DFT_FUNCTIONAL', name)
-
+    # Alter reference name if needed
     user_ref = core.get_option('SCF', 'REFERENCE')
-    if (user_ref == 'RHF'):
-        core.set_local_option('SCF', 'REFERENCE', 'RKS')
-    elif (user_ref == 'UHF'):
-        core.set_local_option('SCF', 'REFERENCE', 'UKS')
-    elif (user_ref == 'ROHF'):
-        raise ValidationError('ROHF reference for DFT is not available.')
-    elif (user_ref == 'CUHF'):
-        raise ValidationError('CUHF reference for DFT is not available.')
+
+    sup = build_superfunctional_from_dictionary(functionals[name], 1, 1, True)[0]
+    if sup.needs_xc() or is_dft:
+        if (user_ref == 'RHF'):
+            core.set_local_option('SCF', 'REFERENCE', 'RKS')
+        elif (user_ref == 'UHF'):
+            core.set_local_option('SCF', 'REFERENCE', 'UKS')
+        elif (user_ref == 'ROHF'):
+            raise ValidationError('ROHF reference for DFT is not available.')
+        elif (user_ref == 'CUHF'):
+            raise ValidationError('CUHF reference for DFT is not available.')
+    # else we are doing HF and nothing needs to be overloaded
 
     return optstash
+
 
 def oeprop_validator(prop_list):
     """
@@ -130,7 +100,7 @@ def check_iwl_file_from_scf_type(scf_type, wfn):
     """
 
 
-    if scf_type in ['DF', 'CD', 'PK', 'DIRECT']:
+    if scf_type in ['DF', 'DISK_DF', 'MEM_DF', 'CD', 'PK', 'DIRECT']:
         mints = core.MintsHelper(wfn.basisset())
         if core.get_global_option("RELATIVISTIC") in ["X2C", "DKH"]:
             rel_bas = core.BasisSet.build(wfn.molecule(), "BASIS_RELATIVISTIC",
@@ -146,13 +116,28 @@ def check_non_symmetric_jk_density(name):
     """
     Ensure non-symmetric density matrices are supported for the selected JK routine.
     """
-    scf_type = core.get_option('SCF', 'SCF_TYPE')
-    supp_jk_type = ['DF', 'CD', 'PK', 'DIRECT', 'OUT_OF_CORE']
+    scf_type = core.get_global_option('SCF_TYPE')
+    supp_jk_type = ['DF', 'DISK_DF', 'MEM_DF', 'CD', 'PK', 'DIRECT', 'OUT_OF_CORE']
     supp_string = ', '.join(supp_jk_type[:-1]) + ', or ' + supp_jk_type[-1] + '.'
 
     if scf_type not in supp_jk_type:
         raise ValidationError("Method %s: Requires support for non-symmetric density matrices.\n"
                               "     Please set SCF_TYPE to %s" % (name, supp_string))
+
+def check_disk_df(name, optstash):
+
+    optstash.add_option(['SCF_TYPE'])
+
+    # Alter default algorithm
+    if not core.has_global_option_changed('SCF_TYPE'):
+        core.set_global_option('SCF_TYPE', 'DISK_DF')
+        core.print_out("""    Method '%s' requires SCF_TYPE = DISK_DF, setting.\n""" % name)
+    elif core.get_global_option('SCF_TYPE') == "DF":
+        core.set_global_option('SCF_TYPE', 'DISK_DF')
+        core.print_out("""    Method '%s' requires SCF_TYPE = DISK_DF, setting.\n""" % name)
+    else:
+        if core.get_global_option('SCF_TYPE') != "DISK_DF":
+            raise ValidationError("  %s requires SCF_TYPE = DISK_DF, please use SCF_TYPE = DF to automatically choose the correct DFJK implementation." % name)
 
 def print_ci_results(ciwfn, rname, scf_e, ci_e, print_opdm_no=False):
     """

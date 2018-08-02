@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -54,7 +54,7 @@ SharedWavefunction adc(SharedWavefunction ref_wfn, Options &options)
     // this code is completely rewrtten in order to be better suited for Libtrans library, more flexible than transqt2.
     //
 
-    std::shared_ptr<ADCWfn> adcwfn(new ADCWfn(ref_wfn, options));
+    auto adcwfn = std::make_shared<ADCWfn>(ref_wfn, options);
     adcwfn->compute_energy();
 
     tstop();

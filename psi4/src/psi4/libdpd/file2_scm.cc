@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -48,7 +48,7 @@ int DPD::file2_scm(dpdfile2 *InFile, double alpha)
     file2_mat_init(InFile);
 
     /* Look first for the TOC entry on disk */
-    if(psio_tocscan(InFile->filenum, InFile->label) == NULL)
+    if(psio_tocscan(InFile->filenum, InFile->label) == nullptr)
         new_file2 = 1;
     else new_file2 = 0;
 

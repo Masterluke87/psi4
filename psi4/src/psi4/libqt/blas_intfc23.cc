@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -36,6 +36,8 @@
 */
 
 #include <stdexcept>
+
+#include "psi4/pragma.h"
 #include "psi4/libqt/blas_intfc23_mangle.h"
 #include "psi4/libqt/qt.h"
 
@@ -316,7 +318,7 @@ void C_DGBMV(char trans, int m, int n, int kl, int ku, double alpha, double* a, 
 *
 *     .. External Functions ..
 **/
-void C_DGEMM(char transa, char transb, int m, int n, int k, double alpha, double* a, int lda, double* b, int ldb, double beta, double* c, int ldc)
+PSI_API void C_DGEMM(char transa, char transb, int m, int n, int k, double alpha, double* a, int lda, double* b, int ldb, double beta, double* c, int ldc)
 {
     if(m == 0 || n == 0 || k == 0) return;
     ::F_DGEMM(&transb, &transa, &n, &m, &k, &alpha, b, &ldb, a, &lda, &beta, c, &ldc);
@@ -416,7 +418,7 @@ void C_DGEMM(char transa, char transb, int m, int n, int k, double alpha, double
 *
 *     .. Parameters ..
 **/
-void C_DGEMV(char trans, int m, int n, double alpha, double* a, int lda, double* x, int incx, double beta, double* y, int incy)
+PSI_API void C_DGEMV(char trans, int m, int n, double alpha, double* a, int lda, double* x, int incx, double beta, double* y, int incy)
 {
     if(m == 0 || n == 0) return;
     if (trans == 'N' || trans == 'n') trans = 'T';
@@ -498,7 +500,7 @@ void C_DGEMV(char trans, int m, int n, double alpha, double* a, int lda, double*
 *
 *     .. Parameters ..
 **/
-void C_DGER(int m, int n, double alpha, double* x, int incx, double* y, int incy, double* a, int lda)
+PSI_API void C_DGER(int m, int n, double alpha, double* x, int incx, double* y, int incy, double* a, int lda)
 {
     if(m == 0 || n == 0) return;
     ::F_DGER(&n, &m, &alpha, y, &incy, x, &incx, a, &lda);

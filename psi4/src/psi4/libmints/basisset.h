@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -63,7 +63,7 @@ class IntegralFactory;
     from the checkpoint file storing the information in an internal Molecule class
     which can be accessed using molecule().
 */
-class BasisSet
+class PSI_API BasisSet
 {
 protected:
     friend class BasisSetParser;
@@ -295,7 +295,7 @@ public:
     /// Set the number of electrons associated with the given atom label, for an ECP basis set.
     void set_n_ecp_core(const std::string &label, int n) { ncore_[std::string(label)] = n; }
 
-    /// Number of frozen core for molecule given freezing state, accounting for any ECP present
+    /// Number of frozen core for molecule given freezing state, less any ECP present
     int n_frozen_core(const std::string& depth = "", SharedMolecule mol=nullptr);
 
     /** @{

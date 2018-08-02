@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -1099,7 +1099,7 @@ el2mass = dict(zip(_temp_symbol, _temp_mass))
 el2mass["GH"] = 0.  # note that ghost atoms in Cfour have mass 100.
 eliso2mass = dict(zip(_temp_iso_symbol, _temp_iso_mass))  # encompasses el2mass
 eliso2mass["GH"] = 0.  # note that ghost atoms in Cfour have mass 100.  # encompasses el2mass
-#eliso2mass["X0"] = 0.  # probably needed, just checking
+eliso2mass["X0"] = 0.  # probably needed, just checking
 el2z = dict(zip(_temp_symbol, _temp_z))
 el2z["GH"] = 0
 z2mass = dict(zip(_temp_z, _temp_mass))

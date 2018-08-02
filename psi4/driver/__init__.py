@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -27,10 +27,12 @@
 #
 
 import pickle
+
 from . import dependency_check
 from psi4.driver.molutil import *
 from psi4.driver.inputparser import process_input
 from psi4.driver.p4util.util import *
+from psi4.driver.p4util.fcidump import *
 from psi4.driver.p4util.text import *
 from psi4.driver.qmmm import QMMM
 from psi4.driver.plugin import *
@@ -41,6 +43,7 @@ from psi4.driver import diatomic
 from psi4.driver import wrapper_database
 from psi4.driver import wrapper_autofrag
 from psi4.driver import json_wrapper
+from psi4.driver import frac
 
 from psi4.driver.driver import *
 

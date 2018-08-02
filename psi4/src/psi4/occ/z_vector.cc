@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -172,7 +172,7 @@ if (reference_ == "RESTRICTED") {
     if (print_ > 2) zvectorA->print();
 
     // Build Zmatrix
-    ZmatA = std::shared_ptr<Matrix>(new Matrix("Alpha Z-Matrix", nirrep_, nmopi_, nmopi_));
+    ZmatA = std::make_shared<Matrix>("Alpha Z-Matrix", nirrep_, nmopi_, nmopi_);
     for(int x = 0; x < nidpA; x++) {
 	int a = idprowA[x];
 	int i = idpcolA[x];
@@ -485,8 +485,8 @@ else if (reference_ == "UNRESTRICTED") {
     }
 
     // Build Zmatrix
-    ZmatA = std::shared_ptr<Matrix>(new Matrix("Alpha Z-Matrix", nirrep_, nmopi_, nmopi_));
-    ZmatB = std::shared_ptr<Matrix>(new Matrix("Beta Z-Matrix", nirrep_, nmopi_, nmopi_));
+    ZmatA = std::make_shared<Matrix>("Alpha Z-Matrix", nirrep_, nmopi_, nmopi_);
+    ZmatB = std::make_shared<Matrix>("Beta Z-Matrix", nirrep_, nmopi_, nmopi_);
     for(int x = 0; x < nidpA; x++) {
 	int a = idprowA[x];
 	int i = idpcolA[x];

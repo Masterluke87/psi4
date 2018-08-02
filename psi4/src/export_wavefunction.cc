@@ -1,9 +1,9 @@
-/*
+ /*
  * @BEGIN LICENSE
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -74,6 +74,8 @@ void export_wavefunction(py::module& m) {
              "Copies the pointers to the internal data.")
         .def("deep_copy", take_sharedwfn(&Wavefunction::deep_copy),
              "Deep copies the internal data.")
+        .def("c1_deep_copy", &Wavefunction::c1_deep_copy,
+             "Returns a new wavefunction with internal data converted to C_1 symmetry, using pre-c1-constructed BasisSet *basis", py::arg("basis"))
         .def("same_a_b_orbs", &Wavefunction::same_a_b_orbs,
              "Returns true if the alpha and beta orbitals are the same.")
         .def("same_a_b_dens", &Wavefunction::same_a_b_dens,
@@ -123,10 +125,16 @@ void export_wavefunction(py::module& m) {
         .def("frequencies", &Wavefunction::frequencies, "Returns the frequencies of the Hessian.")
         .def("set_frequencies", &Wavefunction::set_frequencies,
              "Sets the frequencies of the Hessian.")
+        .def("esp_at_nuclei", &Wavefunction::get_esp_at_nuclei,
+             "returns electrostatic potentials at nuclei")
+        .def("mo_extents", &Wavefunction::get_mo_extents,
+             "returns the wavefunction's electronic orbital extents.")
         .def("atomic_point_charges", &Wavefunction::get_atomic_point_charges,
              "Returns the set atomic point charges.")
-        .def("normalmodes", &Wavefunction::normalmodes,
-             "Returns the normal modes of the Wavefunction.")
+        .def("get_dipole_field_strength", &Wavefunction::get_dipole_field_strength,
+             "Returns a vector of length 3, containing the x,y, and z dipole field strengths.")
+        .def("no_occupations", &Wavefunction::get_no_occupations,
+             "returns the natural orbital occupations on the wavefunction.")
         .def("set_name", &Wavefunction::set_name,
              "Sets the level of theory this wavefunction corresponds to.")
         .def("name", &Wavefunction::name, py::return_value_policy::copy,
@@ -136,8 +144,10 @@ void export_wavefunction(py::module& m) {
         .def("molecule", &Wavefunction::molecule, "Returns the Wavefunctions molecule.")
         .def("doccpi", &Wavefunction::doccpi, py::return_value_policy::copy,
              "Returns the number of doubly occupied orbitals per irrep.")
+        .def("force_doccpi", &Wavefunction::force_doccpi, "Specialized expert use only. Sets the number of doubly occupied oribtals per irrep. Note that this results in inconsistent Wavefunction objects for SCF, so caution is advised.")
         .def("soccpi", &Wavefunction::soccpi, py::return_value_policy::copy,
              "Returns the number of singly occupied orbitals per irrep.")
+        .def("force_soccpi", &Wavefunction::force_soccpi, "Specialized expert use only. Sets the number of singly occupied oribtals per irrep. Note that this results in inconsistent Wavefunction objects for SCF, so caution is advised.")
         .def("nsopi", &Wavefunction::nsopi, py::return_value_policy::copy,
              "Returns the number of symmetry orbitals per irrep.")
         .def("nmopi", &Wavefunction::nmopi, py::return_value_policy::copy,
@@ -194,6 +204,7 @@ void export_wavefunction(py::module& m) {
         .def("Va", &scf::HF::Va, "Returns the Alpha Kohn-Shame Potential Matrix.")
         .def("Vb", &scf::HF::Vb, "Returns the Alpha Kohn-Shame Potential Matrix.")
         .def("jk", &scf::HF::jk, "Returns the internal JK object.")
+        .def("set_jk", &scf::HF::set_jk, "Sets the internal JK object !expert.")
         .def("functional", &scf::HF::functional, "Returns the internal DFT Superfunctional.")
         .def("V_potential", &scf::HF::V_potential, "Returns the internal DFT V object.")
         .def("initialize", &scf::HF::initialize, "Initializes the Wavefunction.")
@@ -206,19 +217,27 @@ void export_wavefunction(py::module& m) {
              "Semicanonicalizes the orbitals for ROHF.");
 
     py::class_<scf::RHF, std::shared_ptr<scf::RHF>, scf::HF>(m, "RHF", "docstring")
-        .def(py::init<std::shared_ptr<Wavefunction>, std::shared_ptr<SuperFunctional>>());
+        .def(py::init<std::shared_ptr<Wavefunction>, std::shared_ptr<SuperFunctional>>())
+        .def("c1_deep_copy", &scf::RHF::c1_deep_copy,
+             "Returns a new wavefunction with internal data converted to C_1 symmetry, using pre-c1-constructed BasisSet *basis*", py::arg("basis"));
 
     py::class_<scf::ROHF, std::shared_ptr<scf::ROHF>, scf::HF>(m, "ROHF", "docstring")
         .def(py::init<std::shared_ptr<Wavefunction>, std::shared_ptr<SuperFunctional>>())
         .def("moFeff", &scf::ROHF::moFeff, "docstring")
         .def("moFa", &scf::ROHF::moFa, "docstring")
-        .def("moFb", &scf::ROHF::moFb, "docstring");
+        .def("moFb", &scf::ROHF::moFb, "docstring")
+        .def("c1_deep_copy", &scf::ROHF::c1_deep_copy,
+             "Returns a new wavefunction with internal data converted to C_1 symmetry, using pre-c1-constructed BasisSet *basis*", py::arg("basis"));
 
     py::class_<scf::UHF, std::shared_ptr<scf::UHF>, scf::HF>(m, "UHF", "docstring")
-        .def(py::init<std::shared_ptr<Wavefunction>, std::shared_ptr<SuperFunctional>>());
+        .def(py::init<std::shared_ptr<Wavefunction>, std::shared_ptr<SuperFunctional>>())
+        .def("c1_deep_copy", &scf::UHF::c1_deep_copy,
+             "Returns a new wavefunction with internal data converted to C_1 symmetry, using pre-c1-constructed BasisSet *basis*", py::arg("basis"));
 
     py::class_<scf::CUHF, std::shared_ptr<scf::CUHF>, scf::HF>(m, "CUHF", "docstring")
-        .def(py::init<std::shared_ptr<Wavefunction>, std::shared_ptr<SuperFunctional>>());
+        .def(py::init<std::shared_ptr<Wavefunction>, std::shared_ptr<SuperFunctional>>())
+        .def("c1_deep_copy", &scf::CUHF::c1_deep_copy,
+             "Returns a new wavefunction with internal data converted to C_1 symmetry, using pre-c1-constructed BasisSet *basis*", py::arg("basis"));
 
     py::class_<dfep2::DFEP2Wavefunction, std::shared_ptr<dfep2::DFEP2Wavefunction>, Wavefunction>(
         m, "DFEP2Wavefunction", "A density-fitted second-order Electron Propagator Wavefunction.")

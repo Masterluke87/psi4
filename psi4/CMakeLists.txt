@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
-project(psi4-core LANGUAGES C CXX VERSION 1.1)
+project(psi4-core
+        LANGUAGES C CXX)
 # no Fortran in psi4-core proper, but language needs to be declared
 #   for CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES to be populated so
 #   static Fortran add-ons can be linked
@@ -21,6 +22,7 @@ set(CMAKECONFIG_INSTALL_DIR "share/cmake/psi4")
 # <<<  Marshal Dependencies & Add-ons  >>>
 
 set(_addons)
+set(TargetOpenMP_FIND_COMPONENTS "CXX")
 find_package(TargetLAPACK CONFIG REQUIRED)
 get_property(_ill TARGET tgt::lapk PROPERTY INTERFACE_LINK_LIBRARIES)
 list(GET _ill 0 _ill0)
@@ -44,7 +46,7 @@ endif()
 
 #  <<  Pybind11 & Python  >>
 set(PYBIND11_CPP_STANDARD "-std=c++${CMAKE_CXX_STANDARD}")
-find_package(pybind11 2.0.0 CONFIG REQUIRED)
+find_package(pybind11 2.2.3 EXACT CONFIG REQUIRED)
 message(STATUS "${Cyan}Using pybind11${ColourReset}: ${pybind11_INCLUDE_DIR} (version ${pybind11_VERSION} for Py${PYTHON_VERSION_STRING} and ${PYBIND11_CPP_STANDARD})")
 message(STATUS "${Cyan}Using Python ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}${ColourReset}: ${PYTHON_EXECUTABLE}")
 
@@ -82,7 +84,7 @@ else()
 endif()
 
 if(${ENABLE_libefp})
-    find_package(libefp 1.4.2 CONFIG REQUIRED COMPONENTS shallow)
+    find_package(libefp 1.5.0 CONFIG REQUIRED COMPONENTS shallow)
     get_property(_loc TARGET libefp::efp PROPERTY LOCATION)
     list(APPEND _addons ${_loc})
     message(STATUS "${Cyan}Using libefp${ColourReset}: ${_loc} (version ${libefp_VERSION})")
@@ -99,6 +101,11 @@ else()
     message(STATUS "Disabled erd")
 endif()
 
+find_package(gau2grid 1.1 CONFIG REQUIRED COMPONENTS gaussian)
+get_property(_loc TARGET gau2grid::gg PROPERTY LOCATION)
+list(APPEND _addons ${_loc})
+message(STATUS "${Cyan}Using gau2grid${ColourReset}: ${_loc} (version ${gau2grid_VERSION})")
+
 if(${ENABLE_gdma})
     find_package(gdma 2.2.6 CONFIG REQUIRED)
     get_property(_loc TARGET gdma::gdma PROPERTY LOCATION)
@@ -114,7 +121,7 @@ list(APPEND _addons ${_loc})
 message(STATUS "${Cyan}Using Libint ${Libint_MAX_AM_ERI}${ColourReset}: ${_loc} (version ${Libint_VERSION})")
 
 if(${ENABLE_PCMSolver})
-    find_package(PCMSolver 1.1.10 CONFIG REQUIRED)
+    find_package(PCMSolver 1.2.1 CONFIG REQUIRED)
     get_property(_loc TARGET PCMSolver::pcm PROPERTY LOCATION)
     list(APPEND _addons ${_loc})
     message(STATUS "${Cyan}Using PCMSolver${ColourReset}: ${_loc} (version ${PCMSolver_VERSION})")
@@ -131,7 +138,7 @@ else()
     message(STATUS "Disabled simint")
 endif()
 
-find_package(Libxc CONFIG REQUIRED)
+find_package(Libxc 4.0.2 CONFIG REQUIRED)
 get_property(_loc TARGET Libxc::xc PROPERTY LOCATION)
 list(APPEND _addons ${_loc})
 message(STATUS "${Cyan}Using Libxc${ColourReset}: ${_loc} (version ${Libxc_VERSION})")
@@ -150,14 +157,19 @@ include_directories(src)
 add_subdirectory(src)
 
 # <<<  Version  >>>
+# * computes version from metadata.py and git info
+# * calls cmake to run write_basic_package_version_file
 
 add_custom_target(update_version ALL
                   COMMAND ${PYTHON_EXECUTABLE} versioner.py --metaout ${CMAKE_CURRENT_BINARY_DIR}/metadata.py
+                                                            --cmakeout ${CMAKE_CURRENT_BINARY_DIR}/metadata.cmake
+                  COMMAND cmake -DWTO="${CMAKE_CURRENT_BINARY_DIR}/${CMAKECONFIG_INSTALL_DIR}"
+                                -DPN="psi4"
+                                -P ${CMAKE_CURRENT_BINARY_DIR}/metadata.cmake
                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                   COMMENT "Generating version info")
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/metadata.py
         DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}${PYMOD_INSTALL_LIBDIR}/psi4)
-    # TODO absorb some version info into CM variables, write to package, adj psi4ConfigVersion to sort dev
 
 # <<<  Install  >>>
 
@@ -190,8 +202,8 @@ install(FILES ${CMAKE_BINARY_DIR}/__init__.py
         DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}${PYMOD_INSTALL_LIBDIR}/psi4)
 
 install(FILES ../tests/pytest/conftest.py
+              ../tests/pytest/addons.py
               ../tests/pytest/test_psi4.py
-              ../tests/pytest/test_aaa_profiling.py
               ../tests/pytest/test_addons.py
         DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}${PYMOD_INSTALL_LIBDIR}/psi4/tests/)
 
@@ -227,42 +239,12 @@ endif()
 
 # <<<  Export Config  >>>
 
-if((DEFINED ENV{CONDA_BUILD}) AND ((UNIX AND NOT APPLE) OR
-                                   ((APPLE) AND (CMAKE_CXX_COMPILER_ID MATCHES GNU))))
-    # installed-alongside GCC compilers compatible with the Intel compilers used in
-    #   https://github.com/psi4/psi4meta/blob/master/conda-recipes/psi4-core/build.sh
-    set(cache_CMAKE_C_COMPILER       "/opt/anaconda1anaconda2anaconda3/bin/gcc")
-    set(cache_CMAKE_C_FLAGS          " -march=native -fopenmp")
-    set(cache_CMAKE_CXX_COMPILER     "/opt/anaconda1anaconda2anaconda3/bin/g++")
-    set(cache_CMAKE_CXX_FLAGS        " -march=native -fopenmp")
-    set(cache_CMAKE_Fortran_COMPILER "/opt/anaconda1anaconda2anaconda3/bin/gfortran")
-    set(cache_pybind11_DIR           "/opt/anaconda1anaconda2anaconda3/share/cmake/pybind11")
-elseif((DEFINED ENV{CONDA_BUILD}) AND (APPLE) AND (CMAKE_CXX_COMPILER_ID MATCHES AppleClang))
-    # for stdlib compatibility, must be consistent with Darwin section of
-    #   https://github.com/psi4/psi4meta/blob/master/conda-recipes/psi4-core/build.sh
-    set(cache_CMAKE_C_COMPILER       "/usr/bin/clang")
-    set(cache_CMAKE_CXX_COMPILER     "/usr/bin/clang++")
-    set(cache_CMAKE_CXX_FLAGS        " -stdlib=libc++")
-    set(cache_CMAKE_Fortran_COMPILER "/opt/anaconda1anaconda2anaconda3/bin/gfortran")
-    set(cache_pybind11_DIR           "/opt/anaconda1anaconda2anaconda3/share/cmake/pybind11")
-else()
-    # normal plugin use. this initializes the plugin compilation from the
-    #   same-computer parent Psi4 compilation
-    set(cache_CMAKE_C_COMPILER       "${CMAKE_C_COMPILER}")
-    set(cache_CMAKE_C_FLAGS          "${CMAKE_C_FLAGS}")
-    set(cache_CMAKE_CXX_COMPILER     "${CMAKE_CXX_COMPILER}")
-    set(cache_CMAKE_CXX_FLAGS        "${CMAKE_CXX_FLAGS}")
-    set(cache_CMAKE_Fortran_COMPILER "${CMAKE_Fortran_COMPILER}")
-    set(cache_CMAKE_Fortran_FLAGS    "${CMAKE_Fortran_FLAGS}")
-    set(cache_pybind11_DIR           "${pybind11_DIR}")
-endif()
-
 configure_file(psi4PluginCache.cmake.in psi4PluginCache.cmake @ONLY)
+
 install(FILES ${CMAKE_BINARY_DIR}/psi4PluginCache.cmake
               ${PSI4_ROOT}/cmake/psi4OptionsTools.cmake
               ${PSI4_ROOT}/cmake/custom_static_library.cmake
               ${PSI4_ROOT}/cmake/custom_cxxstandard.cmake
-              ${PSI4_ROOT}/cmake/autocmake_omp.cmake
         DESTINATION ${CMAKECONFIG_INSTALL_DIR})
 
     # <<<  Export Config for Plugins  >>>
@@ -274,10 +256,6 @@ configure_package_config_file(
         psi4Config.cmake.in
         ${CMAKE_CURRENT_BINARY_DIR}/share/cmake/psi4/psi4Config.cmake
         INSTALL_DESTINATION ${CMAKECONFIG_INSTALL_DIR})
-write_basic_package_version_file(
-        ${CMAKE_CURRENT_BINARY_DIR}/share/cmake/psi4/psi4ConfigVersion.cmake
-        VERSION ${psi4_VERSION}
-        COMPATIBILITY SameMajorVersion)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/share/cmake/psi4/psi4Config.cmake
               ${CMAKE_CURRENT_BINARY_DIR}/share/cmake/psi4/psi4ConfigVersion.cmake
         DESTINATION ${CMAKECONFIG_INSTALL_DIR})

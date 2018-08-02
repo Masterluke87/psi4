@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -55,7 +55,7 @@ ADCWfn::compute_energy()
     double *omega, omega_o, omega_diff, theta;
     dpdfile2 B, V;
 
-    omega_guess_ = SharedVector(new Vector(nirrep_, rpi_));
+    omega_guess_ = std::make_shared<Vector>(nirrep_, rpi_);
 
     if(options_.get_str("REFERENCE") == "RHF"){
         corr_energy = rhf_init_tensors();

@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -29,10 +29,12 @@
 #ifndef _psi_src_lib_libpsi4util_libpsi4util_h_
 #define _psi_src_lib_libpsi4util_libpsi4util_h_
 
+#include "psi4/pragma.h"
+
+#include <algorithm>
+#include <chrono>
 #include <string>
 #include <vector>
-#include <algorithm>
-#include <sys/time.h>
 
 namespace psi {
 
@@ -94,17 +96,12 @@ std::vector<std::string> split(const std::string &input, const std::string &rege
  */
 size_t edit_distance(const std::string &s1, const std::string &s2);
 
-class Timer {
-   public:
+class PSI_API Timer {
+  public:
     Timer();
     double get();
-
-   private:
-    struct timeval ___start, ___end;
-    struct timezone ___dummy;
-    double delta_time_seconds;
-    double delta_time_hours;
-    double delta_time_days;
+  private:
+    std::chrono::high_resolution_clock::time_point start;
 };
 
 void generate_combinations(int n, int k, std::vector<std::vector<int>> &combinations);

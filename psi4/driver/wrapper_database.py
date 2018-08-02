@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -33,13 +33,12 @@ functions: :py:mod:`driver.energy`, :py:mod:`driver.optimize`,
 """
 from __future__ import print_function
 from __future__ import absolute_import
-import re
 import os
+import re
 import math
-import warnings
 import pickle
-import copy
 import collections
+
 from psi4.driver import constants
 from psi4.driver.driver import *
 # never import aliases into this file
@@ -230,7 +229,7 @@ def database(name, db_name, **kwargs):
     kwargs.pop('molecule', None)
 
     # Paths to search for database files: here + PSIPATH + library + PYTHONPATH
-    psidatadir = os.environ.get('PSIDATADIR', None)
+    psidatadir = core.get_datadir()
     #nolongerpredictable psidatadir = __file__ + '/../..' if psidatadir is None else psidatadir
     libraryPath = ':' + os.path.abspath(psidatadir) + '/databases'
     driver_loc = os.path.dirname(os.path.abspath(__file__))
@@ -534,7 +533,7 @@ def database(name, db_name, **kwargs):
         if db_mode == 'continuous':
             exec(banners)
 
-            molecule = core.Molecule.create_molecule_from_string(GEOS[rgt].create_psi4_string_from_molecule())
+            molecule = core.Molecule.from_dict(GEOS[rgt].to_dict())
             molecule.set_name(rgt)
             molecule.update_geometry()
 

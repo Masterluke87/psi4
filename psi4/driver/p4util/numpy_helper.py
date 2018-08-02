@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -27,6 +27,7 @@
 #
 
 import sys
+
 import numpy as np
 
 from psi4 import core
@@ -80,7 +81,7 @@ def array_to_matrix(self, arr, name="New Matrix", dim1=None, dim2=None):
         given in the matrix besides the diagonal blocks determined by the passed
         dimension.
     dim2 :
-        Same as dim1 only if using a Psi4.Dimension object.
+        Same as dim1 only if using a psi4.core.Dimension object.
 
     Returns
     -------
@@ -212,20 +213,20 @@ def array_to_matrix(self, arr, name="New Matrix", dim1=None, dim2=None):
 def _to_array(matrix, copy=True, dense=False):
     """
     Converts a Psi4 Matrix or Vector to a numpy array. Either copies the data or simply
-    consturcts a view.
+    constructs a view.
 
     Parameters
     ----------
     matrix : :py:class:`~psi4.core.Matrix` or :py:class:`~psi4.core.Vector`
         Pointers to which Psi4 core class should be used in the construction.
-    copy : bool
-        Copy the data if True, return a view otherwise
-    dense : bool
-        Converts irreped Psi4 objects to diagonally blocked dense arrays. Returns a list of arrays otherwise.
+    copy : bool, optional
+        Copy the data if `True`, return a view otherwise
+    dense : bool, optional
+        Converts irreped Psi4 objects to diagonally blocked dense arrays if `True`. Returns a list of arrays otherwise.
 
     Returns
     -------
-    array : np.array or list of of np.array
+    array : ndarray or list of ndarray
        Returns either a list of np.array's or the base array depending on options.
 
     Notes
@@ -482,7 +483,7 @@ def _chain_dot(*args, **kwargs):
     return ret
 
 
-# Matirx attributes
+# Matrix attributes
 core.Matrix.from_array = classmethod(array_to_matrix)
 core.Matrix.from_list = classmethod(lambda self, x: array_to_matrix(self, np.array(x)))
 core.Matrix.to_array = _to_array

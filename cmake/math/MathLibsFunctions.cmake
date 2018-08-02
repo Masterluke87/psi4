@@ -58,7 +58,7 @@ macro(find_math_libs _service)
     set(NARGN ${ARGN})
     foreach(l ${NARGN})
         set(_stat "")
-        if(ENABLE_GENERIC)
+        if(ENABLE_GENERIC_MATH)
             IF((NOT "${l}" STREQUAL "iomp5") AND (NOT "${l}" STREQUAL "pthread") AND
                (NOT "${l}" STREQUAL "dl") AND (NOT "${l}" STREQUAL "m"))
                 set(_stat "lib${l}.a")
@@ -79,7 +79,7 @@ macro(find_math_libs _service)
             set(_libs ${_libs} ${_lib})
         elseif((${l} STREQUAL "-Wl,--start-group") OR
                (${l} STREQUAL "-Wl,--end-group") OR
-               (${l} STREQUAL "-fno-openmp"))
+               (${l} STREQUAL "-Wl,--as-needed"))
             set(_libs ${_libs} ${l})
         else()
             set(${_SERVICE}_LIBRARIES ${_SERVICE}_LIBRARIES-NOTFOUND)

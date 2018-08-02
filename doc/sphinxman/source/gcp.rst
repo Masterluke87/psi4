@@ -3,7 +3,7 @@
 .. #
 .. # Psi4: an open-source quantum chemistry software package
 .. #
-.. # Copyright (c) 2007-2017 The Psi4 Developers.
+.. # Copyright (c) 2007-2018 The Psi4 Developers.
 .. #
 .. # The copyrights for code used from other parties are included in
 .. # the corresponding files.
@@ -40,14 +40,14 @@ Interface to gCP by S. Grimme
 *Module:* :ref:`Samples <apdx:testSuitegcp>`
 
 .. image:: https://img.shields.io/badge/home-gCP-5077AB.svg
-   :target: http://www.thch.uni-bonn.de/tc/downloads/gcp/index.html
+   :target: https://www.chemie.uni-bonn.de/pctc/mulliken-center/software/gcp
 
 .. raw:: html
 
    <br>
 
 .. image:: https://img.shields.io/badge/docs-latest-5077AB.svg
-   :target: http://www.thch.uni-bonn.de/tc/downloads/gcp/data/manGCP.pdf
+   :target: https://www.chemie.uni-bonn.de/pctc/mulliken-center/software/gcp/manGCP.pdf
 
 Installation
 ~~~~~~~~~~~~
@@ -59,18 +59,22 @@ Installation
 
 * gCP is available as a conda package for Linux and macOS (and Windows, through the Ubuntu shell).
 
-* If using the |PSIfour| binary, gCP has already been installed alongside.
+* If using the Psi4conda installer, gCP has already been installed alongside.
+
+* If using the |PSIfour| conda package, the gcp conda package can
+  be obtained through ``conda install gcp -c psi4`` or ``conda install
+  psi4-rt -c psi4``.
 
 * If using |PSIfour| built from source, and anaconda or miniconda has
   already been installed (instructions at :ref:`sec:quickconda`),
-  the gcp executable can be obtained through ``conda install gcp``.
+  the gcp executable can be obtained through ``conda install gcp -c psi4``.
 
 * To remove a conda installation, ``conda remove gcp``.
 
 **Source**
 
 * .. image:: https://img.shields.io/badge/home-gCP-5077AB.svg
-     :target: http://www.thch.uni-bonn.de/tc/downloads/gcp/getgCP.html
+     :target: https://www.chemie.uni-bonn.de/pctc/mulliken-center/software/gcp/getgcp
 
 * If using |PSIfour| built from source and you want to build gCP from
   from source also, follow the instructions provided with the source

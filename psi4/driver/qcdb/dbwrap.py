@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -37,11 +37,8 @@ try:
 except ImportError:
     import pickle
 import itertools
-# from collections import defaultdict
-try:
-    from collections import OrderedDict
-except ImportError:
-    from oldpymodules import OrderedDict
+from collections import OrderedDict
+
 from .exceptions import *
 from .molecule import Molecule
 from .modelchems import Method, BasisSet, Error, methods, bases, errors, pubs

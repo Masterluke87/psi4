@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -30,6 +30,7 @@
 #define SUPERFUNCTIONAL_H
 
 #include "psi4/libmints/typedefs.h"
+#include "psi4/pragma.h"
 #include <map>
 #include <vector>
 #include <cstdlib>
@@ -173,6 +174,7 @@ public:
     // => Setters <= //
 
     void set_lock(bool locked) { locked_ = locked; }
+    void set_do_vv10( bool do_vv10) { needs_vv10_ = do_vv10;}
     void set_name(const std::string & name) { name_ = name; }
     void set_description(const std::string & description) { description_ = description; }
     void set_citation(const std::string & citation) { citation_ = citation; }
@@ -219,14 +221,15 @@ public:
     bool needs_xc() const { return ((c_functionals_.size() + x_functionals_.size()) > 0); }
     bool needs_vv10() const {return needs_vv10_; };
     bool needs_grac() const {return needs_grac_; };
-    bool is_unpolarized() const;
-    bool is_meta() const;
-    bool is_gga() const;
+    bool PSI_API is_unpolarized() const;
+    bool PSI_API is_meta() const;
+    bool PSI_API is_gga() const;
     bool is_x_lrc() const { return x_omega_ != 0.0; }
     bool is_c_lrc() const { return c_omega_ != 0.0; }
     bool is_x_hybrid() const { return x_alpha_ != 0.0; }
     bool is_c_hybrid() const { return c_alpha_ != 0.0; }
     bool is_c_scs_hybrid() const { return c_os_alpha_ != 0.0 || c_ss_alpha_ != 0.0; }
+    bool is_libxc_func() const { return libxc_xc_func_; }
 
     // => Utility <= //
 

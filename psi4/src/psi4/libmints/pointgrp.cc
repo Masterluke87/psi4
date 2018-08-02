@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -192,7 +192,7 @@ PointGroup::PointGroup(const PointGroup &pg)
     *this = pg;
 }
 
-PointGroup::PointGroup(const std::shared_ptr <PointGroup> &pg)
+PointGroup::PointGroup(const std::shared_ptr<PointGroup> &pg)
 {
     *this = *pg.get();
 }
@@ -227,7 +227,7 @@ PointGroup::char_table() const
 }
 
 int
-PointGroup::equiv(const std::shared_ptr <PointGroup> &grp, double /*tol*/) const
+PointGroup::equiv(const std::shared_ptr<PointGroup> &grp, double /*tol*/) const
 {
     if (symb != grp->symb)
         return 0;
@@ -365,11 +365,24 @@ const char *PointGroup::bits_to_basic_name(unsigned char bits)
 void
 PointGroup::print(std::string out) const
 {
-    std::shared_ptr <psi::PsiOutStream> printer = (out == "outfile" ? outfile :
-                                                   std::shared_ptr<PsiOutStream>(new PsiOutStream(out)));
+    std::shared_ptr<psi::PsiOutStream> printer = (out == "outfile" ? outfile :
+                                                   std::make_shared<PsiOutStream>(out));
     printer->Printf("PointGroup: %s\n", symb.c_str());
 }
 
+std::string PointGroup::irrep_bits_to_string(int irrep_bits) const {
+    std::string irrep_str;
+    const CharacterTable c_table = char_table();
+    for (int irrep = 0; irrep < c_table.nirrep(); ++irrep) {
+        if ((1 << irrep) & irrep_bits) {
+            if (!irrep_str.empty()) {
+                irrep_str += ", ";
+            }
+            irrep_str += c_table.gamma(irrep).symbol();
+        }
+    }
+    return irrep_str;
+}
 }
 
 /////////////////////////////////////////////////////////////////////////////

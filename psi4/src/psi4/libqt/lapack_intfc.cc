@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -15658,7 +15658,7 @@ int C_DSYEV(char jobz, char uplo, int n, double* a, int lda, double* w, double* 
 *
 *     .. Parameters ..
 **/
-int C_DSYEVD(char jobz, char uplo, int n, double* a, int lda, double* w, double* work, int lwork, int* iwork, int liwork)
+int PSI_API C_DSYEVD(char jobz, char uplo, int n, double* a, int lda, double* w, double* work, int lwork, int* iwork, int liwork)
 {
     int info;
     ::F_DSYEVD(&jobz, &uplo, &n, a, &lda, w, work, &lwork, iwork, &liwork, &info);

@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -72,7 +72,7 @@ class OptionsException : public PsiException {
     OptionsException(const std::string& message) : PSIEXCEPTION("Options Exception: " + message) {}
 };
 
-class Data;
+class PSI_API Data;
 class DataType {
     bool changed_;
 
@@ -244,7 +244,7 @@ class IStringDataType : public DataType {
     virtual void assign(std::string s);
 };
 
-class Data {
+class PSI_API Data {
     std::shared_ptr<DataType> ptr_;
 
    public:
@@ -296,7 +296,7 @@ class Data {
 #ifdef __INTEL_COMPILER
 #pragma warning disable 654
 #endif
-class ArrayType : public DataType {
+class PSI_API ArrayType : public DataType {
     std::vector<Data> array_;
 
    public:
@@ -352,7 +352,7 @@ class MapType : public DataType {
     virtual std::string to_string() const;
 };
 
-class Options {
+class PSI_API Options {
     bool edit_globals_;
 
     /// A temporary map used for validation of local options

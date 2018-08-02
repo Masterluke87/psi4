@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -26,10 +26,12 @@
  * @END LICENSE
  */
 
+#include <ctime>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include <algorithm>
+#include <functional>
 #include <vector>
 #include <utility>
 #include <tuple>
@@ -392,6 +394,7 @@ double UHF::compute_E()
     Etotal += 0.5 * coulomb_E;
     Etotal += 0.5 * exchange_E;
     Etotal += XC_E;
+    Etotal += VV10_E;
     Etotal += dashD_E;
 
     return Etotal;
@@ -502,10 +505,10 @@ std::vector<SharedMatrix> UHF::twoel_Hx(std::vector<SharedMatrix> x_vec, bool co
         // Gotta reorder the wizardry
         for (size_t i = 0; i < nvecs; i++) {
             Dx.push_back(Matrix::doublet(Cl[i], Cr[i], false, true));
-            Vx.push_back(SharedMatrix(new Matrix("Vax Temp", Dx[i]->rowspi(), Dx[i]->colspi())));
+            Vx.push_back(std::make_shared<Matrix>("Vax Temp", Dx[i]->rowspi(), Dx[i]->colspi()));
 
             Dx.push_back(Matrix::doublet(Cl[nvecs + i], Cr[nvecs + i], false, true));
-            Vx.push_back(SharedMatrix(new Matrix("Vbx Temp", Dx[nvecs + i]->rowspi(), Dx[nvecs +i]->colspi())));
+            Vx.push_back(std::make_shared<Matrix>("Vbx Temp", Dx[nvecs + i]->rowspi(), Dx[nvecs +i]->colspi()));
         }
         potential_->compute_Vx(Dx, Vx);
     }
@@ -597,7 +600,7 @@ std::vector<SharedMatrix> UHF::cphf_solve(std::vector<SharedMatrix> x_vec, doubl
     }
 
     time_t start, stop;
-    start = time(NULL);
+    start = time(nullptr);
     cphf_converged_ = false;
     cphf_nfock_builds_ = 0;
 
@@ -611,8 +614,8 @@ std::vector<SharedMatrix> UHF::cphf_solve(std::vector<SharedMatrix> x_vec, doubl
     SharedMatrix IFock_a = Matrix::triplet(Ca_, Fa_, Ca_, true, false, false);
     SharedMatrix IFock_b = Matrix::triplet(Cb_, Fb_, Cb_, true, false, false);
 
-    SharedMatrix Precon_a = SharedMatrix(new Matrix("Alpha Precon", nirrep_, nalphapi_, virpi_a));
-    SharedMatrix Precon_b = SharedMatrix(new Matrix("Beta Precon", nirrep_, nbetapi_, virpi_b));
+    auto Precon_a = std::make_shared<Matrix>("Alpha Precon", nirrep_, nalphapi_, virpi_a);
+    auto Precon_b = std::make_shared<Matrix>("Beta Precon", nirrep_, nbetapi_, virpi_b);
 
     for (size_t h = 0; h < nirrep_; h++) {
         if (virpi_a[h] && nalphapi_[h]){
@@ -713,7 +716,7 @@ std::vector<SharedMatrix> UHF::cphf_solve(std::vector<SharedMatrix> x_vec, doubl
     mean_rms /= (double)nvecs;
     cphf_nfock_builds_ += nremain;
 
-    stop = time(NULL);
+    stop = time(nullptr);
     if (print_lvl > 1) {
         outfile->Printf("    %5s %14.3e %12.3e %7d %9ld\n", "Guess", mean_rms, max_rms, nremain,
                         stop - start);
@@ -788,7 +791,7 @@ std::vector<SharedMatrix> UHF::cphf_solve(std::vector<SharedMatrix> x_vec, doubl
         nremain = new_remain;
         mean_rms /= (double)nvecs;
 
-        stop = time(NULL);
+        stop = time(nullptr);
         if (print_lvl) {
             outfile->Printf("    %5d %14.3e %12.3e %7d %9ld\n", cg_iter, mean_rms, max_rms, nremain,
                             stop - start);
@@ -841,7 +844,7 @@ std::vector<SharedMatrix> UHF::cphf_solve(std::vector<SharedMatrix> x_vec, doubl
 int UHF::soscf_update(void)
 {
     time_t start, stop;
-    start = time(NULL);
+    start = time(nullptr);
 
     // => Build gradient and preconditioner <= //
 
@@ -879,7 +882,7 @@ void UHF::compute_orbital_gradient(bool save_fock)
 
     if(save_fock){
         if (initialized_diis_manager_ == false) {
-            diis_manager_ = std::shared_ptr<DIISManager>(new DIISManager(max_diis_vectors_, "HF DIIS vector", DIISManager::LargestError, DIISManager::OnDisk));
+            diis_manager_ = std::make_shared<DIISManager>(max_diis_vectors_, "HF DIIS vector", DIISManager::LargestError, DIISManager::OnDisk);
             diis_manager_->set_error_vector_size(2,
                                                  DIISEntry::Matrix, gradient_a.get(),
                                                  DIISEntry::Matrix, gradient_b.get());
@@ -900,7 +903,10 @@ bool UHF::diis()
 
 bool UHF::stability_analysis()
 {
-    std::shared_ptr<UStab> stab = std::shared_ptr<UStab>(new UStab(shared_from_this(), options_));
+    if (functional_->needs_xc()) {
+        throw PSIEXCEPTION("Stability analysis not yet supported for XC functionals.");
+    }
+    auto stab = std::make_shared<UStab>(shared_from_this(), options_);
     stab->compute_energy();
     SharedMatrix eval_sym = stab->analyze();
     outfile->Printf( "    Lowest UHF->UHF stability eigenvalues: \n");
@@ -1068,5 +1074,33 @@ void UHF::compute_nos()
         outfile->Printf("]\n");
     }
 }
+
+
+std::shared_ptr<UHF> UHF::c1_deep_copy(std::shared_ptr<BasisSet> basis)
+{
+    std::shared_ptr<Wavefunction> wfn = Wavefunction::c1_deep_copy(basis);
+    auto hf_wfn = std::make_shared<UHF>(wfn, functional_, wfn->options(), wfn->psio());
+
+    // now just have to copy the matrices that UHF initializes
+    // include only those that are not temporary (some deleted in finalize())
+    if (Ca_) hf_wfn->Ca_ = Ca_subset("AO", "ALL");
+    if (Cb_) hf_wfn->Cb_ = Cb_subset("AO", "ALL");
+    if (Da_) hf_wfn->Da_ = Da_subset("AO");
+    if (Db_) hf_wfn->Db_ = Db_subset("AO");
+    if (Fa_) hf_wfn->Fa_ = Fa_subset("AO");
+    if (Fb_) hf_wfn->Fb_ = Fb_subset("AO");
+    if (epsilon_a_) hf_wfn->epsilon_a_ =
+        epsilon_subset_helper(epsilon_a_, nsopi_, "AO", "ALL");
+    if (epsilon_b_) hf_wfn->epsilon_b_ =
+        epsilon_subset_helper(epsilon_b_, nsopi_, "AO", "ALL");
+    // H_ ans X_ reset in the HF constructor, copy them over here
+    SharedMatrix SO2AO = aotoso()->transpose();
+    if (H_) hf_wfn->H_->remove_symmetry(H_, SO2AO);
+    if (X_) hf_wfn->X_->remove_symmetry(X_, SO2AO);
+
+
+    return hf_wfn;
+}
+
 
 }}

@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -28,18 +28,13 @@
 
 from __future__ import absolute_import
 
-# Gn theory.
-
-import re
-import os
-import math
-import warnings
 from psi4 import core
 from psi4.driver import driver
 from psi4.driver import p4util
 from psi4.driver import constants
-#from driver import *
 # never import aliases into this file
+
+# Gn theory.
 
 def run_gaussian_2(name, **kwargs):
 
@@ -53,10 +48,10 @@ def run_gaussian_2(name, **kwargs):
         ['FNOCC','COMPUTE_MP4_TRIPLES'],
         ['FREEZE_CORE'],
         ['MP2_TYPE'],
-        ['SCF','SCF_TYPE'])
+        ['SCF_TYPE'])
 
     # override default scf_type
-    core.set_local_option('SCF','SCF_TYPE','PK')
+    core.set_global_option('SCF_TYPE','PK')
 
     # optimize geometry at scf level
     core.clean()

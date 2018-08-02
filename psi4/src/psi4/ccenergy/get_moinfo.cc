@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -70,7 +70,7 @@ void CCEnergyWavefunction::get_moinfo(void)
     moinfo_.nso = nso_;
     moinfo_.nao = basisset_->nao();
     moinfo_.labels = molecule_->irrep_labels();
-    moinfo_.enuc = molecule_->nuclear_repulsion_energy();
+    moinfo_.enuc = molecule_->nuclear_repulsion_energy(dipole_field_strength_);
     moinfo_.conv = 0.0;
     if(reference_wavefunction_)
         moinfo_.escf = reference_wavefunction_->reference_energy();
@@ -321,7 +321,7 @@ void CCEnergyWavefunction::get_moinfo(void)
 void CCEnergyWavefunction::cleanup(void)
 {
     int i, h;
-    char *keyw=NULL;
+    char *keyw=nullptr;
 
     if( params_.wfn == "CC2" || params_.wfn == "EOM_CC2" )
         psio_write_entry(PSIF_CC_INFO, "CC2 Energy", (char *) &(moinfo_.ecc),

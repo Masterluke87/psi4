@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -28,6 +28,8 @@
 
 #ifndef _psi_src_lib_libpsio_config_h_
 #define _psi_src_lib_libpsio_config_h_
+
+#include "psi4/pragma.h"
 
 namespace psi {
 
@@ -86,7 +88,7 @@ typedef struct {
 } psio_ud;
 
 /** A convenient address initialization struct */
-extern psio_address PSIO_ZERO;
+extern PSI_API psio_address PSIO_ZERO;
 
 }
 

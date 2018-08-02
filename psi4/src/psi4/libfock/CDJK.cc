@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -54,7 +54,7 @@ namespace psi {
 
 
 CDJK::CDJK(std::shared_ptr<BasisSet> primary, double cholesky_tolerance):
-    DFJK(primary,primary), cholesky_tolerance_(cholesky_tolerance)
+    DiskDFJK(primary,primary), cholesky_tolerance_(cholesky_tolerance)
 {
 }
 CDJK::~CDJK()
@@ -68,7 +68,7 @@ void CDJK::initialize_JK_disk()
 void CDJK::initialize_JK_core()
 {
     timer_on("CD: cholesky decomposition");
-    std::shared_ptr<IntegralFactory> integral (new IntegralFactory(primary_,primary_,primary_,primary_));
+    auto integral = std::make_shared<IntegralFactory>(primary_,primary_,primary_,primary_);
     int ntri = sieve_->function_pairs().size();
     /// If user asks to read integrals from disk, just read them from disk.
     /// Qmn is only storing upper triangle.
@@ -77,7 +77,7 @@ void CDJK::initialize_JK_core()
     {
         psio_->open(unit_,PSIO_OPEN_OLD);
         psio_->read_entry(unit_, "length", (char*)&ncholesky_, sizeof(long int));
-        Qmn_ = SharedMatrix(new Matrix("Qmn (CD Integrals)", ncholesky_ , ntri));
+        Qmn_ = std::make_shared<Matrix>("Qmn (CD Integrals)", ncholesky_ , ntri);
         double** Qmnp = Qmn_->pointer();
         psio_->read_entry(unit_, "(Q|mn) Integrals", (char*) Qmnp[0], sizeof(double) * ntri * ncholesky_);
         psio_->close(unit_,1);
@@ -87,7 +87,7 @@ void CDJK::initialize_JK_core()
     }
 
     ///If user does not want to read from disk, recompute the cholesky integrals
-    std::shared_ptr<CholeskyERI> Ch (new CholeskyERI(std::shared_ptr<TwoBodyAOInt>(integral->eri()),0.0,cholesky_tolerance_,memory_));
+    auto Ch = std::make_shared<CholeskyERI>(std::shared_ptr<TwoBodyAOInt>(integral->eri()),0.0,cholesky_tolerance_,memory_);
     Ch->choleskify();
     ncholesky_  = Ch->Q();
     size_t three_memory = ncholesky_ * ntri;
@@ -102,7 +102,7 @@ void CDJK::initialize_JK_core()
     double ** Lp = L->pointer();
     timer_off("CD: cholesky decomposition");
 
-    Qmn_ = SharedMatrix(new Matrix("Qmn (CD Integrals)", ncholesky_ , ntri));
+    Qmn_ = std::make_shared<Matrix>("Qmn (CD Integrals)", ncholesky_ , ntri);
 
     double** Qmnp = Qmn_->pointer();
 

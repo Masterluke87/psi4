@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -35,6 +35,10 @@ from __future__ import absolute_import
 from . import sapt
 from . import proc
 from . import interface_cfour
+
+from psi4.driver.procrouting.dft_funcs import functionals
+from psi4.driver.procrouting.dft_funcs import build_superfunctional_from_dictionary
+
 # never import wrappers or aliases into this file
 
 # Procedure lookup tables
@@ -65,6 +69,7 @@ procedures = {
             'dfocc'         : proc.run_dfocc,  # full control over dfocc
             'qchf'          : proc.run_qchf,
             'ccd'           : proc.run_dfocc,
+            'sf-sapt'       : sapt.run_sf_sapt,
             'sapt(dft)'     : sapt.run_sapt_dft,
             'sapt0'         : proc.run_sapt,
             'ssapt0'        : proc.run_sapt,
@@ -205,16 +210,22 @@ energy_only_methods = [x for x in procedures['energy'].keys() if 'sapt' in x]
 energy_only_methods += ['adc', 'efp', 'cphf', 'tdhf', 'cis']
 
 # Integrate DFT with driver routines
-for ssuper in proc.dft_funcs.superfunctional_list:
-      procedures['energy'][ssuper.name().lower()] = proc.run_dft
+for key in functionals:
+      ssuper = build_superfunctional_from_dictionary(functionals[key], 1, 1, True)[0]
+
+      procedures['energy'][key] = proc.run_scf
 
       # Properties
       if not ssuper.is_c_hybrid():
-            procedures['properties'][ssuper.name().lower()] = proc.run_scf_property
+            procedures['properties'][key] = proc.run_scf_property
 
       # Gradients
-      if ((not ssuper.is_c_hybrid()) and (not ssuper.is_c_lrc()) and (not ssuper.is_x_lrc())):
-            procedures['gradient'][ssuper.name().lower()] = proc.run_dft_gradient
+      if ((not ssuper.is_c_hybrid()) and (not ssuper.is_c_lrc())):
+            procedures['gradient'][key] = proc.run_scf_gradient
+
+      # Hessians
+      if not ssuper.needs_xc():
+            procedures['hessian'][key] = proc.run_scf_hessian
 
 # Integrate CFOUR with driver routines
 for ssuper in interface_cfour.cfour_list():

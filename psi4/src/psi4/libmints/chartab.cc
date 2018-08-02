@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -89,13 +89,13 @@ using namespace psi;
 ////////////////////////////////////////////////////////////////////////
 
 CharacterTable::CharacterTable()
-    : nt(0), pg(PointGroups::C1), nirrep_(0), gamma_(0), symop(0), _inv(0), symb(0),
+    : nt(0), pg(PointGroups::C1), nirrep_(0), gamma_(0), symop(0), _inv(0), symb(),
       bits_(0)
 {
 }
 
 CharacterTable::CharacterTable(const CharacterTable& ct)
-    : nt(0), pg(PointGroups::C1), nirrep_(0), gamma_(0), symop(0), _inv(0), symb(0),
+    : nt(0), pg(PointGroups::C1), nirrep_(0), gamma_(0), symop(0), _inv(0), symb(),
       bits_(0)
 {
     *this = ct;
@@ -152,7 +152,7 @@ void CharacterTable::print(std::string out) const
 {
     if (!nirrep_) return;
     std::shared_ptr<psi::PsiOutStream> printer=(out=="outfile"?outfile:
-          std::shared_ptr<PsiOutStream>(new PsiOutStream(out)));
+          std::make_shared<PsiOutStream>(out));
     int i;
 
     printer->Printf( "  point group %s\n\n", symb.c_str());

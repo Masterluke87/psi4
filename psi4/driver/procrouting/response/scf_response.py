@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -26,10 +26,10 @@
 # @END LICENSE
 #
 
+import numpy as np
+
 from psi4 import core
 from psi4.driver.p4util.exceptions import *
-
-import numpy as np
 
 dipole = {
     'name': 'Dipole polarizabilities',

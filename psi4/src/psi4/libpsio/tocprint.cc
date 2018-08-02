@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -63,7 +63,7 @@ void PSIO::tocprint(size_t unit) {
   outfile->Printf(
           "----------------------------------------------------------------------------\n");
 
-  while (this_entry != NULL) {
+  while (this_entry != nullptr) {
     outfile->Printf("%-32s %10lu %10lu %10lu %10lu\n", this_entry->key,
             this_entry->sadd.page, this_entry->sadd.offset,
             this_entry->eadd.page, this_entry->eadd.offset);

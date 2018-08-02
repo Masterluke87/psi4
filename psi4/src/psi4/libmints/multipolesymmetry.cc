@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -298,7 +298,7 @@ std::vector<SharedMatrix > MultipoleSymmetry::create_matrices(const std::string 
 
                 name = basename + name;
                 if(ignore_symmetry){
-                    SharedMatrix mat(new Matrix(name, matrix_->norb(), matrix_->norb()));
+                    auto mat = std::make_shared<Matrix>(name, matrix_->norb(), matrix_->norb());
                     matrices.push_back(mat);
                 }else{
                     int sym = component_symmetry_[component];

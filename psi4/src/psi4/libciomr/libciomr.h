@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -39,6 +39,9 @@
 
 #include <cstdio>
 #include <string>
+
+#include "psi4/pragma.h"
+
 namespace psi {
 
 int psi_start(FILE** infile, FILE** outfile, char** psi_file_prefix, int argc, char *argv[], int overwrite_output);
@@ -92,9 +95,9 @@ void zero_arr(double *a, int size) ;
 void zero_mat(double **a, int rows, int cols) ;
 
 /* Functions in int_array.c */
-int * init_int_array(int size) ;
+PSI_API int * init_int_array(int size) ;
 void zero_int_array(int *a, int size);
-int **init_int_matrix(int rows, int cols);
+PSI_API int ** init_int_matrix(int rows, int cols);
 void free_int_matrix(int **array);
 void zero_int_matrix(int **array, int rows, int cols);
 void print_int_mat(int **a, int m, int n, std::string out);
@@ -108,7 +111,7 @@ void zero_long_int_matrix(long int **array, int rows, int cols);
 void print_long_int_mat(long int **a, int m, int n, std::string out);
 
 /* Functions in block_matrix.c */
-double ** block_matrix(size_t n, size_t m, bool mlock = false);
+PSI_API double ** block_matrix(size_t n, size_t m, bool mlock = false);
 void free_block(double **array);
 
 /* Functions in fndcor */

@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -166,7 +166,7 @@ void sigmaCC3_RHF_obsolete(int i, int C_irr, double omega)
 
          /* <D| H'   <T| (Uhat T2)c   |0> |T> / (-wt) -> sigma_2 */
 
-  global_dpd_->cc3_sigma_RHF(&tIjAb, &WAbEi, &WMbIj, 0, NULL, NULL,
+  global_dpd_->cc3_sigma_RHF(&tIjAb, &WAbEi, &WMbIj, 0, nullptr, nullptr,
      1, &FME, &WmAEf, &WMnIe, &SIjAb, moinfo.occpi, moinfo.occ_off,
      moinfo.virtpi, moinfo.vir_off, 0.0, "outfile", params.newtrips);
 

@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -52,7 +52,7 @@ PSIO::~PSIO() {
   size_t total_read=0, total_write=0;
   FILE *io_out;
   time_t my_time;
-  my_time = time(NULL);
+  my_time = time(nullptr);
   io_out = fopen("io.dat", "a+");
   fprintf(io_out, "\nLIBPSIO Read/Write Statistics\n\n");
   fprintf(io_out, "Run at: %s\n", ctime(&my_time));

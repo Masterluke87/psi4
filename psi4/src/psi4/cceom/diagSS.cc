@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -57,7 +57,7 @@ void restart_SS(double **alpha, int L, int num, int C_irr);
 void dgeev_eom(int L, double **G, double *evals, double **alpha);
 double norm_C1(dpdfile2 *C1A, dpdfile2 *C1B);
 double norm_C1_rhf(dpdfile2 *C1A);
-double scm_C1(dpdfile2 *C1A, dpdfile2 *C1B, double a);
+void scm_C1(dpdfile2 *C1A, dpdfile2 *C1B, double a);
 
 void diagSS(int C_irr) {
   dpdfile2 Fmi, FMI, Fae, FAE, Fme, FME;

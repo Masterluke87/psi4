@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -26,7 +26,13 @@
  * @END LICENSE
  */
 
+#ifdef _MSC_VER
+#include <io.h>
+#define SYSTEM_UNLINK ::_unlink
+#else
 #include <unistd.h>
+#define SYSTEM_UNLINK ::unlink
+#endif
 #include <cstdio>
 #include <cstdlib>
 #include <string>
@@ -42,17 +48,11 @@ namespace psi{
 PSIOManager::PSIOManager()
 {
     pid_ = psio_getpid();
-
-    // set the default to /tmp unless one of the
-    // TMP environment variables is set
-    if(std::getenv("TMPDIR"))
-        set_default_path(std::getenv("TMPDIR"));
-    else if(std::getenv("TEMP"))
-        set_default_path(std::getenv("TEMP"));
-    else if(std::getenv("TMP"))
-        set_default_path(std::getenv("TMP"));
-    else
-        set_default_path("/tmp");
+#ifdef _MSC_VER
+    set_default_path("C:\\");
+#else
+    set_default_path("/tmp");
+#endif
 }
 
 PSIOManager::~PSIOManager()
@@ -138,7 +138,7 @@ void PSIOManager::move_file(const std::string& old_full_path, const std::string&
 void PSIOManager::print(std::string out)
 {
    std::shared_ptr<psi::PsiOutStream> printer=(out=="outfile"?outfile:
-            std::shared_ptr<PsiOutStream>(new PsiOutStream(out)));
+            std::make_shared<PsiOutStream>(out));
     printer->Printf("                    --------------------------------\n");
     printer->Printf("                    ==> Psi4 Current File Status <==\n");
     printer->Printf( "                    --------------------------------\n");
@@ -187,7 +187,7 @@ void PSIOManager::mirror_to_disk()
 
 //      FILE* fh = fopen("psi.clean","w");
     FILE* fh = fopen(("psi." + pid_ + ".clean").c_str(), "w");
-      if (fh == NULL) throw PSIEXCEPTION("PSIOManager cannot get a mirror file handle\n");
+      if (fh == nullptr) throw PSIEXCEPTION("PSIOManager cannot get a mirror file handle\n");
 
       for (std::map<std::string, bool>::iterator it = files_.begin(); it != files_.end(); it++) {
           if (retained_files_.count((*it).first) == 0) {
@@ -203,14 +203,14 @@ void PSIOManager::build_from_disk()
 
 
       FILE* fh = fopen("psi.clean","r");
-      if (fh == NULL) throw PSIEXCEPTION("PSIOManager cannot get a mirror file handle. Is there a psi.clean file there?\n");
+      if (fh == nullptr) throw PSIEXCEPTION("PSIOManager cannot get a mirror file handle. Is there a psi.clean file there?\n");
 
       files_.clear();
       retained_files_.clear();
 
       char* in = new char[1000];
 
-      while (fgets(in, 1000, fh) != NULL) {
+      while (fgets(in, 1000, fh) != nullptr) {
           std::string str(in);
           str.resize(str.size()-1); // crush the newline
           files_[str] = false;
@@ -241,7 +241,7 @@ void PSIOManager::psiclean()
         if (retained_files_.count((*it).first) == 0) {
             //Safe to delete
 
-                unlink((*it).first.c_str());
+                SYSTEM_UNLINK((*it).first.c_str());
         } else {
             temp[(*it).first] = (*it).second;
         }
@@ -250,7 +250,7 @@ void PSIOManager::psiclean()
     files_ = temp;
 
 //        unlink("psi.clean");
-    unlink(("psi." + pid_ + ".clean").c_str());
+    SYSTEM_UNLINK(("psi." + pid_ + ".clean").c_str());
 }
 
 }

@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -30,6 +30,7 @@
 #define libfock_points_H
 
 #include "psi4/libmints/typedefs.h"
+#include "psi4/pragma.h"
 
 #include <cstdio>
 #include <map>
@@ -44,7 +45,7 @@ class Vector;
 class BlockOPoints;
 
 
-class BasisFunctions {
+class PSI_API BasisFunctions {
 
 protected:
     /// Basis set for this BasisFunctions

@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -34,6 +34,7 @@
 #include "psi4/libpsi4util/process.h"
 #include "psi4/liboptions/liboptions.h"
 
+#include <ctime>
 #ifdef _OPENMP
    #include<omp.h>
 #endif
@@ -142,7 +143,7 @@ PsiReturnType CoupledCluster::triples(){
       Z2[i]     = (double*)malloc(vvv*sizeof(double));
   }
 
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
 
   psio->open(PSIF_DCC_IJAK,PSIO_OPEN_OLD);
   psio->read_entry(PSIF_DCC_IJAK,"E2ijak",(char*)&E2ijak[0],vooo*sizeof(double));
@@ -174,7 +175,7 @@ PsiReturnType CoupledCluster::triples(){
   outfile->Printf("        %% complete  total time\n");
 
 
-  time_t stop,start = time(NULL);
+  time_t stop,start = time(nullptr);
   int pct10,pct20,pct30,pct40,pct50,pct60,pct70,pct80,pct90;
   pct10=pct20=pct30=pct40=pct50=pct60=pct70=pct80=pct90=0;
 
@@ -192,7 +193,7 @@ PsiReturnType CoupledCluster::triples(){
           thread = omp_get_thread_num();
       #endif
 
-      std::shared_ptr<PSIO> mypsio(new PSIO());
+      auto mypsio = std::make_shared<PSIO>();
       mypsio->open(PSIF_DCC_ABCI,PSIO_OPEN_OLD);
 
       psio_address addr = psio_get_address(PSIO_ZERO,k*vvv*sizeof(double));
@@ -344,7 +345,7 @@ PsiReturnType CoupledCluster::triples(){
       // print out update
       if (thread==0){
          int print = 0;
-         stop = time(NULL);
+         stop = time(nullptr);
          if ((double)ind/nijk >= 0.1 && !pct10){      pct10 = 1; print=1;}
          else if ((double)ind/nijk >= 0.2 && !pct20){ pct20 = 1; print=1;}
          else if ((double)ind/nijk >= 0.3 && !pct30){ pct30 = 1; print=1;}

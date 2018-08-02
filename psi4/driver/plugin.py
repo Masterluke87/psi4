@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -29,6 +29,7 @@
 import os
 import sys
 
+from psi4 import core
 from psi4.driver.util.filesystem import *
 from psi4.driver.util import tty
 
@@ -87,7 +88,7 @@ def sanitize_name(name):
 
 # Determine the available plugins
 available_plugins = []
-psidatadir = os.environ.get('PSIDATADIR', None)
+psidatadir = core.get_datadir()
 plugin_path = join_path(psidatadir, "plugin")
 for dir in os.listdir(plugin_path):
     if os.path.isdir(join_path(plugin_path, dir)):
@@ -121,12 +122,18 @@ def create_plugin(name, template):
     os.mkdir(name)
     created_files = []
     for source_file in template_files:
+
+        # Skip swp files
+        if source_file.endswith(".swp"):
+            continue
+
         target_file = source_file
 
         if source_file.endswith('.template'):
             target_file = source_file[0:-9]
 
         try:
+            print(join_path(template_path, source_file))
             with open(join_path(template_path, source_file), 'r') as temp_file:
                 contents = temp_file.read()
         except IOError as err:

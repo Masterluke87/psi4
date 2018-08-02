@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -39,7 +39,7 @@
 #include "psi4/psifiles.h"
 #include <cstdio>
 #include <cstdlib>
-#include <strings.h>
+#include <cstring>
 #include "psi4/psi4-dec.h"
 #include "psi4/libpsi4util/PsiOutStream.h"
 namespace psi {
@@ -59,16 +59,16 @@ namespace psi {
 ** C. David Sherrill
 ** \ingroup CIOMR
 */
-int * init_int_array(int size)
+PSI_API int * init_int_array(int size)
 {
   int *array;
 
-  if ((array = (int *) malloc(sizeof(int)*size))==NULL) {
+  if ((array = (int *) malloc(sizeof(int)*size))==nullptr) {
     outfile->Printf("init_array:  trouble allocating memory \n");
     outfile->Printf("size = %d\n",size);
     exit(PSI_RETURN_FAILURE);
   }
-  bzero(array,sizeof(int)*size);
+  memset(array, 0, sizeof(int)*size);
   return(array);
 }
 
@@ -86,7 +86,7 @@ int * init_int_array(int size)
 */
 void zero_int_array(int *a, int size)
 {
-   bzero(a,sizeof(int)*size);
+   memset(a, 0, sizeof(int)*size);
 }
 
 
@@ -103,18 +103,18 @@ void zero_int_array(int *a, int size)
 **
 ** \ingroup CIOMR
 */
-int **init_int_matrix(int rows, int cols)
+PSI_API int ** init_int_matrix(int rows, int cols)
 {
-   int **array=NULL;
+   int **array=nullptr;
    int i;
 
-   if ((array = (int **) malloc(sizeof(int *)*rows))==NULL) {
+   if ((array = (int **) malloc(sizeof(int *)*rows))==nullptr) {
      outfile->Printf("init_int_matrix: trouble allocating memory \n");
      outfile->Printf("rows = %d\n", rows);
      exit(PSI_RETURN_FAILURE);
    }
 
-   if ((array[0] = (int *) malloc (sizeof(int)*cols*rows))==NULL) {
+   if ((array[0] = (int *) malloc (sizeof(int)*cols*rows))==nullptr) {
      outfile->Printf("init_int_matrix: trouble allocating memory \n");
      outfile->Printf("rows = %d, cols = %d", rows, cols);
      exit(PSI_RETURN_FAILURE) ;
@@ -122,7 +122,7 @@ int **init_int_matrix(int rows, int cols)
    for (i=1; i<rows; i++) {
      array[i] = array[i-1] + cols;
    }
-   bzero(array[0], sizeof(int)*cols*rows);
+   memset(array[0], 0, sizeof(int)*cols*rows);
 
    return array;
 }
@@ -136,7 +136,7 @@ int **init_int_matrix(int rows, int cols)
 **
 ** \ingroup CIOMR
 */
-void free_int_matrix(int **array)
+void PSI_API free_int_matrix(int **array)
 {
   free(array[0]);
   free(array);
@@ -179,7 +179,7 @@ void zero_int_matrix(int **array, int rows, int cols)
 void print_int_mat(int **a, int m, int n, std::string out)
 {
    std::shared_ptr<psi::PsiOutStream> printer=(out=="outfile"?outfile:
-         std::shared_ptr<PsiOutStream>(new PsiOutStream(out)));
+         std::make_shared<PsiOutStream>(out));
    int ii,jj,kk,nn,ll;
   int i,j;
 

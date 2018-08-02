@@ -16,13 +16,23 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 #  <<<  CMake build overview  >>>
 #
 #    >>> ls
-#    external/  LICENSE  psi4/  tests/  ...
+#    external/  COPYING  psi4/  tests/  ...
 #    >>> cmake -H. -Bobjdir -DCMAKE_INSTALL_PREFIX=/path/to/install-psi4 ...
 #    ...
 #    -- Generating done
 #    -- Build files have been written to: /current/dir/objdir
 #    >>> cd objdir && make -j`getconf _NPROCESSORS_ONLN`
 #    >>> make install
+
+#  <<<  Required build dependencies that Psi4 can't build itself  >>>
+#
+#    - CMake (e.g., `conda install cmake`)
+#    - C++ and C compilers (C++11 compliant)
+#    - BLAS/LAPACK (also runtime; e.g., `conda install mkl-devel`)
+#    - Python (also runtime; interpreter and headers; e.g., `conda install python`)
+#    - NumPy (also runtime; avoidable at buildtime if gau2grid pre-built; e.g., `conda install numpy`)
+#    - deepdiff (runtime only; e.g., `conda install deepdiff -c conda-forge`)
+#    - networkx (runtime only; e.g., `conda install networkx`)
 
 #  These three "###  Options  ###" sections contain useful CMake variables for build configuration.
 
@@ -42,11 +52,12 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 #    - PYTHON_INCLUDE_DIR "Path to the python include files (e.g., /path/to/include/python2.7)"
 #    - SPHINX_ROOT "Root directory for Sphinx: 'bin/sphinx-build' (or similar) should be in this dir."
 #
-#    For any ${AddOn} of: ambit, CheMPS2, dkh, libefp, erd, gdma, Libint, PCMSolver, pybind11, simint, LibXC
+#    For any ${AddOn} of: ambit, CheMPS2, dkh, libefp, erd, gau2grid, gdma, Libint, PCMSolver, pybind11, simint, Libxc
 #    - CMAKE_PREFIX_PATH "Set to list of root directories to look for externally built add-ons and dependencies
 #      (e.g., /path/to/install-libint;/path/to/install-gdma where exists /path/to/install-libint/lib/libderiv.a)"
 #    - ${AddOn}_DIR "Set to directory containing ${AddOn}Config.cmake file to facilitate detection of external build"
 #    - CMAKE_DISABLE_FIND_PACKAGE_${AddON} "Set to OFF to force internal build"
+#    - CMAKE_INSIST_FIND_PACKAGE_${AddON} "Set to ON to force external detect"
 
 #  <<<  Detecting BLAS/LAPACK  >>>
 #
@@ -57,6 +68,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 #                 (default: search order MKL>OPENBLAS>ESSL>ATLAS>ACML>SYSTEM_NATIVE on Linux; MKL>Accelerate>... on Mac)"
 #    - LAPACK_LIBRARIES "Location of BLAS/LAPACK libraries as ";"-separated list of full paths, bypassing math detection"
 #    - LAPACK_INCLUDE_DIRS "Location of BLAS/LAPACK headers (only needed for MKL), bypassing math detection"
+#    - OpenMP_LIBRARY_DIRS "Location of OpenMP libraries (iomp5/gomp/omp) as ";"-separated list, hinting OpenMP detection"
 
 #  <<<  Install  >>>
 #
@@ -66,7 +78,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 #    - CMAKE_INSTALL_DATADIR "Location within CMAKE_INSTALL_PREFIX to which resources are installed (default: share)"
 #    - CMAKE_INSTALL_INCLUDEDIR "Location within CMAKE_INSTALL_PREFIX to which headers are installed (default: include)"
 #    - PYMOD_INSTALL_LIBDIR "Location within CMAKE_INSTALL_LIBDIR to which python modules are installed (default: /)
-#                            Must start with /"
+#                            Must start with: / . Used to imitate python install: /python3.6/site-packages ."
 
 ############################  Options: Build What?  ############################
 option(ENABLE_ambit "Enables the ambit tensor library" OFF)
@@ -77,7 +89,10 @@ option(ENABLE_erd "Enables use of ERD instead of Libint (requires Fortran)" OFF)
 option(ENABLE_simint "Enables use of SIMINT two-electron integral library" OFF)
 option(ENABLE_gdma "Enables Stone's GDMA multipole code (requires Fortran)" OFF)
 option(ENABLE_PCMSolver "Enables PCMSolver library (requires Fortran)" OFF)
-# These options are relevant to pasture
+option(ENABLE_snsmp2 "Enables SNSMP2 plugin (can also be added at runtime)" OFF)
+option(ENABLE_v2rdm_casscf "Enables V2RDM_CASSCF plugin (requires Fortran; can also be added at runtime)" OFF)
+option(ENABLE_gpu_dfcc "Enables GPU_DFCC plugin for gpu-accelerated df-cc (requires CUDA; can also be added at runtime)" OFF)
+# These options are relevant to pasture, expert only
 option(ENABLE_ccsort "Enables ccsort plugin installed from psi4pasture" OFF)
 option(ENABLE_transqt2 "Enables transqt2 plugin installed from psi4pasture" OFF)
 
@@ -94,6 +109,7 @@ if(ENABLE_gdma OR ENABLE_dkh OR ENABLE_erd OR ENABLE_PCMSolver)
 endif()
 
 if(ENABLE_erd)
+    message(FATAL_ERROR "The Psi4/ERD interface is broken, probably since spring 2017. We'll try to fix it (comment this line to try), but disabling for now.")
     message(WARNING "ERD will build, link, and run in Psi4 just fine. However, it has not been hooked into Psi4 in all roles, notably gradients, LRC DFT energies, and ESP. So upon activating through ``set integral_package erd``, known failures will be caught and halted, but perhaps other types not tested and identified will give *wrong* answers. Consider this your warning.")
 endif()
 
@@ -110,22 +126,25 @@ option_with_flags(ENABLE_CODE_COVERAGE "Enables details on code coverage" OFF
                   "-ftest-coverage")
 option_with_flags(ENABLE_BOUNDS_CHECK "Enables bounds check in Fortran" OFF
                   "-ftrapuv -check all -fpstkchk" "-fcheck=all" "-fbounds-check -fcheck-array-temporaries")
-option_with_flags(ENABLE_ASAN "Enables address sanitizer" OFF
-                  "-fsanitize=address" "-fno-omit-frame-pointer")
-option_with_flags(ENABLE_TSAN "Enables thread sanitizer" OFF
-                  "-fsanitize=thread" "-fno-omit-frame-pointer -pie")
-option_with_flags(ENABLE_UBSAN "Enables undefined behavior sanitizer" OFF
-                  "-fsanitize=undefined" "-fno-omit-frame-pointer")
+option_with_flags(ENABLE_ASAN "Enables address sanitizer (requires similarly compiled Python and Numpy)" OFF
+                  "-fsanitize=address -fno-omit-frame-pointer")
+option_with_flags(ENABLE_TSAN "Enables thread sanitizer (requires similarly compiled Python and Numpy)" OFF
+                  "-fsanitize=thread -fPIE -pie -fno-omit-frame-pointer")
+option_with_flags(ENABLE_UBSAN "Enables undefined behavior sanitizer (requires similarly compiled Python and Numpy)" OFF
+                  "-fsanitize=undefined -fno-omit-frame-pointer")
+option_with_flags(ENABLE_MSAN "Enables memory sanitizer (requires similarly compiled Python and Numpy)" OFF
+                  "-fsanitize=memory -fPIE -pie -fno-omit-frame-pointer")
 option_with_default(MAX_AM_ERI "Maximum angular momentum for integrals" 5)
 option_with_default(CMAKE_BUILD_TYPE "Build type (Release or Debug)" Release)
 option_with_default(FC_SYMBOL "The type of Fortran name mangling" 2)
 option_with_default(BUILD_FPIC "Compile static libraries with position independent code" ON)
 option_with_default(CMAKE_INSTALL_LIBDIR "Directory to which libraries installed" lib)
 option_with_default(PYMOD_INSTALL_LIBDIR "Location within CMAKE_INSTALL_LIBDIR to which python modules are installed" /)
-option_with_default(ENABLE_GENERIC "Enables mostly static linking of system and math libraries for shared library" OFF)
+option_with_default(ENABLE_GENERIC "Enables mostly static linking of language libraries for shared library" OFF)
 option_with_default(CMAKE_INSTALL_MESSAGE "Specify verbosity of installation messages" LAZY)
 option_with_default(psi4_CXX_STANDARD "Specify C++ standard for core Psi4" 11)
 option_with_default(SIMINT_VECTOR "Vectorization type to use for simint (scalar sse avx avxfma micavx512)" avx)
+option_with_default(SPHINX_THEME "Theme for Sphinx documentation and extensions" sphinx_psi_theme)
 
 ########################  Process & Validate Options  ##########################
 include(GNUInstallDirs)
@@ -151,7 +170,6 @@ add_subdirectory(external/common)
 add_subdirectory(external/upstream)
 
 # external projects manage their own OpenMP and c++YY flags, so only add to CXX_FLAGS for psi4-core
-include(autocmake_omp)
 include(custom_cxxstandard)
 include(custom_static_library)
 
@@ -165,6 +183,7 @@ ExternalProject_Add(psi4-core
            dkh_external
            libefp_external
            erd_external
+           gau2grid_external
            gdma_external
            libint_external
            pcmsolver_external
@@ -203,6 +222,7 @@ ExternalProject_Add(psi4-core
               -DENABLE_simint=${ENABLE_simint}
               -DENABLE_gdma=${ENABLE_gdma}
               -DENABLE_PCMSolver=${ENABLE_PCMSolver}
+              -DENABLE_OPENMP=${ENABLE_OPENMP}
               -DTargetLAPACK_DIR=${TargetLAPACK_DIR}
               -DTargetHDF5_DIR=${TargetHDF5_DIR}
               -Dambit_DIR=${ambit_DIR}
@@ -210,6 +230,7 @@ ExternalProject_Add(psi4-core
               -Ddkh_DIR=${dkh_DIR}
               -Dlibefp_DIR=${libefp_DIR}
               -Derd_DIR=${erd_DIR}
+              -Dgau2grid_DIR=${gau2grid_DIR}
               -Dgdma_DIR=${gdma_DIR}
               -DLibint_DIR=${Libint_DIR}
               -DPCMSolver_DIR=${PCMSolver_DIR}
@@ -220,11 +241,11 @@ ExternalProject_Add(psi4-core
               -DLIBC_INTERJECT=${LIBC_INTERJECT}
               -DRESTRICT_KEYWORD=${RESTRICT_KEYWORD}
               -DFC_SYMBOL=${FC_SYMBOL}
+              -DOpenMP_LIBRARY_DIRS=${OpenMP_LIBRARY_DIRS}
               -DDESTDIR=${CMAKE_BINARY_DIR}/stage
    CMAKE_CACHE_ARGS -DCMAKE_PREFIX_PATH:PATH=${CMAKE_PREFIX_PATH}
    BUILD_ALWAYS 1
-   INSTALL_COMMAND ${CMAKE_MAKE_PROGRAM} install
-                   DESTDIR=${CMAKE_BINARY_DIR}/stage)
+   INSTALL_COMMAND DESTDIR=${CMAKE_BINARY_DIR}/stage ${CMAKE_MAKE_PROGRAM} install)
 
 add_subdirectory(external/downstream)
 add_subdirectory(doc)

@@ -3,7 +3,7 @@
 .. #
 .. # Psi4: an open-source quantum chemistry software package
 .. #
-.. # Copyright (c) 2007-2017 The Psi4 Developers.
+.. # Copyright (c) 2007-2018 The Psi4 Developers.
 .. #
 .. # The copyrights for code used from other parties are included in
 .. # the corresponding files.
@@ -216,6 +216,21 @@ and cholesky-decomposed coupled-cluster singles and doubles method
   U. Bozkaya,   *J. Chem. Phys.* **144**, 144108 (2016).
   (doi: `10.1063/1.4945706 <http://dx.doi.org/10.1063/1.4945706>`_).
 
+Implementation of analytic gradients for the density-fitted 
+coupled-cluster singles and doubles method
+
+* "Analytic energy gradients for the coupled-cluster singles and doubles method with
+  the density-fitting approximation," 
+  U. Bozkaya and C. D. Sherrill,   *J. Chem. Phys.* **144**, 174103 (2016).
+  (doi: `10.1063/1.4948318 <http://dx.doi.org/10.1063/1.4948318>`_).
+
+Implementation of analytic gradients for the density-fitted 
+coupled-cluster singles and doubles with perturbative triples method
+
+* "Analytic energy gradients for the coupled-cluster singles and doubles 
+  with perturbative triples method with the density-fitting approximation," 
+  U. Bozkaya and C. D. Sherrill,   *J. Chem. Phys.* **147**, 044104 (2017).
+  (doi: `10.1063/1.4994918 <http://dx.doi.org/10.1063/1.4994918>`_).
  
 Mukherjee State-Specific Multi-Reference Coupled Cluster (Mk-MRCC)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -509,25 +524,32 @@ Implementation within Psi4
 .. index:: architectures
 .. index:: compilers
 
-Supported Architectures
-=======================
+Supported Systems
+=================
 
-The majority of |PSIfour| was developed on Mac and Linux machines; in
-principle, it should work on any Unix system. The latest version of the
-|PSIfour| program package may be obtained at `psicode.org <http://psicode.org>`_.
-The package is available as a binary (:ref:`Installing from Binary
-<sec:conda>`) for Linux, macOS, or Windows (via Windows Subsystem for
-Linux aka `Bash on Ubuntu on Windows
-<https://msdn.microsoft.com/commandline/wsl/about>`_)
-or as source code (zipped archive or git repository from
-`https://github.com/psi4/psi4 <http://www.github.com/psi4/psi4>`_).
-
-|PSIfour| has been successfully compiled using Intel, GCC, and Clang
-compilers. :ref:`Compiler requirements <faq:approvedcxx>` are primarily
-C++11 compliance (*i.e.*, GCC version 4.9 or above).
-For some architectures, a :ref:`precompiled binary
-<sec:conda>` is available. See :ref:`Compiling and Installing
-<sec:installFile>` for details.
+Architectures 
+    The majority of |PSIfour| was developed on Mac and Linux machines; in
+    principle, it should work on any Unix system. The latest version of the
+    |PSIfour| program package may be obtained at `psicode.org <http://psicode.org>`_.
+    The package is available as a binary (:ref:`Installing from Binary
+    <sec:conda>`) for Linux, macOS, or Windows (via Windows Subsystem for
+    Linux aka `Bash on Ubuntu on Windows
+    <https://msdn.microsoft.com/commandline/wsl/about>`_)
+    or as source code (git repository or zipped archive from
+    `https://github.com/psi4/psi4 <http://www.github.com/psi4/psi4>`_).
+Compilers
+    |PSIfour| has been successfully compiled using Intel, GCC, and Clang
+    compilers. :ref:`Compiler requirements <faq:approvedcxx>` are primarily
+    C++11 compliance (*i.e.*, GCC version 4.9 or above).
+    For some architectures, a :ref:`precompiled binary
+    <sec:conda>` is available. See :ref:`Compiling and Installing
+    <sec:installFile>` for details.
+Python
+    |PSIfour| 1.1 and 1.2 are supported on Python 2.7, 3.5,
+    and 3.6. After 1.2, only Python 3 will be supported
+    `in accordance with other scientific software projects
+    <https://python3statement.org/>`_). Once Python 3.7 is released,
+    the plan is to support >=3.6 or at least two Python versions.
 
 .. index:: license
 
@@ -595,7 +617,7 @@ For more details, see Tables :ref:`Energy <table:energy_gen>`,
     +-------------------------+----------------+-------------------+--------------+----------------+-----------------------------+-----------+------------+
     | CCSD [#f10]_            | RHF/UHF/ROHF   | CONV/DF/CD [#f8]_ | RHF/UHF/ROHF | CONV/DF [#f8]_ | threaded [#f3]_             |           | E [#f2]_   |
     +-------------------------+----------------+-------------------+--------------+----------------+-----------------------------+-----------+------------+
-    | CCSD(T) [#f10]_         | RHF/UHF/ROHF   | CONV/DF/CD [#f8]_ | RHF/UHF      | CONV           | threaded (pthreads) [#f3]_  |           | E [#f2]_   |
+    | CCSD(T) [#f10]_         | RHF/UHF/ROHF   | CONV/DF/CD [#f8]_ | RHF/UHF      | CONV/DF [#f8]_ | threaded (pthreads) [#f3]_  |           | E [#f2]_   |
     +-------------------------+----------------+-------------------+--------------+----------------+-----------------------------+-----------+------------+
     | CCSD(AT) [#f10]_        | RHF            | CONV/DF/CD        | ---          | ---            | threaded [#f3]_             |           |            |
     +-------------------------+----------------+-------------------+--------------+----------------+-----------------------------+-----------+------------+

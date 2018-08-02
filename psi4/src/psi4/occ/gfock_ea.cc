@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -48,7 +48,7 @@ void OCCWave::gfock_ea()
 if (reference_ == "RESTRICTED") {
 
 	// Initialize
-	Ftilde = std::shared_ptr<Matrix>(new Matrix("MO-basis GFM-EA", nirrep_, nmopi_, nmopi_));
+	Ftilde = std::make_shared<Matrix>("MO-basis GFM-EA", nirrep_, nmopi_, nmopi_);
 	Ftilde->zero();
 	Ftilde->add(HmoA);
         Ftilde->scale(2.0);
@@ -363,8 +363,8 @@ if (reference_ == "RESTRICTED") {
 else if (reference_ == "UNRESTRICTED") {
 
 	// Initialize
-	FtildeA = std::shared_ptr<Matrix>(new Matrix("MO-basis Alpha GFM-EA", nirrep_, nmopi_, nmopi_));
-	FtildeB = std::shared_ptr<Matrix>(new Matrix("MO-basis Beta GFM-EA", nirrep_, nmopi_, nmopi_));
+	FtildeA = std::make_shared<Matrix>("MO-basis Alpha GFM-EA", nirrep_, nmopi_, nmopi_);
+	FtildeB = std::make_shared<Matrix>("MO-basis Beta GFM-EA", nirrep_, nmopi_, nmopi_);
 	FtildeA->zero();
 	FtildeB->zero();
 	FtildeA->add(HmoA);

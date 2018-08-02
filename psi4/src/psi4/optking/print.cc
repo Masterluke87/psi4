@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -50,7 +50,7 @@ void oprintf(const std::string psi_fp, const FILE *qc_fp, const char* format,...
 
 #if defined(OPTKING_PACKAGE_PSI)
   std::shared_ptr<psi::PsiOutStream> printer(psi_fp=="outfile"? psi::outfile:
-     std::shared_ptr<psi::PsiOutStream>(new psi::PsiOutStream(psi_fp,std::ostream::app)));
+     std::make_shared<psi::PsiOutStream>(psi_fp,std::ostream::app));
 
   printer->Printf("%s", line);
 #elif defined(OPTKING_PACKAGE_QCHEM)

@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -44,7 +44,6 @@ struct dpdfile2;
 
 class PSIO;
 class Vector;
-class SimpleMatrix;
 class Dimension;
 class Molecule;
 class Vector3;
@@ -63,7 +62,7 @@ enum diagonalize_order {
  *
  * Using a matrix factory makes creating these a breeze.
  */
-class Matrix : public std::enable_shared_from_this<Matrix> {
+class PSI_API Matrix : public std::enable_shared_from_this<Matrix> {
 protected:
     /// Matrix data
     double ***matrix_;
@@ -148,7 +147,6 @@ public:
     /**
      * Constructor, sets up the matrix
      * Convenience case for 1 irrep
-     * Note: You should be using SimpleMatrix
      *
      * @param rows Row dimensionality.
      * @param cols Column dimensionality.
@@ -157,7 +155,6 @@ public:
     /**
      * Constructor, sets up the matrix
      * Convenience case for 1 irrep
-     * Note: You should be using SimpleMatrix
      *
      * @param name Name of the matrix.
      * @param rows Row dimensionality.
@@ -360,16 +357,6 @@ public:
     /** @} */
 
     /**
-     * @{
-     * Copies sq to matrix_
-     *
-     * @param sq SimpleMatrix object to set this matrix to.
-     */
-    void set(const SimpleMatrix * const sq);
-    void set(const std::shared_ptr<SimpleMatrix>& sq);
-    /** @} */
-
-    /**
      * Set a single element of matrix_
      *
      * @param h Subblock to address
@@ -539,13 +526,6 @@ public:
     double *to_lower_triangle() const;
 
     /**
-     * Converts this to a full non-symmetry-block matrix
-     *
-     * @returns The SimpleMatrix copy of the current matrix.
-     */
-    SimpleMatrix *to_simple_matrix() const;
-
-    /**
      * Sets the name of the matrix, used in print(...) and save(...)
      *
      * @param name New name to use.
@@ -566,7 +546,7 @@ public:
      * @param outfile File point to use, defaults to Psi4's outfile.
      * @param extra When printing the name of the 'extra' will be printing after the name.
      */
-    void print(std::string outfile = "outfile", const char *extra=NULL) const;
+    void print(std::string outfile = "outfile", const char *extra=nullptr) const;
 
     /// Prints the matrix with atom and xyz styling.
     void print_atom_vector(std::string out_fname = "outfile");
@@ -747,16 +727,14 @@ public:
     /// Scale column n of irrep h by a
     void scale_column(int h, int n, double a);
 
-    /** Special function to transform a SimpleMatrix (no symmetry) into
-     *  a symmetry matrix.
+    /** Special function to add symmetry to a Matrix .
      *
-     *  \param a SimpleMatrix to transform
+     *  \param a Matrix to transform
      *  \param transformer The matrix returned by PetiteList::aotoso() that acts as the transformer
      */
     void apply_symmetry(const SharedMatrix& a, const SharedMatrix& transformer);
 
-    /** Special function to transform a symmetry matrix into
-     *  a SimpleMatrix (no symmetry).
+    /** Special function to remove symmetry from a matrix.
      *
      *  \param a symmetry matrix to transform
      *  \param transformer The matrix returned by PetiteList::sotoao() that acts as the transformer
@@ -1118,9 +1096,9 @@ public:
     /// Checks matrix equality.
     /// @param rhs Matrix to compare to.
     /// @returns true if equal, otherwise false.
-    bool equal(const Matrix& rhs);
-    bool equal(const SharedMatrix& rhs);
-    bool equal(const Matrix* rhs);
+    bool equal(const Matrix& rhs, double TOL=1.0e-10);
+    bool equal(const SharedMatrix& rhs, double TOL=1.0e-10);
+    bool equal(const Matrix* rhs, double TOL=1.0e-10);
     /// @}
 
     /// @{

@@ -18,6 +18,7 @@ set(sources_list
         export_oeprop.cc
         export_plugins.cc
         export_psio.cc
+        export_trans.cc
         export_wavefunction.cc
         export_options.cc
         create_new_plugin.cc
@@ -29,6 +30,9 @@ add_library(core SHARED ${sources_list})
 
 get_property(psi4_binmodules GLOBAL PROPERTY BINLIST)
 target_link_libraries(core PRIVATE ${PRE_LIBRARY_OPTION} dpd qt ${POST_LIBRARY_OPTION})
+if(TARGET ambit::ambit)
+    target_link_libraries(core PRIVATE ${PRE_LIBRARY_OPTION} ambit_interface ${POST_LIBRARY_OPTION})
+endif()
 
 if(TARGET dkh::dkh)
     target_compile_definitions(core PRIVATE $<TARGET_PROPERTY:dkh::dkh,INTERFACE_COMPILE_DEFINITIONS>)
@@ -39,6 +43,7 @@ endif()
 target_include_directories(core PRIVATE $<TARGET_PROPERTY:Libxc::xc,INTERFACE_INCLUDE_DIRECTORIES>)
 target_link_libraries(core PRIVATE ${psi4_binmodules})
 target_link_libraries(core PRIVATE ${LIBC_INTERJECT})
+target_link_libraries(core PRIVATE tgt::lapack)  # OpenMP flags to core.cc
 target_link_libraries(core PUBLIC pybind11::module)
 target_link_libraries(core PRIVATE Threads::Threads)
 

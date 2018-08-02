@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -957,7 +957,7 @@ void print_nested_timer(const Timer_Structure &timer, std::shared_ptr<PsiOutStre
     for (auto child_iter = children.begin(), end_child_iter = children.end(); child_iter != end_child_iter;
          ++child_iter) {
         printer->Printf("%s", indent.c_str());
-        print_timer(*child_iter, printer, 28 - indent.length());
+        print_timer(*child_iter, printer, 36 - indent.length());
         print_nested_timer(*child_iter, printer, indent + "| ");
     }
 }
@@ -983,7 +983,7 @@ void timer_init(void) {
     omp_set_lock(&lock_timer);
     extern time_t timer_start;
     extern Timer_Structure root_timer;
-    timer_start = time(NULL);
+    timer_start = time(nullptr);
     root_timer.turn_on();
     extern std::list<Timer_Structure *> ser_on_timers;
     ser_on_timers.push_back(&root_timer);
@@ -1008,20 +1008,20 @@ void timer_done(void) {
     gethostname(host, 40);
 
     /* Dump the timing data to timer.dat and free the timers */
-    std::shared_ptr<PsiOutStream> printer(new PsiOutStream("timer.dat", std::ostream::app));
+    auto printer = std::make_shared<PsiOutStream>("timer.dat", std::ostream::app);
     printer->Printf("\n");
     printer->Printf("Host: %s\n", host);
     free(host);
     printer->Printf("\n");
     printer->Printf("Timers On : %s", ctime(&timer_start));
-    timer_end = time(NULL);
+    timer_end = time(nullptr);
     printer->Printf("Timers Off: %s", ctime(&timer_end));
     printer->Printf("\nWall Time:  %10.2f seconds\n\n",
                     std::chrono::duration_cast<std::chrono::duration<double>>(root_timer.get_total_wtime()).count());
 
     const std::list<Timer_Structure> timer_list = root_timer.summarize();
     for (auto timer_iter = timer_list.begin(), end_iter = timer_list.end(); timer_iter != end_iter; ++timer_iter) {
-        print_timer(*timer_iter, printer, 28);
+        print_timer(*timer_iter, printer, 36);
     }
 
     printer->Printf("\n-----------------------------------------------------------\n");
@@ -1057,7 +1057,7 @@ void stop_skip_timers() {
 **
 ** \ingroup QT
 */
-void timer_on(const std::string& key) {
+PSI_API void timer_on(const std::string& key) {
     omp_set_lock(&lock_timer);
     extern bool skip_timers;
     if (skip_timers) {
@@ -1093,7 +1093,7 @@ void timer_on(const std::string& key) {
 **
 ** \ingroup QT
 */
-void timer_off(const std::string& key) {
+PSI_API void timer_off(const std::string& key) {
     omp_set_lock(&lock_timer);
     extern bool skip_timers;
     if (skip_timers) {

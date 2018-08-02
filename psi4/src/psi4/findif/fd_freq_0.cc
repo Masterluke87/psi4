@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -38,6 +38,7 @@
 #include "psi4/libmints/molecule.h"
 #include "psi4/libmints/matrix.h"
 #include "psi4/libmints/cdsalclist.h"
+#include "psi4/libmints/wavefunction.h"
 #include "psi4/physconst.h"
 
 #include "psi4/pybind11.h"
@@ -60,17 +61,16 @@ namespace findif {
 int iE0(std::vector<int> &Ndisp_pi, std::vector <std::vector<int>> &salcs_pi, int pts,
         int irrep, int ii, int jj, int disp_i, int disp_j);
 
-SharedMatrix fd_freq_0(std::shared_ptr <Molecule> mol, Options &options,
-                       const py::list &python_energies, int freq_irrep_only)
-{
+SharedMatrix fd_freq_0(std::shared_ptr<Molecule> mol, Options &options,
+                       const py::list &python_energies, int freq_irrep_only) {
     int pts = options.get_int("POINTS");
     double disp_size = options.get_double("DISP_SIZE");
     int print_lvl = options.get_int("PRINT");
 
     int Natom = mol->natom();
-    std::shared_ptr <MatrixFactory> fact;
-    bool project = !options.get_bool("EXTERN") && !options.get_bool("PERTURB_H");
-    CdSalcList salc_list(mol, fact, 0xFF, project, project);
+    bool t_project = !options.get_bool("EXTERN") && !options.get_bool("PERTURB_H");
+    bool r_project = t_project && options.get_bool("FD_PROJECT");
+    CdSalcList salc_list(mol, 0xFF, t_project, r_project);
     int Nirrep = salc_list.nirrep();
 
     // build vectors that list indices of salcs for each irrep
@@ -126,23 +126,28 @@ SharedMatrix fd_freq_0(std::shared_ptr <Molecule> mol, Options &options,
     for (int i = 0; i < len(python_energies); ++i)
         E.push_back(python_energies[i].cast<double>());
 
-    outfile->Printf("\n-------------------------------------------------------------\n\n");
+    if (print_lvl) {
+        outfile->Printf("\n-------------------------------------------------------------\n\n");
 
-    outfile->Printf("  Computing second-derivative from energies using projected, \n");
-    outfile->Printf("  symmetry-adapted, cartesian coordinates (fd_freq_0).\n");
+        outfile->Printf("  Computing second-derivative from energies using projected, \n");
+        outfile->Printf("  symmetry-adapted, cartesian coordinates (fd_freq_0).\n");
 
-    outfile->Printf("\t%d energies passed in, including the reference energy.\n", (int) E.size());
+        outfile->Printf("\t%d energies passed in, including the reference energy.\n", (int) E.size());
+    }
+
     if (E.size() != Ndisp_all + 1) { // last energy is the reference non-displaced energy
         throw PsiException("FINDIF: Incorrect number of energies passed in!", __FILE__, __LINE__);
     }
 
     double energy_ref = E[Ndisp_all];
-    outfile->Printf("\tUsing %d-point formula.\n", pts);
-    outfile->Printf("\tEnergy without displacement: %15.10lf\n", energy_ref);
-    outfile->Printf("\tCheck energies below for precision!\n");
-    for (int i = 0; i < Ndisp_all + 1; ++i)
-        outfile->Printf("\t%5d : %20.10lf\n", i + 1, E[i]);
-    outfile->Printf("\n");
+    if (print_lvl) {
+        outfile->Printf("\tUsing %d-point formula.\n", pts);
+        outfile->Printf("\tEnergy without displacement: %15.10lf\n", energy_ref);
+        outfile->Printf("\tCheck energies below for precision!\n");
+        for (int i = 0; i < Ndisp_all + 1; ++i)
+            outfile->Printf("\t%5d : %20.10lf\n", i + 1, E[i]);
+        outfile->Printf("\n");
+    }
 
     // Determine the number of translation and rotational coordinates projected out
     // and obtain them.  might be needed for cartesian hessian.
@@ -151,8 +156,6 @@ SharedMatrix fd_freq_0(std::shared_ptr <Molecule> mol, Options &options,
 
     std::vector<std::string> irrep_lbls = mol->irrep_labels();
     double **H_irr[8]; // hessian by irrep block
-
-    std::vector < VIBRATION * > modes;
 
     for (int h = 0; h < Nirrep; ++h) {
 
@@ -257,30 +260,11 @@ SharedMatrix fd_freq_0(std::shared_ptr <Molecule> mol, Options &options,
             eivout(normal_irr, evals, 3 * Natom, dim, "outfile");
         }
 
-        for (int i = 0; i < salcs_pi[h].size(); ++i) {
-            double *v = init_array(3 * Natom);
-            for (int x = 0; x < 3 * Natom; ++x)
-                v[x] = normal_irr[x][i];
-            VIBRATION *vib = new VIBRATION(h, evals[i], v);
-            modes.push_back(vib);
-        }
-
         free(evals);
         free_block(evects);
         free_block(normal_irr);
     }
 
-    // This print function also saves frequencies in wavefunction.
-    print_vibrations(mol, modes);
-
-    // Optionally, save normal modes to file.
-    if (options.get_bool("NORMAL_MODES_WRITE")) {
-        save_normal_modes(mol, modes);
-    }
-
-    for (int i = 0; i < modes.size(); ++i)
-        delete modes[i];
-    modes.clear();
 
     // Build complete hessian for transformation to cartesians
     double **H = block_matrix(Nsalc_all, Nsalc_all);
@@ -313,7 +297,7 @@ SharedMatrix fd_freq_0(std::shared_ptr <Molecule> mol, Options &options,
     //B[i][3*a+xyz] *= sqrt(mol->mass(a));
 
 //  double **Hx = block_matrix(3*Natom, 3*Natom);
-    SharedMatrix mat_Hx = SharedMatrix(new Matrix("Hessian", 3 * Natom, 3 * Natom));
+    auto mat_Hx = std::make_shared<Matrix>("Hessian", 3 * Natom, 3 * Natom);
     double **Hx = mat_Hx->pointer();
 
     // Hx = Bt H B
@@ -448,28 +432,30 @@ SharedMatrix fd_freq_0(std::shared_ptr <Molecule> mol, Options &options,
         mat_print(Hx, 3 * Natom, 3 * Natom, "outfile");
     }
 
-    // Print a hessian file
-    if (options.get_bool("HESSIAN_WRITE")) {
-        std::string hess_fname = get_writer_file_prefix(mol->name()) + ".hess";
-        std::shared_ptr <PsiOutStream> printer(new PsiOutStream(hess_fname, std::ostream::trunc));
-        //FILE *of_Hx = fopen(hess_fname.c_str(),"w");
-        printer->Printf("%5d", Natom);
-        printer->Printf("%5d\n", 6 * Natom);
-
-        int cnt = -1;
-        for (int i = 0; i < 3 * Natom; ++i) {
-            for (int j = 0; j < 3 * Natom; ++j) {
-                printer->Printf("%20.10lf", Hx[i][j]);
-                if (++cnt == 2) {
-                    printer->Printf("\n");
-                    cnt = -1;
-                }
-            }
-        }
-    }
+//    // Print a hessian file
+//    if (options.get_bool("HESSIAN_WRITE")) {
+//        std::string hess_fname = get_writer_file_prefix(mol->name()) + ".hess";
+//        auto printer = std::make_shared<PsiOutStream>(hess_fname, std::ostream::trunc);
+//        //FILE *of_Hx = fopen(hess_fname.c_str(),"w");
+//        printer->Printf("%5d", Natom);
+//        printer->Printf("%5d\n", 6 * Natom);
+//
+//        int cnt = -1;
+//        for (int i = 0; i < 3 * Natom; ++i) {
+//            for (int j = 0; j < 3 * Natom; ++j) {
+//                printer->Printf("%20.10lf", Hx[i][j]);
+//                if (++cnt == 2) {
+//                    printer->Printf("\n");
+//                    cnt = -1;
+//                }
+//            }
+//        }
+//    }
 //  free_block(Hx);
 
-    outfile->Printf("\n-------------------------------------------------------------\n");
+    if (print_lvl) {
+        outfile->Printf("\n-------------------------------------------------------------\n");
+    }
 
     return mat_Hx;
 }

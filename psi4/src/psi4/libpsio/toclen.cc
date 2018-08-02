@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -32,7 +32,17 @@
  */
 
 #include <cstdio>
+#ifdef _MSC_VER
+#include <io.h>
+#define SYSTEM_LSEEK ::_lseek
+#define SYSTEM_READ ::_read
+#define SYSTEM_WRITE ::_write
+#else
 #include <unistd.h>
+#define SYSTEM_LSEEK ::lseek
+#define SYSTEM_READ ::read
+#define SYSTEM_WRITE ::write
+#endif
 #include <cstdlib>
 #include "psi4/libpsi4util/exception.h"
 #include "psi4/libpsio/psio.h"
@@ -46,7 +56,7 @@ size_t PSIO::toclen(size_t unit) {
 
   this_entry = psio_unit[unit].toc;
 
-  while (this_entry != NULL) {
+  while (this_entry != nullptr) {
     ++len;
     this_entry = this_entry->next;
   }
@@ -64,14 +74,14 @@ size_t PSIO::rd_toclen(size_t unit) {
   /* Seek vol[0] to its beginning */
   stream = this_unit->vol[0].stream;
 
-    errcod = ::lseek(stream, 0L, SEEK_SET);
+    errcod = SYSTEM_LSEEK(stream, 0L, SEEK_SET);
 
   if (errcod == -1)
     psio_error(unit, PSIO_ERROR_LSEEK);
 
   /* Read the value */
 
-    errcod = ::read(stream, (char *) &len, sizeof(size_t));
+    errcod = SYSTEM_READ(stream, (char *) &len, sizeof(size_t));
 
 
   if(errcod != sizeof(size_t)) return(0); /* assume that all is well (see comments above) */
@@ -88,7 +98,7 @@ void PSIO::wt_toclen(size_t unit, size_t len) {
   /* Seek vol[0] to its beginning */
   stream = this_unit->vol[0].stream;
 
-    errcod = ::lseek(stream, 0L, SEEK_SET);
+    errcod = SYSTEM_LSEEK(stream, 0L, SEEK_SET);
 
   if (errcod == -1) {
     ::fprintf(stderr, "Error in PSIO_WT_TOCLEN()!\n");
@@ -97,7 +107,7 @@ void PSIO::wt_toclen(size_t unit, size_t len) {
 
   /* Write the value */
 
-    errcod = ::write(stream, (char *) &len, sizeof(size_t));
+    errcod = SYSTEM_WRITE(stream, (char *) &len, sizeof(size_t));
 
   if(errcod != sizeof(size_t)) {
     ::fprintf(stderr, "PSIO_ERROR: Failed to write toclen to unit %zu.\n", unit);

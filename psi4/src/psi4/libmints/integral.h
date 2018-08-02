@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -268,7 +268,7 @@ public:
     AOIntegralsIterator integrals_iterator();
 };
 
-class SOShellCombinationsIterator
+class PSI_API SOShellCombinationsIterator
 {
 private:
     struct ShellQuartet {
@@ -310,7 +310,7 @@ public:
     int end_of_PK() const { return current.end_of_PK; }
 };
 
-class SO_PQ_Iterator
+class PSI_API SO_PQ_Iterator
 {
 private:
     struct PQ_Pair {
@@ -337,7 +337,7 @@ public:
     int q() const { return current.Q; }
 };
 
-class SO_RS_Iterator
+class PSI_API SO_RS_Iterator
 {
 private:
     struct RS_Pair {
@@ -381,7 +381,7 @@ public:
 
 
 /*! \ingroup MINTS */
-class IntegralFactory
+class PSI_API IntegralFactory
 {
 protected:
     /// Center 1 basis set

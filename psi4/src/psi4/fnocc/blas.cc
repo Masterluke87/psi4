@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -29,6 +29,8 @@
 #include"blas.h"
 #include<stdlib.h>
 
+#include "psi4/pragma.h"
+
 namespace psi { namespace fnocc{
 
 // position in a symmetric packed matrix
@@ -42,14 +44,14 @@ long int Position(long int i,long int j){
 /**
  * fortran-ordered dgemv
  */
-void F_DGEMV(char trans,integer m,integer n,doublereal alpha,doublereal*A,integer lda,
+void PSI_API F_DGEMV(char trans,integer m,integer n,doublereal alpha,doublereal*A,integer lda,
             doublereal*X,integer incx,doublereal beta,doublereal*Y,integer incy){
     DGEMV(trans,m,n,alpha,A,lda,X,incx,beta,Y,incy);
 }
 /**
  * fortran-ordered dgemm
  */
-void F_DGEMM(char transa,char transb, integer m, integer n, integer k,
+void PSI_API F_DGEMM(char transa,char transb, integer m, integer n, integer k,
             doublereal alpha,doublereal*A,integer lda,doublereal*B,integer ldb,
             doublereal beta,doublereal*C,integer ldc){
     DGEMM(transa,transb,m,n,k,alpha,A,lda,B,ldb,beta,C,ldc);

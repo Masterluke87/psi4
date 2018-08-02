@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -40,7 +40,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <strings.h>
 
 namespace psi {
 
@@ -68,21 +67,21 @@ namespace psi {
 */
 double ** init_matrix(size_t n, size_t m)
 {
-    double **A=NULL;
-    double *B=NULL;
+    double **A=nullptr;
+    double *B=nullptr;
     size_t i;
 
     if(!m || !n) return(static_cast<double **>(0));
 
-//  if ((A = (double **) malloc(n * (size_t)sizeof(double *)))==NULL) {
-    if ((A = new double*[n])==NULL) {
+//  if ((A = (double **) malloc(n * (size_t)sizeof(double *)))==nullptr) {
+    if ((A = new double*[n])==nullptr) {
         outfile->Printf("block_matrix: trouble allocating memory \n");
         outfile->Printf("n = %ld\n",n);
         exit(PSI_RETURN_FAILURE);
     }
 
-//  if ((B = (double *) malloc(m*n * (size_t)sizeof(double)))==NULL) {
-    if ((B = new double[n*m])==NULL) {
+//  if ((B = (double *) malloc(m*n * (size_t)sizeof(double)))==nullptr) {
+    if ((B = new double[n*m])==nullptr) {
         outfile->Printf("block_matrix: trouble allocating memory \n");
         outfile->Printf("m = %ld\n",m);
         exit(PSI_RETURN_FAILURE);
@@ -102,11 +101,11 @@ double ** init_matrix(size_t n, size_t m)
 // <<<<<<<<<<<<<<<<<<<<<
 
   /**
-  double **array=NULL;
+  double **array=nullptr;
   size_t i;
 
   if ((array = (double **) malloc(n*(size_t)sizeof(double *)))
-    ==NULL) {
+    ==nullptr) {
     outfile->Printf("init_matrix: trouble allocating memory \n");
     outfile->Printf("n = %ld\n",n);
     exit(PSI_RETURN_FAILURE);
@@ -114,7 +113,7 @@ double ** init_matrix(size_t n, size_t m)
 
   for (i = 0; i < n; i++) {
     if ((array[i] = (double *) malloc(m*(size_t)sizeof(double)))
-      ==NULL) {
+      ==nullptr) {
       outfile->Printf("init_matrix: trouble allocating memory \n");
       outfile->Printf("i = %ld m = %ld\n",i,m);
       exit(PSI_RETURN_FAILURE);
@@ -147,7 +146,7 @@ double ** init_matrix(size_t n, size_t m)
 */
 void free_matrix(double **array, size_t /*size*/)
 {
-    if(array == NULL) return;
+    if(array == nullptr) return;
     delete [] array[0];
     delete [] array;
 // <<<<<<<<<<<<<<<<<<<<<

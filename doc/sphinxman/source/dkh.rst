@@ -3,7 +3,7 @@
 .. #
 .. # Psi4: an open-source quantum chemistry software package
 .. #
-.. # Copyright (c) 2007-2017 The Psi4 Developers.
+.. # Copyright (c) 2007-2018 The Psi4 Developers.
 .. #
 .. # The copyrights for code used from other parties are included in
 .. # the corresponding files.
@@ -65,10 +65,13 @@ Installation
 
 * If using |PSIfour| built from source, and anaconda or miniconda has
   already been installed (instructions at :ref:`sec:quickconda`),
-  dkh can be obtained through ``conda install dkh``.
+  dkh can be obtained through ``conda install dkh -c psi4``.
   Then enable it as a feature with :makevar:`ENABLE_dkh`,
   hint its location with :makevar:`CMAKE_PREFIX_PATH`,
   and rebuild |PSIfour| to detect dkh and activate dependent code.
+
+* Previous bullet had details. To build |PSIfour| from source and use
+  dkh from conda without thinking, consult :ref:`sec:condapsi4dev`.
 
 * To remove a conda installation, ``conda remove dkh``.
 
@@ -140,6 +143,7 @@ How to configure dkh for building Psi4
 * :makevar:`CMAKE_PREFIX_PATH` |w---w| CMake list variable to specify where pre-built dependencies can be found. For dkh, set to an installation directory containing ``include/DKH/DKH_MANGLE.h``
 * :makevar:`dkh_DIR` |w---w| CMake variable to specify where pre-built dkh can be found. Set to installation directory containing ``share/cmake/dkh/dkhConfig.cmake``
 * :makevar:`CMAKE_DISABLE_FIND_PACKAGE_dkh` |w---w| CMake variable to force internal build of dkh instead of detecting pre-built
+* :makevar:`CMAKE_INSIST_FIND_PACKAGE_dkh` |w---w| CMake variable to force detecting pre-built dkh and not falling back on internal build
 
 **Examples**
 

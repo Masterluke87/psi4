@@ -3,7 +3,7 @@
 .. #
 .. # Psi4: an open-source quantum chemistry software package
 .. #
-.. # Copyright (c) 2007-2017 The Psi4 Developers.
+.. # Copyright (c) 2007-2018 The Psi4 Developers.
 .. #
 .. # The copyrights for code used from other parties are included in
 .. # the corresponding files.
@@ -224,6 +224,7 @@ tags as are created with the `GitHub interface
 
     >>> git fetch <remote> 'refs/tags/*:refs/tags/*'
 
+
 .. _`faq:psi4version`:
 
 What Psi4 version is running
@@ -279,4 +280,54 @@ What Psi4 version is running
     '1.1rc2.dev17 {condadoc} c852257 1.0.0.999 dirty  1.0 <-- 1.1rc2.dev17+c852257'
     >>> psi4.version_formatter("""{{{branch}}} {versionlong}""")
     '{condadoc} 1.1rc2.dev17+c852257'
+
+
+.. _`faq:grepascii`:
+
+How to locate non-ascii characters in the codebase
+--------------------------------------------------
+
+Neither the Python interpreter nor Sphinx like non-ASCII characters one
+bit, though the errors may be intermittant. Output files are usually ok,
+so Jerome can live, for now. To aid in tracking down offenders, here's
+the ``vi`` and ``grep`` search strings. In the docs, you want to use
+the substitutions in :source:`doc/sphinxman/source/abbr_accents.rst`
+instead of the actual characters. ::
+
+    # vim
+    :/[^\x00-\x7F]
+
+    # bash
+    grep -r --color='auto' -P -n "[^\x00-\x7F]" psi4/
+    
+.. _`faq:undefversion`:
+
+How to fix "Psi4 undefined" version
+-----------------------------------
+
+When in a git repo, the versioner uses ``git describe`` and psi4/metadata.py
+to compute the version. If you don't have all the latest tags, this mechanism
+can't work. To solve, pull tags and remake. ::
+
+    # upstream in `git remote -v` points to github.com/psi4/psi4.git
+    >>> git fetch upstream 'refs/tags/*:refs/tags/*'
+    >>> make
+    # version healed
+    
+.. _`faq:cannotimportcoretlpd`:
+
+How to fix "cannot import name 'core' from {top-level-psi4-dir}
+---------------------------------------------------------------
+
+First, what's happening? ``sys.path`` (where modules can be imported from in python) starts with ``''``.  If you `export PYTHONPATH={objdir}/stage/{prefix}/lib/{pymod_lib_dir}:$PYTHONPATH` to make PsiAPI easy, that inserts starting in pos’n 1 (0-indexed), so ``''`` still at the head of ``sys.path``. Now, if you try to run a psiapi/python file from ``{top-level-psi4-dir}`` that contains ``import psi4``, it will find the source tree ``psi4/__init__.py`` and fail because there’s no ``core.so`` around. That is, it’s finding what looks to be the psi4 module dir structure ``.`` when the one it wants is what you inserted into PYTHONPATH at pos’n 1.
+
+The way around this is to move the python file you're running to any other directory. Or, within the file, do ``sys.path.insert(0, {objdir}/stage/{prefix}/lib/{pymod_lib_dir}``.
+
+How to find tests without output.ref
+------------------------------------
+
+Ideally, each new test or much-altered test should add its own
+``output.ref``. When that doesn't happen, this command helps. ::
+
+    find tests/ -mindepth 1 -maxdepth 1 -type d '!' -exec test -e "{}/output.ref" ";" -print
 

@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -226,7 +226,7 @@ double ** symm_matrix_inv(double **A, int dim, bool redundant) {
   double * evals = init_array(dim);
   double ** A_evects = matrix_return_copy(A, dim, dim);
 
-  if (dim <= 0) return ( (double **) NULL);
+  if (dim <= 0) return ( (double **) nullptr);
 
   if (! opt_symm_matrix_eig(A_evects, dim, evals) )
     throw(INTCO_EXCEPT("symm_matrix_inv : opt_symm_matrix_eig could not diagonalize"));

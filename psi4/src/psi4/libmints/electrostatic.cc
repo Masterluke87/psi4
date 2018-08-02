@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -197,7 +197,7 @@ void ElectrostaticInt::compute_pair(const GaussianShell& s1, const GaussianShell
 
 SharedVector ElectrostaticInt::nuclear_contribution(std::shared_ptr<Molecule> mol)
 {
-    std::shared_ptr<Vector> sret(new Vector(mol->natom()));
+    auto sret = std::make_shared<Vector>(mol->natom());
     double *ret = sret->pointer();
 
     int natom = mol->natom();

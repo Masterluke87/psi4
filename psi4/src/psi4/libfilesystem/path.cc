@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -66,7 +66,7 @@ path path::make_absolute() const
 #endif
 
     char *temp = new char[path_max];
-    if (realpath(str().c_str(), temp) == NULL) {
+    if (realpath(str().c_str(), temp) == nullptr) {
         // Ignore errors relating to a file or directory component not existing
         if (errno != (int)std::errc::no_such_file_or_directory &&
             errno != (int)std::errc::not_a_directory) {

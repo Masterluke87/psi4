@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -34,15 +34,14 @@ Organizationally, this module isolates qcdb code from psi4 code.
 """
 from __future__ import print_function
 from __future__ import absolute_import
-import shutil
 import os
-import subprocess
 import re
-import inspect
 import glob
 import shelve
-import datetime
+import shutil
 import difflib
+import datetime
+import subprocess
 
 from psi4.driver.p4util.exceptions import *
 
@@ -52,7 +51,7 @@ def run_cfour_module(xmod):
     lenv = {
         'PATH': ':'.join([os.path.abspath(x) for x in os.environ.get('PSIPATH', '').split(':') if x != '']) + \
                 ':' + os.environ.get('PATH') + \
-                ':' + core.Process.environment["PSIDATADIR"] + '/basis' + \
+                ':' + core.get_datadir() + '/basis' + \
                 ':' + core.psi_top_srcdir() + '/share/basis',
         'CFOUR_NUM_CORES': os.environ.get('CFOUR_NUM_CORES'),
         'LD_LIBRARY_PATH': os.environ.get('LD_LIBRARY_PATH')

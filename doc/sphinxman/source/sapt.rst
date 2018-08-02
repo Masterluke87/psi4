@@ -3,7 +3,7 @@
 .. #
 .. # Psi4: an open-source quantum chemistry software package
 .. #
-.. # Copyright (c) 2007-2017 The Psi4 Developers.
+.. # Copyright (c) 2007-2018 The Psi4 Developers.
 .. #
 .. # The copyrights for code used from other parties are included in
 .. # the corresponding files.
@@ -37,7 +37,7 @@
 SAPT: Symmetry-Adapted Perturbation Theory
 ==========================================
 
-.. codeauthor:: Edward G. Hohenstein, Rob M. Parrish and J\ |e_acute|\ r\ |o_circumflex|\ me F. Gonthier
+.. codeauthor:: Edward G. Hohenstein, Rob M. Parrish, J\ |e_acute|\ r\ |o_circumflex|\ me F. Gonthier, and Daniel. G. A. Smith
 .. sectionauthor:: Edward G. Hohenstein and J\ |e_acute|\ r\ |o_circumflex|\ me F. Gonthier
 
 *Module:* :ref:`Keywords <apdx:sapt>`, :ref:`PSI Variables <apdx:sapt_psivar>`, :source:`LIBSAPT_SOLVER <psi4/src/psi4/libsapt_solver>`
@@ -353,6 +353,12 @@ yourself. In the example below, we do a stability analysis for the open-shell mo
   psi4.IO.change_file_namespace(97, 'monomerB', 'dimer')
   psi4.IO.set_default_namespace('dimer')
   
+  aux_basis = psi4.core.BasisSet.build(wfn_dimer.molecule(), "DF_BASIS_SAPT",
+                                psi4.core.get_global_option("DF_BASIS_SAPT"),
+                                "RIFIT", psi4.core.get_global_option("BASIS"))
+  wfn_dimer.set_basisset("DF_BASIS_SAPT", aux_basis)
+  wfn_dimer.set_basisset("DF_BASIS_ELST", aux_basis)
+  
   psi4.sapt(wfn_dimer,wfn_monA,wfn_monB)
 
 In this way, any of the SCF options can be tweaked for individual fragments.
@@ -406,7 +412,7 @@ Advanced SAPT0 Keywords
 
 .. include:: autodir_options_c/sapt__aio_cphf.rst
 .. include:: autodir_options_c/sapt__aio_df_ints.rst
-.. include:: autodir_options_c/sapt__no_response.rst
+.. include:: autodir_options_c/sapt__coupled_induction.rst
 .. include:: autodir_options_c/sapt__exch_scale_alpha.rst
 .. include:: autodir_options_c/sapt__ints_tolerance.rst
 .. include:: autodir_options_c/sapt__denominator_delta.rst
@@ -786,4 +792,20 @@ set to :math:`1.0`.
    methods in :ref:`SAPT module<sec:sapt>`, there is no workaround;
    on-the-fly construction of an auxiliary basis through Cholesky
    decomposition (not implemented) is the long-term solution.
+
+Spin-Flip SAPT
+^^^^^^^^^^^^^^
+
+SAPT0 with two open-shell references will always yield a high-spin complex.  In
+order to obtain a SAPT-based estimate of the splittings between different spin
+states of a complex the first-order exchange energies for all multiplets can be
+shown to be a linear combination of two matrix elements: a diagonal exchange
+term that determines the spin-averaged effect and a spin-flip term responsible
+for the splittings between the states. The numerical factors in this linear
+combination are determined solely by the Clebsch-Gordan coefficients:
+accordingly, the :math:`S^{2}` approximation implies a Heisenberg Hamiltonian
+picture with a single coupling strength parameter determining all the
+splittings. This method can be invoked with `energy("SF-SAPT")` and
+publications resulting from the use of the SF-SAPT code should cite the
+following publications: [Patkowski:2018:164110]_
 

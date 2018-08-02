@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -107,7 +107,7 @@ PsiReturnType cctriples(std::shared_ptr<Wavefunction> reference_wavefunction, Op
   double **geom, *zvals, value;
   FILE *efile;
   int i, errcod, natom;
-  char *keyw = NULL;
+  char *keyw = nullptr;
 
   init_io();
   title();
@@ -128,7 +128,7 @@ PsiReturnType cctriples(std::shared_ptr<Wavefunction> reference_wavefunction, Op
     spaces.push_back(moinfo.occ_sym);
     spaces.push_back(moinfo.virtpi);
     spaces.push_back(moinfo.vir_sym);
-    dpd_init(0, moinfo.nirreps, memory, 0, cachefiles, cachelist, NULL, 2, spaces);
+    dpd_init(0, moinfo.nirreps, memory, 0, cachefiles, cachelist, nullptr, 2, spaces);
   }
   else if(params.ref == 2) { /*** UHF ***/
     cachelist = cacheprep_uhf(2, cachefiles);
@@ -143,7 +143,7 @@ PsiReturnType cctriples(std::shared_ptr<Wavefunction> reference_wavefunction, Op
     spaces.push_back(moinfo.bvirtpi);
     spaces.push_back(moinfo.bvir_sym);
 
-    dpd_init(0, moinfo.nirreps, memory, 0, cachefiles, cachelist, NULL, 4, spaces);
+    dpd_init(0, moinfo.nirreps, memory, 0, cachefiles, cachelist, nullptr, 4, spaces);
   }
 
   count_ijk();

@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -67,7 +67,7 @@ void MOLECULE::sd_step(void) {
 
   oprintf_out("\tTaking SD optimization step.\n");
 
-  if (last_fq != NULL && p_Opt_data->g_last_dq_norm() != 0.0) {
+  if (last_fq != nullptr && p_Opt_data->g_last_dq_norm() != 0.0) {
     // compute overlap of previous forces with current forces
     double *last_fq_u = init_array(dim);
     array_copy(last_fq, last_fq_u, dim);

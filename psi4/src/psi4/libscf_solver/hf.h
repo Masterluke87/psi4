@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -145,19 +145,13 @@ protected:
     /// TODO We should really get rid of that and put it in the driver
     std::string old_scf_type_;
 
-    /// Perturb the Hamiltonian?
-    int perturb_h_;
-    /// How big of a perturbation
-    Vector3 perturb_dipoles_;
-    /// With what...
-    enum perturb { nothing, dipole_x, dipole_y, dipole_z, dipole, embpot, dx, sphere };
-    perturb perturb_;
 
     /// The value below which integrals are neglected
     double integral_threshold_;
 
     /// The soon to be ubiquitous JK object
     std::shared_ptr<JK> jk_;
+    bool is_dfjk_;
 
     /// Are we to do MOM?
     bool MOM_enabled_;
@@ -232,6 +226,9 @@ public:
 
     /// The JK object (or null if it has been deleted)
     std::shared_ptr<JK> jk() const { return jk_; }
+
+    /// Sets the internal JK object (expert)
+    void set_jk(std::shared_ptr<JK> jk);
 
     /// The DFT Functional object (or null if it has been deleted)
     std::shared_ptr<SuperFunctional> functional() const { return functional_; }
@@ -448,6 +445,7 @@ public:
 
     /** Forms the G matrix */
     virtual void form_G() = 0;
+
 
     /// Hessian-vector computers and solvers
     virtual std::vector<SharedMatrix> onel_Hx(std::vector<SharedMatrix> x);

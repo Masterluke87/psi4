@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -51,12 +51,13 @@
  class EFP;
  }
 
- class Process {
+ class PSI_API Process {
     public:
-     class Environment {
+     class PSI_API Environment {
          std::map<std::string, std::string> environment_;
          size_t memory_;
          int nthread_;
+         std::string datadir_;
 
          std::shared_ptr<Molecule> molecule_;
          SharedMatrix gradient_;
@@ -75,9 +76,6 @@
          std::shared_ptr<PointGroup> parent_symmetry() { return parent_symmetry_; }
          /// Set the "parent" symmetry
          void set_parent_symmetry(std::shared_ptr<PointGroup> pg) { parent_symmetry_ = pg; }
-         const std::string& operator()(const std::string& key) const;
-         std::string operator()(const std::string& key);
-         const std::string set(const std::string& key, const std::string& value);
 
          /// Set active molecule
          void set_molecule(const std::shared_ptr<Molecule>& molecule);
@@ -128,6 +126,10 @@
          /// Memory in bytes
          size_t get_memory() const;
          void set_memory(size_t m);
+
+         /// PSIDATADIR
+         std::string get_datadir() const { return datadir_; }
+         void set_datadir(const std::string pdd) { datadir_ = pdd; }
 
          /// "Global" liboptions object.
          Options options;

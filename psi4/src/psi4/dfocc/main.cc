@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -29,12 +29,10 @@
 #include "dfocc.h"
 #include "psi4/libciomr/libciomr.h"
 
+namespace psi {
+namespace dfoccwave {
 
-
-namespace psi{ namespace dfoccwave {
-
-SharedWavefunction dfoccwave(SharedWavefunction ref_wfn, Options &options)
-{
+SharedWavefunction dfoccwave(SharedWavefunction ref_wfn, Options &options) {
     // Start the timers
     tstart();
 
@@ -46,4 +44,5 @@ SharedWavefunction dfoccwave(SharedWavefunction ref_wfn, Options &options)
 
     return dfocc_wfn;
 }
-}} // End Namespaces
+}  // namespace dfoccwave
+}  // namespace psi

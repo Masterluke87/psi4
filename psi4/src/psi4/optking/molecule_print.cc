@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -79,7 +79,7 @@ void MOLECULE::print_geom_out_irc(void) {
 // This function is only used for an optional trajectory file.
 // The awkward itershift is to decrement in the initial geometry to "iteration 0"
 void MOLECULE::print_xyz(int iter_shift) {
-  FILE *qc_fp = NULL;
+  FILE *qc_fp = nullptr;
 
 #if defined(OPTKING_PACKAGE_QCHEM)
   qc_fp = fopen("geoms.xyz", "a");
@@ -95,7 +95,7 @@ void MOLECULE::print_xyz(int iter_shift) {
 }
 
 void MOLECULE::print_xyz_irc(int point, bool forward) {
-  FILE *qc_fp = NULL;
+  FILE *qc_fp = nullptr;
 
   if(forward) {
 #if defined(OPTKING_PACKAGE_QCHEM)

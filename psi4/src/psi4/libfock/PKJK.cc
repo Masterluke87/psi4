@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -89,7 +89,7 @@ void PKJK::print_header() const
             outfile->Printf( "    Omega:             %11.3E\n", omega_);
         outfile->Printf( "    Memory (MB):       %11ld\n", (memory_ *8L) / (1024L * 1024L));
         outfile->Printf( "    Schwarz Cutoff:    %11.0E\n\n", cutoff_);
-        outfile->Printf( "    OpenMP threads:    %11d\n", nthreads_);
+        outfile->Printf( "    OpenMP threads:    %11d\n\n", nthreads_);
     }
 }
 

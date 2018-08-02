@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -41,8 +41,8 @@ namespace psi {
 
 class PSIO;
 class PSIOManager;
-extern std::shared_ptr<PSIO> _default_psio_lib_;
-extern std::shared_ptr<PSIOManager> _default_psio_manager_;
+extern PSI_API std::shared_ptr<PSIO> _default_psio_lib_;
+extern PSI_API std::shared_ptr<PSIOManager> _default_psio_manager_;
 
 /**
     PSIOManager is a class designed to be used as a static object to track all
@@ -51,11 +51,9 @@ extern std::shared_ptr<PSIOManager> _default_psio_manager_;
     This will allow PSICLEAN to be trivially executed.
     Now supports a .psirc and interactive file placement
    */
-class PSIOManager {
+class PSI_API PSIOManager {
 private:
-    /// Default path for unspec'd file numbers
-    // (defaults to either $TMP, $TEMPDIR, $TMP or /tmp/ in
-    // that order)
+    /// Default path for unspec'd file numbers. Defaults to /tmp/
     std::string default_path_;
     /// Specific paths for arbitrary file numbers
     std::map<int, std::string> specific_paths_;
@@ -95,7 +93,7 @@ public:
             */
     void set_specific_path(int fileno, const std::string& path);
     /**
-            * Set the the specific file number to be retained
+            * Set the specific file number to be retained
             * \param fileno PSI4 file number
             * \param retain keep or not? (Allows override)
             */
@@ -194,7 +192,7 @@ public:
    etc.
 
    */
-class PSIO {
+class PSI_API PSIO {
 public:
     PSIO();
     ~PSIO();
@@ -295,7 +293,7 @@ public:
     void tocclean(size_t unit, const char *key);
     /// Print the table of contents for the given unit
     void tocprint(size_t unit);
-    /// Scans the TOC for a particular keyword and returns either a pointer to the entry or NULL to the caller.
+    /// Scans the TOC for a particular keyword and returns either a pointer to the entry or nullptr to the caller.
     psio_tocentry* tocscan(size_t unit, const char *key);
     /// Checks the TOC to see if a particular keyword exists there or not
     bool tocentry_exists(size_t unit, const char *key);

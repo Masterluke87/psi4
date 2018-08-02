@@ -3,7 +3,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -874,6 +874,14 @@ def muster_modelchem(name, dertype):
         options['CFOUR']['CFOUR_CALC_LEVEL']['value'] = 'CCSDT'
         options['CFOUR']['CFOUR_CC_PROGRAM']['value'] = 'ECC'
 
+    elif lowername == 'c4-ccsdt(q)':
+        options['CFOUR']['CFOUR_CALC_LEVEL']['value'] = 'CCSDT(Q)'
+        options['CFOUR']['CFOUR_CC_PROGRAM']['value'] = 'NCC'
+ 
+    elif lowername == 'c4-ccsdtq':
+        options['CFOUR']['CFOUR_CALC_LEVEL']['value'] = 'CCSDTQ'
+        options['CFOUR']['CFOUR_CC_PROGRAM']['value'] = 'NCC'
+
     else:
         raise ValidationError("""Requested Cfour computational methods %d is not available.""" % (lowername))
 
@@ -908,6 +916,8 @@ def cfour_list():
     val.append('c4-cc3')
     val.append('c4-ccsd(t)')
     val.append('c4-ccsdt')
+    val.append('c4-ccsdt(q)')
+    val.append('c4-ccsdtq')
     return val
 
 

@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -96,11 +96,11 @@ int CCTransform::allocate_tei_mo_block(int first_irrep)
 
   int last_irrep = first_irrep;
 
-  if(tei_mo == NULL){
+  if(tei_mo == nullptr){
     // Allocate the tei_mo matrix blocks
     allocate1(double*,tei_mo,moinfo->get_nirreps());
     for(int h = 0; h < moinfo->get_nirreps(); ++h)
-      tei_mo[h] = NULL;
+      tei_mo[h] = nullptr;
   }
 
   // Find how many irreps we can store in 95% of the free memory
@@ -135,13 +135,13 @@ int CCTransform::allocate_tei_mo_block(int first_irrep)
 void CCTransform::free_tei_mo_integrals_block(int first_irrep, int last_irrep)
 {
   for(int h = first_irrep; h < last_irrep; ++h){
-    if(tei_mo[h] != NULL){
+    if(tei_mo[h] != nullptr){
       release1(tei_mo[h]);
     }
   }
   if(last_irrep >= moinfo->get_nirreps()){
     release1(tei_mo);
-    tei_mo = NULL;
+    tei_mo = nullptr;
   }
 }
 

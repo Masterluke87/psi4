@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -185,7 +185,6 @@ protected:
     void build_UV_terms();
     void build_AB_x_terms();
     void build_Amn_x_terms();
-    void build_Amn_x_lr_terms();
 
     /// File number for Alpha (Q|mn) tensor
     size_t unit_a_;

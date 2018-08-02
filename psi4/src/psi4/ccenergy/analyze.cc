@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -58,7 +58,7 @@ void CCEnergyWavefunction::analyze(void)
   max = 9;
   min = 0;
   width = (max-min) / (num_div);
-  std::shared_ptr<PsiOutStream> printer(new PsiOutStream("tamps.dat",std::ostream::app));
+  auto printer = std::make_shared<PsiOutStream>("tamps.dat",std::ostream::app);
   amp_array = init_array(num_div);
 
   nvir = moinfo_.virtpi[0];
@@ -117,7 +117,7 @@ void CCEnergyWavefunction::analyze(void)
   max = 2;
   min = -5;
   width = (max-min) / (num_div);
-  std::shared_ptr<PsiOutStream> printer2(new PsiOutStream("t1amps.dat",std::ostream::app));
+  auto printer2 = std::make_shared<PsiOutStream>("t1amps.dat",std::ostream::app);
   amp_array = init_array(num_div);
 
   global_dpd_->file2_init(&T1, PSIF_CC_OEI, 0, 0, 1, "tIA");

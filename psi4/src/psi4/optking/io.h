@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -43,7 +43,7 @@ namespace opt {
 enum OPT_IO_FILE_STATUS {OPT_IO_OPEN_NEW, OPT_IO_OPEN_OLD} ;
 
 bool opt_io_is_present(void);
-void opt_io_remove(void);
+void opt_io_remove(bool force=false);
 void opt_io_open(OPT_IO_FILE_STATUS status);
 void opt_io_close(int keep);
 void opt_io_read_entry(const char *key, char *buffer, size_t size);

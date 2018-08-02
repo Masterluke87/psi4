@@ -3,7 +3,7 @@
 .. #
 .. # Psi4: an open-source quantum chemistry software package
 .. #
-.. # Copyright (c) 2007-2017 The Psi4 Developers.
+.. # Copyright (c) 2007-2018 The Psi4 Developers.
 .. #
 .. # The copyrights for code used from other parties are included in
 .. # the corresponding files.
@@ -84,6 +84,9 @@ Installation
   hint its location with :makevar:`CMAKE_PREFIX_PATH`,
   and rebuild |PSIfour| to detect CheMPS2 and activate dependent code.
 
+* Previous bullet had details. To build |PSIfour| from source and use
+  Libint from conda without thinking, consult :ref:`sec:condapsi4dev`.
+
 * To remove a conda installation, ``conda remove chemps2``.
 
 **Source**
@@ -154,7 +157,7 @@ How to configure CheMPS2 for building Psi4
 
 * Downstream Dependencies |w---w| |PSIfour| (\ |dr| optional) CheMPS2
 
-* Upstream Dependencies |w---w| CheMPS2 |dr| HDF5 |dr| zlib
+* Upstream Dependencies |w---w| CheMPS2 |dr| BLAS/LAPACK, HDF5 |dr| zlib
 
 **CMake Variables**
 
@@ -162,6 +165,7 @@ How to configure CheMPS2 for building Psi4
 * :makevar:`CMAKE_PREFIX_PATH` |w---w| CMake list variable to specify where pre-built dependencies can be found. For CheMPS2, set to an installation directory containing ``include/chemps2/DMRG.h``
 * :makevar:`CheMPS2_DIR` |w---w| CMake variable to specify where pre-built CheMPS2 can be found. Set to installation directory containing ``share/cmake/CheMPS2/CheMPS2Config.cmake``
 * :makevar:`CMAKE_DISABLE_FIND_PACKAGE_CheMPS2` |w---w| CMake variable to force internal build of CheMPS2 instead of detecting pre-built
+* :makevar:`CMAKE_INSIST_FIND_PACKAGE_CheMPS2` |w---w| CMake variable to force detecting pre-built CheMPS2 and not falling back on internal build
 
 **Examples**
 

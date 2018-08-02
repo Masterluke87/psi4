@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -67,7 +67,7 @@ void OCCWave::omp2_ip_poles()
 //===========================================================================================
 if (reference_ == "RESTRICTED") {
      // Memory allocation
-     SharedVector eOccOrbA = std::shared_ptr<Vector>(new Vector("eOccOrbA", nirrep_, occpiA));
+     auto eOccOrbA = std::make_shared<Vector>("eOccOrbA", nirrep_, occpiA);
      eOccOrbA->zero();
 
      dpdbuf4 K, T, D;
@@ -263,8 +263,8 @@ if (reference_ == "RESTRICTED") {
 else if (reference_ == "UNRESTRICTED") {
 
      // Memory allocation
-     SharedVector eOccOrbA = std::shared_ptr<Vector>(new Vector("eOccOrbA", nirrep_, occpiA));
-     SharedVector eOccOrbB = std::shared_ptr<Vector>(new Vector("eOccOrbB", nirrep_, occpiB));
+     auto eOccOrbA = std::make_shared<Vector>("eOccOrbA", nirrep_, occpiA);
+     auto eOccOrbB = std::make_shared<Vector>("eOccOrbB", nirrep_, occpiB);
      eOccOrbA->zero();
      eOccOrbB->zero();
 

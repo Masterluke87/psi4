@@ -5,7 +5,7 @@
 #
 # Psi4: an open-source quantum chemistry software package
 #
-# Copyright (c) 2007-2017 The Psi4 Developers.
+# Copyright (c) 2007-2018 The Psi4 Developers.
 #
 # The copyrights for code used from other parties are included in
 # the corresponding files.
@@ -28,9 +28,11 @@
 # @END LICENSE
 #
 
+import atexit
 import sys
 import os
 import json
+import datetime
 import argparse
 from argparse import RawTextHelpFormatter
 
@@ -138,8 +140,13 @@ if args["output"] is None:
 # Plugin compile line
 if args['plugin_compile']:
     share_cmake_dir = os.path.sep.join([cmake_install_prefix, 'share', 'cmake', 'psi4'])
-    print("""cmake -C {}/psi4PluginCache.cmake -DCMAKE_PREFIX_PATH={} .""".format(share_cmake_dir, cmake_install_prefix))
-    sys.exit()
+
+    plugincachealongside = os.path.isfile(share_cmake_dir + os.path.sep + 'psi4PluginCache.cmake')
+    if plugincachealongside:
+        print("""cmake -C {}/psi4PluginCache.cmake -DCMAKE_PREFIX_PATH={} .""".format(share_cmake_dir, cmake_install_prefix))
+        sys.exit()
+    else:
+        print("""Install "psi4-dev" via `conda install psi4-dev -c psi4[/label/dev]`, then reissue command.""")
 
 if args['psiapi_path']:
     pyexe_dir = os.path.dirname("@PYTHON_EXECUTABLE@")
@@ -199,12 +206,13 @@ psi4.core.set_num_threads(int(args["nthread"]), quiet=True)
 psi4.core.set_memory_bytes(524288000, True)
 psi4.extras._input_dir_ = os.path.dirname(os.path.abspath(args["input"]))
 psi4.print_header()
+start_time = datetime.datetime.now()
 
 # Prepare scratch for inputparser
 if args["scratch"] is not None:
     if not os.path.isdir(args["scratch"]):
         raise Exception("Passed in scratch is not a directory (%s)." % args["scratch"])
-    psi4.core.set_environment("PSI_SCRATCH", os.path.abspath(os.path.expanduser(args["scratch"])))
+    psi4.core.IOManager.shared_object().set_default_path(os.path.abspath(os.path.expanduser(args["scratch"])))
 
 # If this is a json call, compute and stop
 if args["json"]:
@@ -213,7 +221,7 @@ if args["json"]:
         json_data = json.load(f)
 
     psi4.extras._success_flag_ = True
-    psi4.extras.exit_printing()
+    psi4.extras.exit_printing(start_time)
     psi4.json_wrapper.run_json(json_data)
 
     with open(args["input"], 'w') as f:
@@ -241,19 +249,20 @@ if args["verbose"]:
     psi4.core.print_out('-' * 75)
 
 # Handle Messy
+_clean_functions = [psi4.core.clean, psi4.extras.clean_numpy_files]
 if args["messy"]:
-    import atexit
 
     if sys.version_info >= (3, 0):
-        atexit.unregister(psi4.core.clean)
+        for func in _clean_functions:
+            atexit.unregister(func)
     else:
         for handler in atexit._exithandlers:
-            if handler[0] == psi4.core.clean:
-                atexit._exithandlers.remove(handler)
+            for func in _clean_functions:
+                if handler[0] == func: 
+                    atexit._exithandlers.remove(handler)
 
 # Register exit printing, failure GOTO coffee ELSE beer
-import atexit
-atexit.register(psi4.extras.exit_printing)
+atexit.register(psi4.extras.exit_printing, start_time)
 
 # Run the program!
 try:

@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -97,7 +97,7 @@ DPD::~DPD()
         free(orbs2);
     }
 
-    if(orbspi and orbsym){
+    if(orbspi && orbsym){
         for(i=0; i < num_subspaces; i++) {
             free(orbspi[i]);
             free(orbsym[i]);

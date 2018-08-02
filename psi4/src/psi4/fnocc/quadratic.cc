@@ -3,7 +3,7 @@
  *
  * Psi4: an open-source quantum chemistry software package
  *
- * Copyright (c) 2007-2017 The Psi4 Developers.
+ * Copyright (c) 2007-2018 The Psi4 Developers.
  *
  * The copyrights for code used from other parties are included in
  * the corresponding files.
@@ -30,8 +30,7 @@
 #include "psi4/libmints/vector.h"
 #include "psi4/libmints/matrix.h"
 #include "psi4/libmints/wavefunction.h"
-#include"psi4/libqt/qt.h"
-#include<sys/times.h>
+#include "psi4/libqt/qt.h"
 #include "psi4/libpsio/psio.hpp"
 #include "psi4/psifiles.h"
 #ifdef _OPENMP
@@ -55,7 +54,7 @@ void CoupledCluster::CPU_I1ab_quadratic(CCTaskParams params){
   long int v = nvirt;
   long int b,m,n,e,a,id=0;
   // build I1(a,b)
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   psio->open(PSIF_DCC_IAJB,PSIO_OPEN_OLD);
   psio->read_entry(PSIF_DCC_IAJB,"E2iajb",(char*)&integrals[0],o*o*v*v*sizeof(double));
   psio->close(PSIF_DCC_IAJB,1);
@@ -130,7 +129,7 @@ void CoupledCluster::CPU_I1pij_I1ia_lessmem_quadratic(CCTaskParams params){
   long int m,j,e,f,i,a,b;//,one=1;
   long int ov2 = o*v*v;
   long int id=0;
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
 
   // no singles
   // build I1(i,a). n^4
@@ -240,7 +239,7 @@ void CoupledCluster::I2ijkl_quadratic(CCTaskParams params){
   long int id,i,j,a,b,o,v;
   o = ndoccact;
   v = nvirt;
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
 
   if (t2_on_disk){
      psio->open(PSIF_DCC_T2,PSIO_OPEN_OLD);
@@ -293,7 +292,7 @@ void CoupledCluster::I2iabj_quadratic(CCTaskParams params){
   long int id,i,j,a,b,o,v;
   o = ndoccact;
   v = nvirt;
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   psio_address addr;
 
   if (t2_on_disk){
@@ -403,7 +402,7 @@ void CoupledCluster::I2iajb_quadratic(CCTaskParams params){
   long int id,i,j,a,b,o,v;
   o = ndoccact;
   v = nvirt;
-  std::shared_ptr<PSIO> psio(new PSIO());
+  auto psio = std::make_shared<PSIO>();
   psio_address addr;
 
   psio->open(PSIF_DCC_IAJB,PSIO_OPEN_OLD);

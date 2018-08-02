@@ -3,7 +3,7 @@
 .. #
 .. # Psi4: an open-source quantum chemistry software package
 .. #
-.. # Copyright (c) 2007-2017 The Psi4 Developers.
+.. # Copyright (c) 2007-2018 The Psi4 Developers.
 .. #
 .. # The copyrights for code used from other parties are included in
 .. # the corresponding files.
@@ -89,6 +89,7 @@ QC Dependencies and Extensions
 ------------------------------
 
 #. :ref:`faq:addondepend`
+#. :ref:`faq:localaddon`
 #. :ref:`cmake:chemps2`
 #. :ref:`faq:chemps2gccflto`
 #. :ref:`cmake:dkh`
@@ -115,6 +116,7 @@ Runtime Setup
 #. :ref:`faq:inplace`
 #. :ref:`faq:psi4scratch`
 #. :ref:`faq:psidatadir`
+#. :ref:`faq:psi4psiapipath`
 
 Running |PSIfour|
 -----------------

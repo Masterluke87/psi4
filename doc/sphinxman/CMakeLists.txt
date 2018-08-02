@@ -14,9 +14,26 @@ if(NOT (LATEX_COMPILER AND PDFLATEX_COMPILER))
    message(STATUS "No LaTeX (incl. pdflatex), no PDF docs. Pre-built documentation at http://psicode.org/psi4manual/master/index.html")
 endif()
 
+if(SPHINX_THEME STREQUAL sphinx_psi_theme)
+    execute_process(COMMAND ${PYTHON_EXECUTABLE} -c
+        "import sphinx_psi_theme; import cloud_sptheme; import sphinx_automodapi; import graphviz"
+        OUTPUT_QUIET ERROR_QUIET RESULT_VARIABLE _exec_python_err)
+else()
+    execute_process(COMMAND ${PYTHON_EXECUTABLE} -c
+        "import ${SPHINX_THEME}; import sphinx_automodapi; import graphviz"
+        OUTPUT_QUIET ERROR_QUIET RESULT_VARIABLE _exec_python_err)
+endif()
+if(_exec_python_err)
+    message(STATUS "No theme, no docs (try: conda install sphinx-psi-theme cloud_sptheme sphinx-automodapi graphviz python-graphviz -c conda-forge -c psi4)")
+    set(SPHINX_STUFF_FOUND "OFF")
+
+else()
+    set(SPHINX_STUFF_FOUND "ON")
+endif()
+
 
 # Setup and build Sphinx documentation
-if(PERL_FOUND AND SPHINX_FOUND)
+if(PERL_FOUND AND SPHINX_FOUND AND SPHINX_STUFF_FOUND)
     set(CCSD "${CMAKE_CURRENT_SOURCE_DIR}")
     set(CCBD "${CMAKE_CURRENT_BINARY_DIR}")
 
@@ -39,7 +56,9 @@ if(PERL_FOUND AND SPHINX_FOUND)
     chemps2.rst fisapt.rst plugin_v2rdm_casscf.rst psi4api.rst
     manage_addon.rst numpy.rst build_planning.rst build_faq.rst
     build_obtaining.rst libint.rst erd.rst simint.rst gcp.rst
-    index_tutorials.rst manage_faq.rst manage_index.rst manage_git.rst
+    index_tutorials.rst prog_faq.rst manage_index.rst manage_git.rst
+    style_c.rst prog_blas.rst add_tests.rst plugin_snsmp2.rst dftnl.rst
+    libxc.rst gau2grid.rst
     )
 
     # * compute relative path btwn top_srcdir and objdir/doc/sphinxman
@@ -385,5 +404,5 @@ if(PERL_FOUND AND SPHINX_FOUND)
             ${CCBD}/html
         COMMENT "Building abridged html documentation ...")
 
-endif(PERL_FOUND AND SPHINX_FOUND)
+endif(PERL_FOUND AND SPHINX_FOUND AND SPHINX_STUFF_FOUND)
 
